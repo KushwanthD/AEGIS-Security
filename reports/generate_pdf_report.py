@@ -5,10 +5,16 @@ from reportlab.platypus import (
     SimpleDocTemplate,
     Paragraph,
     Spacer,
-    PageBreak
+    PageBreak,
+    Table,
+    TableStyle
+
+
 )
 
 from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+
 
 parser = argparse.ArgumentParser()
 
@@ -245,16 +251,20 @@ for title, risk, reason, action in cursor.fetchall():
 
     content.append(
         Paragraph(
-            f"Reason: {reason}",
+            f"Threat Intelligence: {reason}",
             styles["BodyText"]
         )
     )
 
     content.append(
         Paragraph(
-            f"Recommendation: {action}",
+            f"Recommended Action: {action}",
             styles["BodyText"]
         )
+    )
+
+    content.append(
+        Spacer(1, 6)
     )
 
 content.append(PageBreak())
@@ -269,23 +279,42 @@ content.append(
         styles["Heading1"]
     )
 )
+
 cursor.execute("""
 SELECT
-    event_type,
-    created_at
+    created_at,
+    event_type
 FROM AuditLogs
 WHERE assessment_id = ?
 ORDER BY id
 """, (ASSESSMENT_ID,))
 
-for event_type, created_at in cursor.fetchall():
+audit_rows = [
+    ["Timestamp", "Event"]
+]
 
-    content.append(
-        Paragraph(
-            f"{created_at} - {event_type}",
-            styles["BodyText"]
-        )
-    )
+for created_at, event_type in cursor.fetchall():
+
+    audit_rows.append([
+        created_at,
+        event_type
+    ])
+
+audit_table = Table(
+    audit_rows,
+    colWidths=[180, 250]
+)
+
+audit_table.setStyle(
+    TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
+        ("GRID", (0, 0), (-1, -1), 1, colors.black),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE")
+    ])
+)
+
+content.append(audit_table)
 
 document.build(content)
 

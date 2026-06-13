@@ -4,7 +4,8 @@ import argparse
 from reportlab.platypus import (
     SimpleDocTemplate,
     Paragraph,
-    Spacer
+    Spacer,
+    PageBreak
 )
 
 from reportlab.lib.styles import (
@@ -96,24 +97,21 @@ asset_value = asset[0]
 
 content.append(
     Paragraph(
-        f"<b>Assessment:</b> "
-        f"{assessment_reference}",
+        f"<b>Assessment:</b> {assessment_reference}",
         styles["BodyText"]
     )
 )
 
 content.append(
     Paragraph(
-        f"<b>Asset:</b> "
-        f"{asset_value}",
+        f"<b>Asset:</b> {asset_value}",
         styles["BodyText"]
     )
 )
 
 content.append(
     Paragraph(
-        f"<b>Status:</b> "
-        f"{assessment_status}",
+        f"<b>Status:</b> {assessment_status}",
         styles["BodyText"]
     )
 )
@@ -153,9 +151,8 @@ elif "LOW" in risks:
 
 content.append(
     Paragraph(
-        f"<b>Overall Risk:</b> "
-        f"{overall_risk}",
-        styles["Heading2"]
+        f"<b>Overall Risk:</b> {overall_risk}",
+        styles["Heading1"]
     )
 )
 
@@ -174,16 +171,21 @@ content.append(
     )
 )
 
+summary = (
+    f"The authorized assessment of "
+    f"{asset_value} identified "
+    f"internet-facing services and "
+    f"security-relevant infrastructure. "
+    f"The overall risk level for this "
+    f"assessment is classified as "
+    f"{overall_risk} based on "
+    f"correlated findings and threat "
+    f"intelligence analysis."
+)
+
 content.append(
     Paragraph(
-        "This assessment identified "
-        "security-relevant services and "
-        "internet-facing infrastructure "
-        "associated with the authorized "
-        "asset. Findings were correlated "
-        "from reconnaissance and scanning "
-        "activities performed through "
-        "the AEGIS assessment workflow.",
+        summary,
         styles["BodyText"]
     )
 )
@@ -206,28 +208,78 @@ content.append(
 cursor.execute("""
 SELECT
     correlation_title,
+    risk_level
+FROM CorrelatedFindings
+WHERE assessment_id = ?
+""", (ASSESSMENT_ID,))
+
+for title, risk in cursor.fetchall():
+
+    content.append(
+        Paragraph(
+            f"• {title} ({risk})",
+            styles["BodyText"]
+        )
+    )
+
+content.append(
+    Spacer(1, 12)
+)
+
+# =====================
+# THREAT INTELLIGENCE
+# =====================
+
+content.append(
+    Paragraph(
+        "Threat Intelligence Summary",
+        styles["Heading1"]
+    )
+)
+
+cursor.execute("""
+SELECT DISTINCT
     correlation_reason
 FROM CorrelatedFindings
 WHERE assessment_id = ?
 """, (ASSESSMENT_ID,))
 
-findings = cursor.fetchall()
-
-for title, reason in findings:
+for row in cursor.fetchall():
 
     content.append(
         Paragraph(
-            f"• {title}",
+            f"• {row[0]}",
             styles["BodyText"]
         )
     )
 
-    content.append(
-        Paragraph(
-            reason,
-            styles["BodyText"]
-        )
+content.append(
+    Spacer(1, 12)
+)
+
+# =====================
+# BUSINESS IMPACT
+# =====================
+
+content.append(
+    Paragraph(
+        "Business Impact",
+        styles["Heading1"]
     )
+)
+
+content.append(
+    Paragraph(
+        "Exposed administrative and web "
+        "services may increase attack "
+        "surface visibility and create "
+        "opportunities for unauthorized "
+        "access attempts. Continuous "
+        "monitoring and security control "
+        "validation are recommended.",
+        styles["BodyText"]
+    )
+)
 
 content.append(
     Spacer(1, 12)
@@ -245,7 +297,7 @@ content.append(
 )
 
 cursor.execute("""
-SELECT
+SELECT DISTINCT
     recommended_action
 FROM CorrelatedFindings
 WHERE assessment_id = ?
@@ -256,6 +308,46 @@ for row in cursor.fetchall():
     content.append(
         Paragraph(
             f"• {row[0]}",
+            styles["BodyText"]
+        )
+    )
+
+content.append(
+    Spacer(1, 12)
+)
+
+# =====================
+# ASSESSMENT TIMELINE
+# =====================
+
+content.append(
+    Paragraph(
+        "Assessment Timeline",
+        styles["Heading1"]
+    )
+)
+
+cursor.execute("""
+SELECT
+    event_type,
+    created_at
+FROM AuditLogs
+WHERE assessment_id = ?
+AND event_type IN (
+    'ASSESSMENT_APPROVED',
+    'TOKEN_VERIFIED',
+    'RECON_COMPLETED',
+    'SCAN_COMPLETED',
+    'CORRELATION_COMPLETED'
+)
+ORDER BY id
+""", (ASSESSMENT_ID,))
+
+for event_type, created_at in cursor.fetchall():
+
+    content.append(
+        Paragraph(
+            f"• {created_at} - {event_type}",
             styles["BodyText"]
         )
     )
