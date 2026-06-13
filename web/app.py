@@ -16,6 +16,7 @@ import os
 app = Flask(__name__)
 
 
+
 @app.route("/")
 def home():
 
@@ -25,6 +26,41 @@ def home():
 
     cursor = connection.cursor()
 
+    # Metrics
+    cursor.execute("""
+    SELECT COUNT(*)
+    FROM Assets
+    """)
+
+    asset_count = cursor.fetchone()[0]
+
+    cursor.execute("""
+    SELECT COUNT(*)
+    FROM Assessments
+    """)
+
+    assessment_count = cursor.fetchone()[0]
+
+    cursor.execute("""
+    SELECT COUNT(*)
+    FROM Assessments
+    WHERE status = 'APPROVED'
+    """)
+
+    approved_count = cursor.fetchone()[0]
+
+    cursor.execute("""
+    SELECT COUNT(*)
+    FROM CorrelatedFindings
+    WHERE risk_level IN (
+        'HIGH',
+        'CRITICAL'
+    )
+    """)
+
+    high_risk_count = cursor.fetchone()[0]
+
+    # Existing asset query
     cursor.execute("""
     SELECT
         id,
@@ -39,8 +75,18 @@ def home():
 
     return render_template(
         "index.html",
-        assets=assets
+        assets=assets,
+        asset_count=asset_count,
+        assessment_count=assessment_count,
+        approved_count=approved_count,
+        high_risk_count=high_risk_count
     )
+
+
+
+
+
+
 
 
 @app.route(
@@ -716,7 +762,7 @@ def recon_results(execution_id):
         recon_type,
         result_data
     FROM ReconResults
-    WHERE assessment_id = ?
+    WHERE recon_execution_id = ?
     """, (assessment_id,))
 
     results = cursor.fetchall()
@@ -794,7 +840,7 @@ def scan_results(execution_id):
         description,
         evidence
     FROM ScanResults
-    WHERE assessment_id = ?
+    WHERE scan_execution_id = ?
     """, (assessment_id,))
 
     findings = cursor.fetchall()
@@ -1107,11 +1153,45 @@ def run_correlation(assessment_id):
     correlation_execution_id = cursor.lastrowid
 
     cursor.execute("""
+    SELECT id
+    FROM ReconExecutions
+    WHERE assessment_id = ?
+    ORDER BY id DESC
+    LIMIT  1
+    """, (assessment_id,))
+
+    latest_recon = cursor.fetchone()
+
+    cursor.execute("""
+    SELECT id
+    FROM ScanExecutions
+    WHERE assessment_id = ?
+    ORDER BY id DESC
+    LIMIT 1
+    """, (assessment_id,))
+
+    latest_scan = cursor.fetchone()
+
+    if latest_recon is None or latest_scan is None:
+
+        print(
+            "Recon or scan execution not found."
+    )
+
+    connection.close()
+
+    exit()
+
+    latest_recon_id = latest_recon[0]
+    latest_scan_id = latest_scan[0]
+
+
+    cursor.execute("""
     SELECT
         recon_type,
         result_data
     FROM ReconResults
-    WHERE assessment_id = ?
+    WHERE recon_execution_id = ?
     """, (assessment_id,))
 
     recon_results = cursor.fetchall()
@@ -1122,7 +1202,7 @@ def run_correlation(assessment_id):
         severity,
         evidence
     FROM ScanResults
-    WHERE assessment_id = ?
+    WHERE scan_execution_id = ?
     """, (assessment_id,))
 
     scan_results = cursor.fetchall()
@@ -1302,6 +1382,28 @@ def generate_executive_report(
         </h1>
         """
 
+    connection = sqlite3.connect(
+        "database/aegis.db"
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    INSERT INTO Reports (
+        assessment_id,
+        report_type,
+        file_name
+    )
+    VALUES (?, ?, ?)
+    """, (
+        assessment_id,
+        "EXECUTIVE",
+        pdf_file
+    ))
+
+    connection.commit()
+    connection.close()
+
     return send_file(
         os.path.abspath(pdf_file),
         as_attachment=True
@@ -1335,10 +1437,35 @@ def generate_technical_report(
         </h1>
         """
 
+    connection = sqlite3.connect(
+        "database/aegis.db"
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    INSERT INTO Reports (
+        assessment_id,
+        report_type,
+        file_name
+    )
+    VALUES (?, ?, ?)
+    """, (
+        assessment_id,
+        "TECHNICAL",
+        pdf_file
+    ))
+
+    connection.commit()
+    connection.close()
+
     return send_file(
         os.path.abspath(pdf_file),
         as_attachment=True
     )
+
+
+
 
 
 @app.route("/threat-intelligence")
@@ -1368,6 +1495,216 @@ def threat_intelligence():
         "threat_intelligence.html",
         threats=threats
     )
+
+
+@app.route(
+    "/assessment-summary/<int:assessment_id>"
+)
+def assessment_summary(assessment_id):
+
+    connection = sqlite3.connect(
+        "database/aegis.db"
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    SELECT
+        assessment_reference,
+        status,
+        asset_id
+    FROM Assessments
+    WHERE id = ?
+    """, (assessment_id,))
+
+    assessment = cursor.fetchone()
+
+    if assessment is None:
+
+        connection.close()
+
+        return "<h1>Assessment not found</h1>"
+
+    assessment_reference = assessment[0]
+    assessment_status = assessment[1]
+    asset_id = assessment[2]
+
+    cursor.execute("""
+    SELECT asset_value
+    FROM Assets
+    WHERE id = ?
+    """, (asset_id,))
+
+    asset_value = cursor.fetchone()[0]
+
+    cursor.execute("""
+    SELECT id
+    FROM CorrelationExecutions
+    WHERE assessment_id = ?
+    ORDER BY id DESC
+    LIMIT 1
+    """, (assessment_id,))
+
+    latest_correlation = cursor.fetchone()
+
+    latest_correlation_id = None
+
+    if latest_correlation:
+
+        latest_correlation_id = latest_correlation[0]
+
+        cursor.execute("""
+        SELECT risk_level
+        FROM CorrelatedFindings
+        WHERE correlation_execution_id = ?
+        """, (latest_correlation_id,))
+
+        risks = [
+            row[0]
+            for row in cursor.fetchall()
+        ]
+
+    else:
+
+        risks = []
+    risk_score = 0
+
+    for risk in risks:
+
+        if risk == "CRITICAL":
+            risk_score += 10
+
+        elif risk == "HIGH":
+            risk_score += 7
+
+        elif risk == "MEDIUM":
+            risk_score += 4
+
+        elif risk == "LOW":
+            risk_score += 1
+
+    overall_risk = "INFO"
+
+    if risk_score >= 15:
+        overall_risk = "CRITICAL"
+
+    elif risk_score >= 10:
+        overall_risk = "HIGH"
+
+    elif risk_score >= 5:
+        overall_risk = "MEDIUM"
+
+    elif risk_score >= 1:
+        overall_risk = "LOW"
+
+
+    cursor.execute("""
+    SELECT status
+    FROM ReconExecutions
+    WHERE assessment_id = ?
+    ORDER BY id DESC
+    LIMIT 1
+    """, (assessment_id,))
+
+    row = cursor.fetchone()
+    recon_status = (
+        row[0] if row else "NOT RUN"
+    )
+
+    cursor.execute("""
+    SELECT status
+    FROM ScanExecutions
+    WHERE assessment_id = ?
+    ORDER BY id DESC
+    LIMIT 1
+    """, (assessment_id,))
+
+    row = cursor.fetchone()
+    scan_status = (
+        row[0] if row else "NOT RUN"
+    )
+
+    cursor.execute("""
+    SELECT status
+    FROM CorrelationExecutions
+    WHERE assessment_id = ?
+    ORDER BY id DESC
+    LIMIT 1
+    """, (assessment_id,))
+
+    row = cursor.fetchone()
+    correlation_status = (
+        row[0] if row else "NOT RUN"
+    )
+
+    if latest_correlation_id:
+
+        cursor.execute("""
+        SELECT
+            correlation_title,
+            risk_level
+        FROM CorrelatedFindings
+        WHERE correlation_execution_id = ?
+        ORDER BY id DESC
+        """, (latest_correlation_id,))
+
+        findings = cursor.fetchall()
+
+    else:
+
+        findings = []
+
+
+
+
+
+
+
+    connection.close()
+
+    return render_template(
+        "assessment_summary.html",
+        assessment_id=assessment_id,
+        assessment_reference=assessment_reference,
+        assessment_status=assessment_status,
+        asset_value=asset_value,
+        overall_risk=overall_risk,
+        risk_score=risk_score,
+        recon_status=recon_status,
+        scan_status=scan_status,
+        correlation_status=correlation_status,
+        findings=findings
+    )
+
+@app.route("/report-history")
+def report_history():
+
+    connection = sqlite3.connect(
+        "database/aegis.db"
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    SELECT
+        id,
+        assessment_id,
+        report_type,
+        created_at,
+        file_name
+    FROM Reports
+    ORDER BY id DESC
+    """)
+
+    reports = cursor.fetchall()
+
+    connection.close()
+
+    return render_template(
+        "report_history.html",
+        reports=reports
+    )
+
 
 
 

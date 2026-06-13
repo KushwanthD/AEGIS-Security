@@ -135,23 +135,38 @@ risks = [
     for row in cursor.fetchall()
 ]
 
+risk_score = 0
+
+for risk in risks:
+
+    if risk == "CRITICAL":
+        risk_score += 10
+
+    elif risk == "HIGH":
+        risk_score += 7
+
+    elif risk == "MEDIUM":
+        risk_score += 4
+
+    elif risk == "LOW":
+        risk_score += 1
+
 overall_risk = "INFO"
 
-if "CRITICAL" in risks:
+if risk_score >= 15:
     overall_risk = "CRITICAL"
 
-elif "HIGH" in risks:
+elif risk_score >= 10:
     overall_risk = "HIGH"
 
-elif "MEDIUM" in risks:
+elif risk_score >= 5:
     overall_risk = "MEDIUM"
 
-elif "LOW" in risks:
+elif risk_score >= 1:
     overall_risk = "LOW"
-
 content.append(
     Paragraph(
-        f"<b>Overall Risk:</b> {overall_risk}",
+        f"<b>Risk Score:</b> {overall_risk}",
         styles["Heading1"]
     )
 )

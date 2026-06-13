@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Report History</h2>
+
+<table>
+
+<tr>
+    <th>ID</th>
+    <th>Assessment</th>
+    <th>Report Type</th>
+    <th>Generated</th>
+    <th>File</th>
+</tr>
+
+{% for report in reports %}
+<tr>
+
+    <td>{{ report[0] }}</td>
+    <td>{{ report[1] }}</td>
+    <td>{{ report[2] }}</td>
+    <td>{{ report[3] }}</td>
+    <td>{{ report[4] }}</td>
+
+</tr>
+{% endfor %}
+
+</table>
+
+{% endblock %}

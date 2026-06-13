@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Assessment Summary</h2>
+
+<p>
+<b>Assessment:</b>
+{{ assessment_reference }}
+</p>
+
+<p>
+<b>Asset:</b>
+{{ asset_value }}
+</p>
+
+<p>
+<b>Status:</b>
+{{ assessment_status }}
+</p>
+
+<p>
+<p>
+<b>Overall Risk:</b>
+{{ overall_risk }}
+</p>
+
+<p>
+<b>Risk Score:</b>
+{{ risk_score }}
+</p>
+<hr>
+
+<h3>Execution Status</h3>
+
+<table>
+
+<tr>
+    <th>Component</th>
+    <th>Status</th>
+</tr>
+
+<tr>
+    <td>Recon</td>
+    <td>{{ recon_status }}</td>
+</tr>
+
+<tr>
+    <td>Scan</td>
+    <td>{{ scan_status }}</td>
+</tr>
+
+<tr>
+    <td>Correlation</td>
+    <td>{{ correlation_status }}</td>
+</tr>
+
+</table>
+
+<hr>
+
+<h3>Correlated Findings</h3>
+
+<table>
+
+<tr>
+    <th>Title</th>
+    <th>Risk</th>
+</tr>
+
+{% for finding in findings %}
+<tr>
+
+    <td>{{ finding[0] }}</td>
+    <td>{{ finding[1] }}</td>
+
+</tr>
+{% endfor %}
+
+</table>
+
+<hr>
+
+<h3>Reports</h3>
+
+<a href="/generate-executive-report/{{ assessment_id }}">
+    Executive Report
+</a>
+
+|
+
+<a href="/generate-technical-report/{{ assessment_id }}">
+    Technical Report
+</a>
+
+{% endblock %}
