@@ -239,6 +239,92 @@ def approve_assessment(assessment_id):
     </a>
     """
 
+@app.route("/generate-token/<int:assessment_id>")
+def generate_token(assessment_id):
+
+    connection = sqlite3.connect(
+        "database/aegis.db"
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    SELECT status
+    FROM Assessments
+    WHERE id = ?
+    """, (assessment_id,))
+
+    assessment = cursor.fetchone()
+
+    if (
+        assessment is None
+        or assessment[0] != "APPROVED"
+    ):
+
+        connection.close()
+
+        return """
+        <h1>Assessment must be approved first</h1>
+
+        <a href="/assessments">
+            Back
+        </a>
+        """
+
+    token = secrets.token_hex(16)
+
+    token_hash = hashlib.sha256(
+        token.encode()
+    ).hexdigest()
+
+    cursor.execute("""
+    INSERT INTO AuthorizationTokens (
+        assessment_id,
+        token_hash,
+        expires_at
+    )
+    VALUES (
+        ?, ?, datetime('now', '+24 hours')
+    )
+    """, (
+        assessment_id,
+        token_hash
+    ))
+
+    cursor.execute("""
+    INSERT INTO AuditLogs (
+        assessment_id,
+        event_type,
+        event_details
+    )
+    VALUES (?, ?, ?)
+    """, (
+        assessment_id,
+        "TOKEN_GENERATED",
+        "Authorization token generated"
+    ))
+
+    connection.commit()
+
+    connection.close()
+
+    return f"""
+    <h1>Authorization Token Generated</h1>
+
+    <p><b>Assessment:</b> {assessment_id}</p>
+
+    <p><b>Token:</b> {token}</p>
+
+    <p>
+    Save this token now.
+    It will not be shown again.
+    </p>
+
+    <a href="/assessments">
+        Back to Assessments
+    </a>
+    """
+
 
 if __name__ == "__main__":
 
