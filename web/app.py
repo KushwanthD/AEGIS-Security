@@ -239,6 +239,7 @@ def approve_assessment(assessment_id):
     </a>
     """
 
+
 @app.route("/generate-token/<int:assessment_id>")
 def generate_token(assessment_id):
 
@@ -320,10 +321,106 @@ def generate_token(assessment_id):
     It will not be shown again.
     </p>
 
-    <a href="/assessments">
-        Back to Assessments
+    <a href="/verify-token/{assessment_id}">
+        Go To Token Verification
     </a>
     """
+
+
+@app.route(
+    "/verify-token/<int:assessment_id>",
+    methods=["GET", "POST"]
+)
+def verify_token(assessment_id):
+
+    if request.method == "POST":
+
+        supplied_token = request.form["token"]
+
+        connection = sqlite3.connect(
+            "database/aegis.db"
+        )
+
+        cursor = connection.cursor()
+
+        cursor.execute("""
+        SELECT
+            id,
+            token_hash,
+            used
+        FROM AuthorizationTokens
+        WHERE assessment_id = ?
+        ORDER BY id DESC
+        LIMIT 1
+        """, (assessment_id,))
+
+        record = cursor.fetchone()
+
+        if record is None:
+
+            connection.close()
+
+            return "<h1>No token found</h1>"
+
+        token_id = record[0]
+        stored_hash = record[1]
+        used = record[2]
+
+        if used:
+
+            connection.close()
+
+            return "<h1>Token already used</h1>"
+
+        supplied_hash = hashlib.sha256(
+            supplied_token.encode()
+        ).hexdigest()
+
+        if supplied_hash != stored_hash:
+
+            connection.close()
+
+            return "<h1>Invalid Token</h1>"
+
+        cursor.execute("""
+        UPDATE AuthorizationTokens
+        SET
+            used = 1,
+            used_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """, (token_id,))
+
+        cursor.execute("""
+        INSERT INTO AuditLogs (
+            assessment_id,
+            event_type,
+            event_details
+        )
+        VALUES (?, ?, ?)
+        """, (
+            assessment_id,
+            "TOKEN_VERIFIED",
+            "Authorization token verified"
+        ))
+
+        connection.commit()
+
+        connection.close()
+
+        return f"""
+        <h1>Token Verified Successfully</h1>
+
+        <p>Assessment: {assessment_id}</p>
+
+        <a href="/assessments">
+            Back to Assessments
+        </a>
+        """
+
+    return render_template(
+        "verify_token.html",
+        assessment_id=assessment_id
+    )
 
 
 if __name__ == "__main__":

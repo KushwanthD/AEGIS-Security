@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Verify Authorization Token</h2>
+
+<form method="POST">
+
+    <p>
+        <label>Assessment ID:</label>
+        <input
+            type="number"
+            name="assessment_id"
+            value="{{ assessment_id }}"
+            readonly
+        >
+    </p>
+
+    <p>
+        <label>Authorization Token:</label>
+        <input
+            type="text"
+            name="token"
+            required
+        >
+    </p>
+
+    <p>
+        <button type="submit">
+            Verify Token
+        </button>
+    </p>
+
+</form>
+
+{% endblock %}
