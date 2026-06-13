@@ -8,6 +8,8 @@ import sqlite3
 import secrets
 import hashlib
 import dns.resolver
+import subprocess
+
 
 
 app = Flask(__name__)
@@ -726,7 +728,256 @@ def recon_results(execution_id):
     )
 
 
+@app.route("/scan-history")
+def scan_history():
 
+    connection = sqlite3.connect(
+        "database/aegis.db"
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    SELECT
+        id,
+        assessment_id,
+        status,
+        started_at,
+        completed_at
+    FROM ScanExecutions
+    ORDER BY id DESC
+    """)
+
+    executions = cursor.fetchall()
+
+    connection.close()
+
+    return render_template(
+        "scan_history.html",
+        executions=executions
+    )
+
+
+
+@app.route("/scan-results/<int:execution_id>")
+def scan_results(execution_id):
+
+    connection = sqlite3.connect(
+        "database/aegis.db"
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    SELECT
+        assessment_id
+    FROM ScanExecutions
+    WHERE id = ?
+    """, (execution_id,))
+
+    execution = cursor.fetchone()
+
+    if execution is None:
+
+        connection.close()
+
+        return "<h1>Scan execution not found</h1>"
+
+    assessment_id = execution[0]
+
+    cursor.execute("""
+    SELECT
+        finding_title,
+        finding_category,
+        severity,
+        description,
+        evidence
+    FROM ScanResults
+    WHERE assessment_id = ?
+    """, (assessment_id,))
+
+    findings = cursor.fetchall()
+
+    connection.close()
+
+    return render_template(
+        "scan_results.html",
+        findings=findings
+    )
+
+
+@app.route("/run-scan/<int:assessment_id>")
+def run_scan(assessment_id):
+
+    connection = sqlite3.connect(
+        "database/aegis.db"
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    SELECT status
+    FROM Assessments
+    WHERE id = ?
+    """, (assessment_id,))
+
+    assessment = cursor.fetchone()
+
+    if assessment is None:
+
+        connection.close()
+
+        return "<h1>Assessment not found</h1>"
+
+    if assessment[0] != "APPROVED":
+
+        connection.close()
+
+        return "<h1>Assessment must be approved</h1>"
+
+    cursor.execute("""
+    SELECT used
+    FROM AuthorizationTokens
+    WHERE assessment_id = ?
+    ORDER BY id DESC
+    LIMIT 1
+    """, (assessment_id,))
+
+    token = cursor.fetchone()
+
+    if token is None:
+
+        connection.close()
+
+        return "<h1>No authorization token found</h1>"
+
+    if token[0] != 1:
+
+        connection.close()
+
+        return "<h1>Authorization token not verified</h1>"
+
+    cursor.execute("""
+    SELECT a.asset_value
+    FROM Assets a
+    JOIN Assessments s
+        ON a.id = s.asset_id
+    WHERE s.id = ?
+    """, (assessment_id,))
+
+    asset = cursor.fetchone()
+
+    if asset is None:
+
+        connection.close()
+
+        return "<h1>Target asset not found</h1>"
+
+    target = asset[0]
+
+    cursor.execute("""
+    INSERT INTO ScanExecutions (
+        assessment_id,
+        status
+    )
+    VALUES (?, ?)
+    """, (
+        assessment_id,
+        "RUNNING"
+    ))
+
+    scan_execution_id = cursor.lastrowid
+
+    cursor.execute("""
+    INSERT INTO AuditLogs (
+        assessment_id,
+        event_type,
+        event_details
+    )
+    VALUES (?, ?, ?)
+    """, (
+        assessment_id,
+        "SCAN_STARTED",
+        "Security scan started"
+    ))
+
+    result = subprocess.run(
+        ["nmap", "-F", target],
+        capture_output=True,
+        text=True
+    )
+
+    output = result.stdout
+
+    for line in output.splitlines():
+
+        if "/tcp" in line and "open" in line:
+
+            parts = line.split()
+
+            if len(parts) < 3:
+                continue
+
+            service = parts[2]
+
+            cursor.execute("""
+            INSERT INTO ScanResults (
+                assessment_id,
+                scan_execution_id,
+                tool_name,
+                finding_title,
+                finding_category,
+                severity,
+                description,
+                evidence
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                assessment_id,
+                scan_execution_id,
+                "Nmap",
+                f"{service.upper()} Service Exposed",
+                "Open Port",
+                "LOW",
+                f"{service} service detected",
+                line
+            ))
+
+    cursor.execute("""
+    UPDATE ScanExecutions
+    SET
+        status = ?,
+        completed_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+    """, (
+        "COMPLETED",
+        scan_execution_id
+    ))
+
+    cursor.execute("""
+    INSERT INTO AuditLogs (
+        assessment_id,
+        event_type,
+        event_details
+    )
+    VALUES (?, ?, ?)
+    """, (
+        assessment_id,
+        "SCAN_COMPLETED",
+        "Security scan completed"
+    ))
+
+    connection.commit()
+
+    connection.close()
+
+    return """
+    <h1>Scan Completed</h1>
+
+    <a href="/scan-history">
+        View Scan History
+    </a>
+    """
 
 
 if __name__ == "__main__":
