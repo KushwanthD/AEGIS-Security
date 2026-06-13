@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Correlated Findings</h2>
+
+<table>
+
+<tr>
+    <th>Title</th>
+    <th>Risk</th>
+    <th>Reason</th>
+    <th>Recommended Action</th>
+</tr>
+
+{% for finding in findings %}
+<tr>
+
+    <td>{{ finding[0] }}</td>
+    <td>{{ finding[1] }}</td>
+    <td>{{ finding[2] }}</td>
+    <td>{{ finding[3] }}</td>
+
+</tr>
+{% endfor %}
+
+</table>
+
+{% endblock %}

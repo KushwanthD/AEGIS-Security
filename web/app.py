@@ -979,6 +979,302 @@ def run_scan(assessment_id):
     </a>
     """
 
+@app.route("/audit-logs")
+def audit_logs():
+
+    connection = sqlite3.connect(
+        "database/aegis.db"
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    SELECT
+        id,
+        assessment_id,
+        event_type,
+        event_details,
+        created_at
+    FROM AuditLogs
+    ORDER BY id DESC
+    """)
+
+    logs = cursor.fetchall()
+
+    connection.close()
+
+    return render_template(
+        "audit_logs.html",
+        logs=logs
+    )
+
+
+@app.route("/correlation-history")
+def correlation_history():
+
+    connection = sqlite3.connect(
+        "database/aegis.db"
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    SELECT
+        id,
+        assessment_id,
+        status,
+        started_at,
+        completed_at
+    FROM CorrelationExecutions
+    ORDER BY id DESC
+    """)
+
+    executions = cursor.fetchall()
+
+    connection.close()
+
+    return render_template(
+        "correlation_history.html",
+        executions=executions
+    )
+
+@app.route("/correlation-results/<int:execution_id>")
+def correlation_results(execution_id):
+
+    connection = sqlite3.connect(
+        "database/aegis.db"
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    SELECT
+        assessment_id
+    FROM CorrelationExecutions
+    WHERE id = ?
+    """, (execution_id,))
+
+    execution = cursor.fetchone()
+
+    if execution is None:
+
+        connection.close()
+
+        return "<h1>Correlation execution not found</h1>"
+
+    assessment_id = execution[0]
+
+    cursor.execute("""
+    SELECT
+        correlation_title,
+        risk_level,
+        correlation_reason,
+        recommended_action
+    FROM CorrelatedFindings
+    WHERE assessment_id = ?
+    """, (assessment_id,))
+
+    findings = cursor.fetchall()
+
+    connection.close()
+
+    return render_template(
+        "correlation_results.html",
+        findings=findings
+    )
+
+@app.route("/run-correlation/<int:assessment_id>")
+def run_correlation(assessment_id):
+
+    connection = sqlite3.connect(
+        "database/aegis.db"
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    INSERT INTO CorrelationExecutions (
+        assessment_id,
+        status
+    )
+    VALUES (?, ?)
+    """, (
+        assessment_id,
+        "RUNNING"
+    ))
+
+    correlation_execution_id = cursor.lastrowid
+
+    cursor.execute("""
+    SELECT
+        recon_type,
+        result_data
+    FROM ReconResults
+    WHERE assessment_id = ?
+    """, (assessment_id,))
+
+    recon_results = cursor.fetchall()
+
+    cursor.execute("""
+    SELECT
+        finding_title,
+        severity,
+        evidence
+    FROM ScanResults
+    WHERE assessment_id = ?
+    """, (assessment_id,))
+
+    scan_results = cursor.fetchall()
+
+    mx_found = False
+    spf_found = False
+    ssh_found = False
+    http_found = False
+    https_found = False
+
+    for recon_type, result_data in recon_results:
+
+        if recon_type == "DNS_MX_RECORDS":
+            mx_found = True
+
+        if (
+            recon_type == "DNS_TXT_RECORDS"
+            and "v=spf1" in result_data
+        ):
+            spf_found = True
+
+    for finding_title, severity, evidence in scan_results:
+
+        if "SSH Service Exposed" in finding_title:
+            ssh_found = True
+
+        if "HTTP Service Exposed" in finding_title:
+            http_found = True
+
+        if "HTTPS Service Exposed" in finding_title:
+            https_found = True
+
+    if mx_found:
+
+        cursor.execute("""
+        INSERT INTO CorrelatedFindings (
+            assessment_id,
+            correlation_execution_id,
+            correlation_title,
+            risk_level,
+            correlation_reason,
+            recommended_action
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+        """, (
+            assessment_id,
+            correlation_execution_id,
+            "External Email Infrastructure Detected",
+            "INFO",
+            "MX records indicate email services.",
+            "Review SPF, DKIM and DMARC."
+        ))
+
+    if spf_found:
+
+        cursor.execute("""
+        INSERT INTO CorrelatedFindings (
+            assessment_id,
+            correlation_execution_id,
+            correlation_title,
+            risk_level,
+            correlation_reason,
+            recommended_action
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+        """, (
+            assessment_id,
+            correlation_execution_id,
+            "SPF Record Detected",
+            "INFO",
+            "SPF policy identified.",
+            "Review and maintain SPF records."
+        ))
+
+    if ssh_found:
+
+        cursor.execute("""
+        INSERT INTO CorrelatedFindings (
+            assessment_id,
+            correlation_execution_id,
+            correlation_title,
+            risk_level,
+            correlation_reason,
+            recommended_action
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+        """, (
+            assessment_id,
+            correlation_execution_id,
+            "Administrative Service Exposed",
+            "LOW",
+            "SSH service reachable.",
+            "Restrict SSH access."
+        ))
+
+    if http_found or https_found:
+
+        cursor.execute("""
+        INSERT INTO CorrelatedFindings (
+            assessment_id,
+            correlation_execution_id,
+            correlation_title,
+            risk_level,
+            correlation_reason,
+            recommended_action
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+        """, (
+            assessment_id,
+            correlation_execution_id,
+            "Web Service Exposure Detected",
+            "LOW",
+            "Public web services detected.",
+            "Review exposed web services."
+        ))
+
+    cursor.execute("""
+    UPDATE CorrelationExecutions
+    SET
+        status = ?,
+        completed_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+    """, (
+        "COMPLETED",
+        correlation_execution_id
+    ))
+
+    cursor.execute("""
+    INSERT INTO AuditLogs (
+        assessment_id,
+        event_type,
+        event_details
+    )
+    VALUES (?, ?, ?)
+    """, (
+        assessment_id,
+        "CORRELATION_COMPLETED",
+        "Correlation completed"
+    ))
+
+    connection.commit()
+
+    connection.close()
+
+    return """
+    <h1>Correlation Completed</h1>
+
+    <a href="/correlation-history">
+        View Correlation History
+    </a>
+    """
+
+
 
 if __name__ == "__main__":
 

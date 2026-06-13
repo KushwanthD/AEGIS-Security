@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Correlation Executions</h2>
+
+<table>
+
+<tr>
+    <th>ID</th>
+    <th>Assessment</th>
+    <th>Status</th>
+    <th>Started</th>
+    <th>Completed</th>
+    <th>Action</th>
+</tr>
+
+{% for execution in executions %}
+<tr>
+
+    <td>{{ execution[0] }}</td>
+    <td>{{ execution[1] }}</td>
+    <td>{{ execution[2] }}</td>
+    <td>{{ execution[3] }}</td>
+    <td>{{ execution[4] }}</td>
+
+    <td>
+        <a href="/correlation-results/{{ execution[0] }}">
+            View Findings
+        </a>
+    </td>
+
+</tr>
+{% endfor %}
+
+</table>
+
+{% endblock %}
