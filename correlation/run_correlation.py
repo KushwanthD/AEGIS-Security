@@ -134,8 +134,32 @@ if spf_found:
 
     findings_created += 1
 
-# Rule 3: SSH Exposure
+# Rule 3: SSH Exposure + Threat Intelligence
 if ssh_found:
+
+    cursor.execute("""
+    SELECT
+        risk_level,
+        threat_title,
+        recommended_action
+    FROM ThreatIntel
+    WHERE technology = 'SSH'
+    LIMIT 1
+    """)
+
+    intel = cursor.fetchone()
+
+    risk = "LOW"
+    threat = "SSH service is reachable."
+    recommendation = (
+        "Restrict SSH access to trusted networks or VPN users."
+    )
+
+    if intel:
+
+        risk = intel[0]
+        threat = intel[1]
+        recommendation = intel[2]
 
     cursor.execute("""
     INSERT INTO CorrelatedFindings (
@@ -151,15 +175,44 @@ if ssh_found:
         ASSESSMENT_ID,
         correlation_execution_id,
         "Administrative Service Exposed",
-        "LOW",
-        "SSH service is reachable.",
-        "Restrict SSH access to trusted networks or VPN users."
+        risk,
+        threat,
+        recommendation
     ))
 
     findings_created += 1
 
-# Rule 4: Web Service Exposure
+# Rule 4: Web Service Exposure + Threat Intelligence
 if http_found or https_found:
+
+    technology = "HTTP"
+
+    if https_found:
+        technology = "HTTPS"
+
+    cursor.execute("""
+    SELECT
+        risk_level,
+        threat_title,
+        recommended_action
+    FROM ThreatIntel
+    WHERE technology = ?
+    LIMIT 1
+    """, (technology,))
+
+    intel = cursor.fetchone()
+
+    risk = "LOW"
+    threat = "Public web services were detected during scanning."
+    recommendation = (
+        "Review exposed web services and ensure security controls are configured."
+    )
+
+    if intel:
+
+        risk = intel[0]
+        threat = intel[1]
+        recommendation = intel[2]
 
     cursor.execute("""
     INSERT INTO CorrelatedFindings (
@@ -175,9 +228,9 @@ if http_found or https_found:
         ASSESSMENT_ID,
         correlation_execution_id,
         "Web Service Exposure Detected",
-        "LOW",
-        "Public web services were detected during scanning.",
-        "Review exposed web services and ensure security controls are configured."
+        risk,
+        threat,
+        recommendation
     ))
 
     findings_created += 1
