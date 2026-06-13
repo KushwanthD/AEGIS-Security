@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Assessments</title>
+</head>
+<body>
+
+<h1>Assessments</h1>
+
+<table border="1">
+
+<tr>
+    <th>ID</th>
+    <th>Reference</th>
+    <th>Status</th>
+    <th>Action</th>
+</tr>
+
+{% for assessment in assessments %}
+<tr>
+
+    <td>{{ assessment[0] }}</td>
+    <td>{{ assessment[1] }}</td>
+    <td>{{ assessment[2] }}</td>
+
+    <td>
+
+    {% if assessment[2] == "PENDING" %}
+
+        <a href="/approve-assessment/{{ assessment[0] }}">
+            Approve
+        </a>
+
+    {% else %}
+
+        Approved
+
+    {% endif %}
+
+    </td>
+
+</tr>
+{% endfor %}
+
+</table>
+
+<br>
+
+<a href="/">
+Back to Dashboard
+</a>
+
+</body>
+</html>

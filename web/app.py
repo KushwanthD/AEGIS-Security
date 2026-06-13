@@ -10,6 +10,7 @@ import hashlib
 
 app = Flask(__name__)
 
+
 @app.route("/")
 def home():
 
@@ -35,6 +36,7 @@ def home():
         "index.html",
         assets=assets
     )
+
 
 @app.route(
     "/register-asset",
@@ -103,6 +105,7 @@ def register_asset():
         "register_asset.html"
     )
 
+
 @app.route("/verify-asset/<int:asset_id>")
 def verify_asset(asset_id):
 
@@ -131,6 +134,8 @@ def verify_asset(asset_id):
         Back to Dashboard
     </a>
     """
+
+
 @app.route("/request-assessment/<int:asset_id>")
 def request_assessment(asset_id):
 
@@ -175,6 +180,65 @@ def request_assessment(asset_id):
 
     <a href="/">Back to Dashboard</a>
     """
+
+
+@app.route("/assessments")
+def assessments():
+
+    connection = sqlite3.connect(
+        "database/aegis.db"
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    SELECT
+        id,
+        assessment_reference,
+        status
+    FROM Assessments
+    ORDER BY id DESC
+    """)
+
+    assessments = cursor.fetchall()
+
+    connection.close()
+
+    return render_template(
+        "assessments.html",
+        assessments=assessments
+    )
+
+
+@app.route("/approve-assessment/<int:assessment_id>")
+def approve_assessment(assessment_id):
+
+    connection = sqlite3.connect(
+        "database/aegis.db"
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    UPDATE Assessments
+    SET
+        status = 'APPROVED',
+        approved_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+    """, (assessment_id,))
+
+    connection.commit()
+
+    connection.close()
+
+    return """
+    <h1>Assessment Approved</h1>
+
+    <a href="/assessments">
+        Back to Assessments
+    </a>
+    """
+
 
 if __name__ == "__main__":
 
