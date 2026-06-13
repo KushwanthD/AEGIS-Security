@@ -10,7 +10,7 @@
     <th>ID</th>
     <th>Reference</th>
     <th>Status</th>
-    <th>Action</th>
+    <th>Actions</th>
 </tr>
 
 {% for assessment in assessments %}
@@ -35,9 +35,33 @@
         </a>
 
         |
-        
+
         <a href="/run-recon/{{ assessment[0] }}">
             Run Recon
+        </a>
+
+        |
+
+        <a href="/run-scan/{{ assessment[0] }}">
+            Run Scan
+        </a>
+
+        |
+
+        <a href="/run-correlation/{{ assessment[0] }}">
+            Run Correlation
+        </a>
+
+        |
+
+        <a href="/generate-executive-report/{{ assessment[0] }}">
+            Executive Report
+        </a>
+
+        |
+
+        <a href="/generate-technical-report/{{ assessment[0] }}">
+            Technical Report
         </a>
 
     {% else %}

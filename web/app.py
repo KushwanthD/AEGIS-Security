@@ -1,7 +1,8 @@
 from flask import (
     Flask,
     render_template,
-    request
+    request,
+    send_file
 )
 
 import sqlite3
@@ -9,7 +10,7 @@ import secrets
 import hashlib
 import dns.resolver
 import subprocess
-
+import os
 
 
 app = Flask(__name__)
@@ -1273,6 +1274,77 @@ def run_correlation(assessment_id):
         View Correlation History
     </a>
     """
+
+@app.route(
+    "/generate-executive-report/<int:assessment_id>"
+)
+def generate_executive_report(
+    assessment_id
+):
+
+    pdf_file = (
+        f"aegis_executive_report_"
+        f"{assessment_id}.pdf"
+    )
+
+    subprocess.run([
+        "python",
+        "reports/generate_executive_report.py",
+        "--assessment-id",
+        str(assessment_id)
+    ])
+
+    if not os.path.exists(pdf_file):
+
+        return """
+        <h1>
+        Executive report generation failed
+        </h1>
+        """
+
+    return send_file(
+        os.path.abspath(pdf_file),
+        as_attachment=True
+    )
+
+
+@app.route(
+    "/generate-technical-report/<int:assessment_id>"
+)
+def generate_technical_report(
+    assessment_id
+):
+
+    pdf_file = (
+        f"aegis_report_"
+        f"{assessment_id}.pdf"
+    )
+
+    subprocess.run([
+        "python",
+        "reports/generate_pdf_report.py",
+        "--assessment-id",
+        str(assessment_id)
+    ])
+
+    if not os.path.exists(pdf_file):
+
+        return """
+        <h1>
+        Technical report generation failed
+        </h1>
+        """
+
+    return send_file(
+        os.path.abspath(pdf_file),
+        as_attachment=True
+    )
+
+
+
+
+
+
 
 
 
