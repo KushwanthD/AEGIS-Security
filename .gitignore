@@ -1,0 +1,13 @@
+venv/
+__pycache__/
+*.pyc
+
+aegis_report_*.pdf
+
+demo-site/
+
+*.db-journal
+
+.DS_Store
+
+sqlite3
