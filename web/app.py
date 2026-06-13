@@ -7,6 +7,8 @@ from flask import (
 import sqlite3
 import secrets
 import hashlib
+import dns.resolver
+
 
 app = Flask(__name__)
 
@@ -421,6 +423,310 @@ def verify_token(assessment_id):
         "verify_token.html",
         assessment_id=assessment_id
     )
+
+
+@app.route("/run-recon/<int:assessment_id>")
+def run_recon(assessment_id):
+
+    connection = sqlite3.connect(
+        "database/aegis.db"
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    SELECT status
+    FROM Assessments
+    WHERE id = ?
+    """, (assessment_id,))
+
+    assessment = cursor.fetchone()
+
+    if assessment is None:
+
+        connection.close()
+
+        return "<h1>Assessment not found</h1>"
+
+    if assessment[0] != "APPROVED":
+
+        connection.close()
+
+        return "<h1>Assessment must be approved</h1>"
+
+    cursor.execute("""
+    SELECT used
+    FROM AuthorizationTokens
+    WHERE assessment_id = ?
+    ORDER BY id DESC
+    LIMIT 1
+    """, (assessment_id,))
+
+    token = cursor.fetchone()
+
+    if token is None:
+
+        connection.close()
+
+        return "<h1>No authorization token found</h1>"
+
+    if token[0] != 1:
+
+        connection.close()
+
+        return "<h1>Authorization token not verified</h1>"
+
+    cursor.execute("""
+    INSERT INTO ReconExecutions (
+        assessment_id,
+        status
+    )
+    VALUES (?, ?)
+    """, (
+        assessment_id,
+        "RUNNING"
+    ))
+
+    recon_execution_id = cursor.lastrowid
+
+    cursor.execute("""
+    INSERT INTO AuditLogs (
+        assessment_id,
+        event_type,
+        event_details
+    )
+    VALUES (?, ?, ?)
+    """, (
+        assessment_id,
+        "RECON_STARTED",
+        "DNS reconnaissance started"
+    ))
+
+    cursor.execute("""
+    SELECT A.asset_value
+    FROM Assessments S
+    JOIN Assets A
+    ON S.asset_id = A.id
+    WHERE S.id = ?
+    """, (assessment_id,))
+
+    asset = cursor.fetchone()
+
+    if asset is None:
+
+        connection.close()
+
+        return "<h1>No asset found</h1>"
+
+    target = asset[0]
+
+    try:
+
+        answers = dns.resolver.resolve(
+            target,
+            "A"
+        )
+
+        result_data = "\n".join(
+            str(record)
+            for record in answers
+        )
+
+        cursor.execute("""
+        INSERT INTO ReconResults (
+            assessment_id,
+            recon_execution_id,
+            recon_type,
+            result_data
+        )
+        VALUES (?, ?, ?, ?)
+        """, (
+            assessment_id,
+            recon_execution_id,
+            "DNS_A_RECORDS",
+            result_data
+        ))
+
+    except Exception:
+        pass
+
+    try:
+
+        answers = dns.resolver.resolve(
+            target,
+            "MX"
+        )
+
+        result_data = "\n".join(
+            str(record)
+            for record in answers
+        )
+
+        cursor.execute("""
+        INSERT INTO ReconResults (
+            assessment_id,
+            recon_execution_id,
+            recon_type,
+            result_data
+        )
+        VALUES (?, ?, ?, ?)
+        """, (
+            assessment_id,
+            recon_execution_id,
+            "DNS_MX_RECORDS",
+            result_data
+        ))
+
+    except Exception:
+        pass
+
+    try:
+
+        answers = dns.resolver.resolve(
+            target,
+            "TXT"
+        )
+
+        result_data = "\n".join(
+            str(record)
+            for record in answers
+        )
+
+        cursor.execute("""
+        INSERT INTO ReconResults (
+            assessment_id,
+            recon_execution_id,
+            recon_type,
+            result_data
+        )
+        VALUES (?, ?, ?, ?)
+        """, (
+            assessment_id,
+            recon_execution_id,
+            "DNS_TXT_RECORDS",
+            result_data
+        ))
+
+    except Exception:
+        pass
+
+    cursor.execute("""
+    UPDATE ReconExecutions
+    SET
+        status = ?,
+        completed_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+    """, (
+        "COMPLETED",
+        recon_execution_id
+    ))
+
+    cursor.execute("""
+    INSERT INTO AuditLogs (
+        assessment_id,
+        event_type,
+        event_details
+    )
+    VALUES (?, ?, ?)
+    """, (
+        assessment_id,
+        "RECON_COMPLETED",
+        "DNS reconnaissance completed"
+    ))
+
+    connection.commit()
+
+    connection.close()
+
+    return """
+    <h1>Recon Completed</h1>
+
+    <a href="/recon-history">
+        View Recon History
+    </a>
+    """
+
+
+
+
+
+@app.route("/recon-history")
+def recon_history():
+
+    connection = sqlite3.connect(
+        "database/aegis.db"
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    SELECT
+        id,
+        assessment_id,
+        status,
+        started_at,
+        completed_at
+    FROM ReconExecutions
+    ORDER BY id DESC
+    """)
+
+    executions = cursor.fetchall()
+
+    connection.close()
+
+    return render_template(
+        "recon_history.html",
+        executions=executions
+    )
+
+
+
+
+@app.route("/recon-results/<int:execution_id>")
+def recon_results(execution_id):
+
+    connection = sqlite3.connect(
+        "database/aegis.db"
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    SELECT
+        assessment_id
+    FROM ReconExecutions
+    WHERE id = ?
+    """, (execution_id,))
+
+    execution = cursor.fetchone()
+
+    if execution is None:
+
+        connection.close()
+
+        return "<h1>Recon execution not found</h1>"
+
+    assessment_id = execution[0]
+
+    cursor.execute("""
+    SELECT
+        recon_type,
+        result_data
+    FROM ReconResults
+    WHERE assessment_id = ?
+    """, (assessment_id,))
+
+    results = cursor.fetchall()
+
+    connection.close()
+
+    return render_template(
+        "recon_results.html",
+        results=results
+    )
+
+
+
 
 
 if __name__ == "__main__":
