@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Recon Results</h2>
+
+{% for result in results %}
+
+<h3>{{ result[0] }}</h3>
+
+<pre>
+{{ result[1] }}
+</pre>
+
+<hr>
+
+{% endfor %}
+
+{% endblock %}
