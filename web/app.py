@@ -103,6 +103,79 @@ def register_asset():
         "register_asset.html"
     )
 
+@app.route("/verify-asset/<int:asset_id>")
+def verify_asset(asset_id):
+
+    connection = sqlite3.connect(
+        "database/aegis.db"
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    UPDATE Assets
+    SET
+        verification_status = 'VERIFIED',
+        verification_date = CURRENT_TIMESTAMP
+    WHERE id = ?
+    """, (asset_id,))
+
+    connection.commit()
+
+    connection.close()
+
+    return """
+    <h1>Asset Verified</h1>
+
+    <a href="/">
+        Back to Dashboard
+    </a>
+    """
+@app.route("/request-assessment/<int:asset_id>")
+def request_assessment(asset_id):
+
+    connection = sqlite3.connect(
+        "database/aegis.db"
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    SELECT COUNT(*)
+    FROM Assessments
+    """)
+
+    count = cursor.fetchone()[0]
+
+    assessment_reference = (
+        f"AEGIS-2026-{count + 1:04d}"
+    )
+
+    cursor.execute("""
+    INSERT INTO Assessments (
+        asset_id,
+        assessment_reference,
+        status
+    )
+    VALUES (?, ?, ?)
+    """, (
+        asset_id,
+        assessment_reference,
+        "PENDING"
+    ))
+
+    connection.commit()
+
+    connection.close()
+
+    return f"""
+    <h1>Assessment Created</h1>
+
+    <p>{assessment_reference}</p>
+
+    <a href="/">Back to Dashboard</a>
+    """
+
 if __name__ == "__main__":
 
     app.run(
