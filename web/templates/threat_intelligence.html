@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Threat Intelligence</h2>
+
+<table>
+
+<tr>
+    <th>Technology</th>
+    <th>Risk Level</th>
+    <th>Threat Title</th>
+    <th>Source</th>
+</tr>
+
+{% for threat in threats %}
+<tr>
+
+    <td>{{ threat[0] }}</td>
+    <td>{{ threat[1] }}</td>
+    <td>{{ threat[2] }}</td>
+    <td>{{ threat[3] }}</td>
+
+</tr>
+{% endfor %}
+
+</table>
+
+{% endblock %}

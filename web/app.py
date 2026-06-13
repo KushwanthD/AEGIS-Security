@@ -1341,7 +1341,33 @@ def generate_technical_report(
     )
 
 
+@app.route("/threat-intelligence")
+def threat_intelligence():
 
+    connection = sqlite3.connect(
+        "database/aegis.db"
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    SELECT
+        technology,
+        risk_level,
+        threat_title,
+        source
+    FROM ThreatIntel
+    ORDER BY technology
+    """)
+
+    threats = cursor.fetchall()
+
+    connection.close()
+
+    return render_template(
+        "threat_intelligence.html",
+        threats=threats
+    )
 
 
 
