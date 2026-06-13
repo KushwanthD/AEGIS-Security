@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register Asset</title>
+</head>
+<body>
+
+<h1>Register Asset</h1>
+
+<form method="POST">
+
+    <label>Asset Type:</label>
+    <select name="asset_type">
+        <option value="domain">Domain</option>
+        <option value="website">Website</option>
+    </select>
+
+    <br><br>
+
+    <label>Asset Value:</label>
+    <input
+        type="text"
+        name="asset_value"
+        required
+    >
+
+    <br><br>
+
+    <label>Verification Method:</label>
+    <select name="verification_method">
+        <option value="DNS">DNS</option>
+        <option value="FILE">FILE</option>
+    </select>
+
+    <br><br>
+
+    <button type="submit">
+        Register Asset
+    </button>
+
+</form>
+
+<br>
+
+<a href="/">Back to Dashboard</a>
+
+</body>
+</html>

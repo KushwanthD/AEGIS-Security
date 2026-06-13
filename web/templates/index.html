@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AEGIS Dashboard</title>
+</head>
+<body>
+
+<h1>AEGIS Dashboard</h1>
+
+<h2>Assets</h2>
+
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Asset</th>
+        <th>Status</th>
+    </tr>
+
+    {% for asset in assets %}
+    <tr>
+        <td>{{ asset[0] }}</td>
+        <td>{{ asset[1] }}</td>
+        <td>{{ asset[2] }}</td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+<br>
+
+<a href="/register-asset">
+    Register New Asset
+</a>
+
+</body>
+</html>
