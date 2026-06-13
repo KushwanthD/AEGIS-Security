@@ -1,13 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Assessments</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-<h1>Assessments</h1>
+{% block content %}
 
-<table border="1">
+<h2>Assessments</h2>
+
+<table>
 
 <tr>
     <th>ID</th>
@@ -44,11 +41,4 @@
 
 </table>
 
-<br>
-
-<a href="/">
-Back to Dashboard
-</a>
-
-</body>
-</html>
+{% endblock %}

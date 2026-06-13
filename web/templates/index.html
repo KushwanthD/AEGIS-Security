@@ -1,15 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>AEGIS Dashboard</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-<h1>AEGIS Dashboard</h1>
+{% block content %}
 
 <h2>Assets</h2>
 
-<table border="1">
+<table>
 
     <tr>
         <th>ID</th>
@@ -48,20 +43,4 @@
 
 </table>
 
-<br>
-
-<a href="/register-asset">
-    Register New Asset
-
-<br><br>
-
-<a href="/assessments">
-    View Assessments
-</a>
-
-
-
-</a>
-
-</body>
-</html>
+{% endblock %}

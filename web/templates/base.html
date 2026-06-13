@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AEGIS</title>
+
+    <style>
+
+    body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+    }
+
+    nav {
+        margin-bottom: 20px;
+    }
+
+    nav a {
+        margin-right: 15px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th, td {
+        border: 1px solid black;
+        padding: 8px;
+    }
+
+    th {
+        background-color: #dddddd;
+    }
+
+    </style>
+
+</head>
+<body>
+
+<h1>AEGIS</h1>
+
+<nav>
+
+    <a href="/">Dashboard</a>
+
+    <a href="/register-asset">
+        Register Asset
+    </a>
+
+    <a href="/assessments">
+        Assessments
+    </a>
+
+</nav>
+
+<hr>
+
+{% block content %}
+{% endblock %}
+
+</body>
+</html>
