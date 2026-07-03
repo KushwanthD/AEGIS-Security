@@ -47,21 +47,44 @@
     <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; width: 100%;">
         {% if assessment_status == 'RUNNING' %}
             <div id="scan-progress-container" style="width: 100%; margin-top: 0.5rem; padding: 1rem; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 6px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                    <span id="scan-status-text" style="font-weight: bold; color: var(--accent-yellow); font-size: 0.95rem; text-shadow: 0 0 4px rgba(234, 179, 8, 0.2);">⏳ Initializing security audit...</span>
-                    <span id="scan-percentage-text" style="font-weight: bold; color: var(--text-primary); font-size: 0.95rem;">5%</span>
+                <div style="text-align: center; margin: 2rem auto; max-width: 400px;">
+                    <style>
+                        @keyframes wave-rotate {
+                            0% { transform: rotate(0deg); border-radius: 43% 47% 45% 42% / 40% 45% 42% 47%; }
+                            50% { border-radius: 48% 42% 46% 48% / 46% 48% 40% 42%; }
+                            100% { transform: rotate(360deg); border-radius: 43% 47% 45% 42% / 40% 45% 42% 47%; }
+                        }
+                        .cyber-log-container::-webkit-scrollbar {
+                            width: 4px;
+                        }
+                        .cyber-log-container::-webkit-scrollbar-thumb {
+                            background: rgba(139,92,246,0.3);
+                            border-radius: 2px;
+                        }
+                    </style>
+
+                    <!-- Undulating Sine-Wave Circle Loader (Image 2 Style) -->
+                    <div style="position: relative; width: 140px; height: 140px; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center;">
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 3px solid #a855f7; box-shadow: 0 0 15px rgba(168,85,247,0.4); animation: wave-rotate 4s infinite linear;"></div>
+                        <div style="position: absolute; top: 8px; left: 8px; width: 124px; height: 124px; border: 2px dashed #8b5cf6; opacity: 0.6; animation: wave-rotate 3s infinite linear reverse;"></div>
+                        <div id="scan-percentage-text" style="font-family: 'Outfit', sans-serif; font-size: 1.8rem; font-weight: 700; color: #ffffff; text-shadow: 0 0 8px rgba(168,85,247,0.6); z-index: 10;">5%</div>
+                    </div>
+
+                    <!-- Active Phase Indicator -->
+                    <div id="scan-status-text" style="font-weight: 600; color: var(--text-primary); font-size: 0.95rem; margin-bottom: 1.25rem; font-family: 'Outfit', sans-serif;">Initializing compliance audit...</div>
+
+                    <!-- Minimalist scrolling log console -->
+                    <div class="cyber-log-container" id="cyber-log-console" style="width: 100%; height: 90px; background: rgba(0,0,0,0.45); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.6rem; overflow-y: auto; text-align: left; font-family: 'Courier New', monospace; font-size: 0.75rem; color: #a855f7; line-height: 1.4;">
+                        <div style="color: #6b7280;">[SYSTEM] Handshaking background worker...</div>
+                    </div>
                 </div>
-                <div style="width: 100%; background: rgba(255,255,255,0.05); height: 10px; border-radius: 5px; overflow: hidden; border: 1px solid var(--border-color); position: relative;">
-                    <div id="scan-progress-bar" style="width: 5%; height: 100%; background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%); transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px var(--accent);"></div>
-                </div>
-                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem; margin-bottom: 0;">System is processing scans in the background. Page will automatically refresh when reports compile.</p>
             </div>
             <script>
                 document.addEventListener("DOMContentLoaded", function() {
                     const assessmentId = "{{ assessment_id }}";
                     const statusText = document.getElementById("scan-status-text");
                     const percentageText = document.getElementById("scan-percentage-text");
-                    const progressBar = document.getElementById("scan-progress-bar");
+                    let lastStatus = "";
 
                     function pollStatus() {
                         fetch("/assessment-status/" + assessmentId)
@@ -69,9 +92,21 @@
                             .then(data => {
                                 if (data.error) return;
                                 
-                                statusText.innerHTML = "⏳ " + data.status_text;
                                 percentageText.innerText = data.progress_percent + "%";
-                                progressBar.style.width = data.progress_percent + "%";
+                                statusText.innerHTML = "⚡ " + data.status_text;
+
+                                // Append background info changes minimally to log console
+                                if (data.status_text && data.status_text !== lastStatus) {
+                                    lastStatus = data.status_text;
+                                    const consoleLog = document.getElementById("cyber-log-console");
+                                    if (consoleLog) {
+                                        const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+                                        const logLine = document.createElement("div");
+                                        logLine.innerHTML = `<span style="color: #8b5cf6;">[${time}]</span> ${data.status_text}`;
+                                        consoleLog.appendChild(logLine);
+                                        consoleLog.scrollTop = consoleLog.scrollHeight;
+                                    }
+                                }
 
                                 if (data.status === "COMPLETED" || data.status === "FAILED") {
                                     setTimeout(() => {

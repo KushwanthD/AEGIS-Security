@@ -7,17 +7,9 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
-        @keyframes spin-clockwise {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        @keyframes spin-counter {
-            0% { transform: rotate(360deg); }
-            100% { transform: rotate(0deg); }
-        }
-        @keyframes pulse-lock {
-            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px #8b5cf6); }
-            50% { transform: scale(1.15); filter: drop-shadow(0 0 25px #a855f7); }
+        @keyframes stack-pulse {
+            0%, 100% { opacity: 0.35; transform: rotateX(60deg) translateZ(-20px) scale(0.95); }
+            50% { opacity: 1; transform: rotateX(60deg) translateZ(25px) scale(1.05); filter: drop-shadow(0 0 15px #a855f7); }
         }
     </style>
     <script>
@@ -40,13 +32,14 @@
     </script>
 </head>
 <body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 0; background: #0b0716;">
-    <!-- Concentric Lock Decryption Preloader -->
+    <!-- 3D Concentric Stacked Rings Preloader (Image 3 Style) -->
     <div id="preloader" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0b0716; z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s ease, visibility 0.3s ease;">
         <div style="text-align: center;">
-            <div style="position: relative; width: 100px; height: 100px; margin: 0 auto 1.5rem;">
-                <div class="ring-outer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 2px dashed #8b5cf6; border-radius: 50%; animation: spin-clockwise 3s infinite linear;"></div>
-                <div class="ring-inner" style="position: absolute; top: 10px; left: 10px; width: 80px; height: 80px; border: 2px dotted #a855f7; border-radius: 50%; animation: spin-counter 2s infinite linear;"></div>
-                <div class="lock-core" style="position: absolute; top: 25px; left: 25px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; animation: pulse-lock 1.5s infinite ease-in-out;">🔒</div>
+            <div class="concentric-3d-stack" style="position: relative; width: 110px; height: 110px; margin: 0 auto 1.75rem; perspective: 600px;">
+                <div class="ring-3d r1" style="position: absolute; width: 100%; height: 100%; border: 2px solid rgba(139,92,246,0.3); border-radius: 50%; transform: rotateX(60deg) translateZ(-20px); animation: stack-pulse 2s infinite ease-in-out;"></div>
+                <div class="ring-3d r2" style="position: absolute; width: 100%; height: 100%; border: 2px solid rgba(168,85,247,0.5); border-radius: 50%; transform: rotateX(60deg) translateZ(0px); animation: stack-pulse 2s infinite ease-in-out 0.4s;"></div>
+                <div class="ring-3d r3" style="position: absolute; width: 100%; height: 100%; border: 2px solid rgba(236,72,153,0.7); border-radius: 50%; transform: rotateX(60deg) translateZ(20px); animation: stack-pulse 2s infinite ease-in-out 0.8s;"></div>
+                <div class="ring-3d r4" style="position: absolute; width: 100%; height: 100%; border: 2px solid rgba(255,255,255,0.9); border-radius: 50%; transform: rotateX(60deg) translateZ(40px); animation: stack-pulse 2s infinite ease-in-out 1.2s;"></div>
             </div>
             <div style="color: #ffffff; font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;">
                 AEGIS <span style="color: #a855f7;">GATEWAY</span>
