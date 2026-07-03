@@ -43,6 +43,11 @@
     <h2>Security Assessments History</h2>
     <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Track requested security assessments. Approving an assessment requires an Analyst/Admin role. Active runs check scope restrictions and quota status.</p>
 
+    <!-- Search Input Bar -->
+    <div style="margin-bottom: 1.5rem; position: relative; max-width: 400px;">
+        <input type="text" id="assessmentSearch" placeholder="Search assessments..." onkeyup="filterAssessments()" style="width: 100%; padding: 0.6rem 1.25rem; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; color: white; outline: none; transition: border-color 0.3s; font-size: 0.9rem;">
+    </div>
+
     <!-- Filter non-pending assessments -->
     {% if current_user.role in ['Admin', 'Analyst'] %}
         {% set history_runs = assessments | rejectattr("status", "equalto", "PENDING") | list %}
@@ -53,7 +58,7 @@
     {% if not history_runs %}
         <p style="color: var(--text-secondary);">No active or completed assessments found.</p>
     {% else %}
-        <table>
+        <table id="assessmentsTable">
             <thead>
                 <tr>
                     <th>Ref ID</th>
@@ -107,6 +112,16 @@
                 {% endfor %}
             </tbody>
         </table>
+        <script>
+            function filterAssessments() {
+                const query = document.getElementById('assessmentSearch').value.toLowerCase();
+                const rows = document.querySelectorAll('#assessmentsTable tbody tr');
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(query) ? '' : 'none';
+                });
+            }
+        </script>
     {% endif %}
 </div>
 

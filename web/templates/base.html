@@ -439,8 +439,48 @@
                     sseSource.close();
                 }
             });
+
+            // Global PDF modal handlers
+            window.openPdfModal = function(pdfFilename, title) {
+                const modal = document.getElementById('pdfViewerModal');
+                const iframe = document.getElementById('pdfModalIframe');
+                const titleEl = document.getElementById('pdfModalTitle');
+                const downloadBtn = document.getElementById('pdfModalDownloadBtn');
+
+                if (modal && iframe) {
+                    titleEl.innerText = title;
+                    iframe.src = "/serve-pdf/" + encodeURIComponent(pdfFilename);
+                    downloadBtn.href = "/download-pdf/" + encodeURIComponent(pdfFilename);
+                    modal.style.display = 'flex';
+                }
+            };
+
+            window.closePdfModal = function() {
+                const modal = document.getElementById('pdfViewerModal');
+                const iframe = document.getElementById('pdfModalIframe');
+                if (modal && iframe) {
+                    modal.style.display = 'none';
+                    iframe.src = "";
+                }
+            };
         })();
         {% endif %}
     </script>
+
+    <!-- Global PDF Viewer Modal -->
+    <div id="pdfViewerModal" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(11, 7, 22, 0.9); z-index: 99999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
+        <div style="width: 90%; max-width: 1100px; height: 85%; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.6);">
+            <div style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02);">
+                <h3 style="margin: 0; font-family: 'Outfit', sans-serif; color: white;" id="pdfModalTitle">Report Preview</h3>
+                <div style="display: flex; gap: 0.75rem; align-items: center;">
+                    <a href="#" id="pdfModalDownloadBtn" class="btn" style="padding: 0.4rem 1rem; font-size: 0.85rem; background: var(--accent-green); color: black; font-weight: bold; text-decoration: none;">Download PDF</a>
+                    <button onclick="closePdfModal()" class="btn btn-secondary" style="padding: 0.4rem 1rem; font-size: 0.85rem; border: none; background: rgba(255,255,255,0.05); color: white; cursor: pointer; border-radius: 6px;">✕ Close</button>
+                </div>
+            </div>
+            <div style="flex-grow: 1; background: #1a1625; position: relative;">
+                <iframe id="pdfModalIframe" src="" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

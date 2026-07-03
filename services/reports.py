@@ -118,7 +118,7 @@ def generate_pdf(db: Session, assessment_id: int, report_type: str) -> str:
         risk_color = '#92D050'
 
     # --- Title Page ---
-    report_title = "AEGIS Technical Security Report" if report_type.upper() == "TECHNICAL" else "AEGIS Executive Security Report"
+    report_title = f"AEGIS Technical Security Report (ID: {assessment_id})" if report_type.upper() == "TECHNICAL" else f"AEGIS Executive Security Report (ID: {assessment_id})"
     content.append(Paragraph(report_title, title_style))
     content.append(Spacer(1, 10))
 

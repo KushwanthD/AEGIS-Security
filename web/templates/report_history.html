@@ -4,12 +4,29 @@
 
 <div class="card">
     <h2>Report Generation History</h2>
-    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">List of generated assessment reports. You can download existing technical and executive summaries.</p>
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">List of generated assessment reports. You can view them inline or download technical and executive summaries.</p>
 
     {% if not reports %}
         <p style="color: var(--text-secondary);">No reports have been generated yet. Open an assessment to generate PDFs.</p>
     {% else %}
-        <table>
+        <!-- Search and Dropdown Viewer Actions -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1.5rem; background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem;">
+            <div style="flex: 1; min-width: 250px;">
+                <label style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600; display: block; margin-bottom: 0.4rem;">Search Reports:</label>
+                <input type="text" id="reportSearch" placeholder="Type to filter reports..." onkeyup="filterReports()" style="width: 100%; padding: 0.5rem 1rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 6px; color: white; outline: none; transition: border-color 0.3s;">
+            </div>
+            <div style="flex: 1; min-width: 250px;">
+                <label style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600; display: block; margin-bottom: 0.4rem;">Dropdown Quick Viewer Select:</label>
+                <select id="reportSelect" onchange="viewReportFromDropdown()" style="width: 100%; padding: 0.5rem 1rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 6px; color: white; outline: none; cursor: pointer;">
+                    <option value="">-- Choose a report to view --</option>
+                    {% for r in reports %}
+                        <option value="{{ r[4] }}" data-title="{{ r[2].title() }} Report - Assessment #{{ r[1] }}">{{ r[2].title() }} Report - Assessment #{{ r[1] }} ({{ r[3] }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <table id="reportsTable">
             <thead>
                 <tr>
                     <th>Report ID</th>
@@ -23,7 +40,7 @@
                 {% for r in reports %}
                     <tr>
                         <td>{{ r[0] }}</td>
-                        <td>Assessment #{{ r[1] }}</td>
+                        <td><b>Assessment #{{ r[1] }}</b></td>
                         <td>
                             {% if r[2] == 'EXECUTIVE' %}
                                 <span class="badge badge-success">Executive Summary</span>
@@ -32,14 +49,41 @@
                             {% endif %}
                         </td>
                         <td>{{ r[3] }}</td>
-                        <td>
-                            <a href="/generate-{{ r[2].lower() }}-report/{{ r[1] }}" class="btn" style="padding: 0.3rem 0.8rem; font-size: 0.85rem;">Download PDF</a>
+                        <td style="display: flex; gap: 0.5rem;">
+                            <button onclick="openPdfModal('{{ r[4] }}', '{{ r[2].title() }} Report - Assessment #{{ r[1] }}')" class="btn" style="padding: 0.3rem 0.8rem; font-size: 0.85rem; background-color: var(--accent);">View Report</button>
+                            <a href="/download-pdf/{{ r[4] }}" class="btn btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.85rem; background-color: var(--accent-green); color: black; font-weight: bold; text-decoration: none;">Download PDF</a>
                         </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
+
+        <script>
+            function filterReports() {
+                const query = document.getElementById('reportSearch').value.toLowerCase();
+                const rows = document.querySelectorAll('#reportsTable tbody tr');
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(query) ? '' : 'none';
+                });
+            }
+
+            function viewReportFromDropdown() {
+                const select = document.getElementById('reportSelect');
+                const selectedVal = select.value;
+                if (selectedVal) {
+                    const option = select.options[select.selectedIndex];
+                    const title = option.getAttribute('data-title');
+                    if (window.openPdfModal) {
+                        window.openPdfModal(selectedVal, title);
+                    }
+                    // Reset selection
+                    select.value = "";
+                }
+            }
+        </script>
     {% endif %}
 </div>
 
 {% endblock %}
+

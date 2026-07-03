@@ -9,7 +9,12 @@
     {% if not logs %}
         <p style="color: var(--text-secondary);">No system logs exist.</p>
     {% else %}
-        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <!-- Search Input Bar -->
+        <div style="margin-bottom: 1.5rem; position: relative; max-width: 400px;">
+            <input type="text" id="logSearch" placeholder="Search audit logs..." onkeyup="filterLogs()" style="width: 100%; padding: 0.6rem 1.25rem; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; color: white; outline: none; transition: border-color 0.3s; font-size: 0.9rem;">
+        </div>
+
+        <div id="logsContainer" style="display: flex; flex-direction: column; gap: 0.5rem;">
             {% for log in logs %}
                 <div class="log-item">
                     <div>
@@ -20,6 +25,17 @@
                 </div>
             {% endfor %}
         </div>
+
+        <script>
+            function filterLogs() {
+                const query = document.getElementById('logSearch').value.toLowerCase();
+                const items = document.querySelectorAll('#logsContainer .log-item');
+                items.forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    item.style.display = text.includes(query) ? 'flex' : 'none';
+                });
+            }
+        </script>
     {% endif %}
 </div>
 

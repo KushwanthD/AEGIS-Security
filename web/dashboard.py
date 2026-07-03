@@ -1717,3 +1717,28 @@ def mark_notification_read(notification_id):
         return jsonify({"status": "success"})
     finally:
         db.close()
+
+@dashboard_bp.route("/serve-pdf/<path:filename>")
+@login_required
+def serve_pdf(filename):
+    if not filename.endswith(".pdf") or ".." in filename:
+        return "Access Denied", 403
+    
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    pdf_path = os.path.join(project_root, filename)
+    if os.path.exists(pdf_path):
+        return send_file(pdf_path, mimetype='application/pdf')
+    return "Report file not found", 404
+
+@dashboard_bp.route("/download-pdf/<path:filename>")
+@login_required
+def download_pdf(filename):
+    if not filename.endswith(".pdf") or ".." in filename:
+        return "Access Denied", 403
+
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    pdf_path = os.path.join(project_root, filename)
+    if os.path.exists(pdf_path):
+        return send_file(pdf_path, as_attachment=True)
+    return "Report file not found", 404
+

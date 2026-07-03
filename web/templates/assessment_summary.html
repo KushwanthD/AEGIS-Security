@@ -128,8 +128,8 @@
         {% endif %}
 
         {% if assessment_status == 'COMPLETED' %}
-            <a href="/generate-technical-report/{{ assessment_id }}" class="btn" style="background-color: var(--accent-green);">Download Tech PDF</a>
-            <a href="/generate-executive-report/{{ assessment_id }}" class="btn" style="background-color: var(--accent-green);">Download Executive PDF</a>
+            <button onclick="openPdfModal('aegis_report_{{ assessment_id }}.pdf', 'Technical Security Report - Assessment #{{ assessment_id }}')" class="btn" style="background-color: var(--accent);">View Technical Report</button>
+            <button onclick="openPdfModal('aegis_executive_report_{{ assessment_id }}.pdf', 'Executive Security Report - Assessment #{{ assessment_id }}')" class="btn" style="background-color: var(--accent);">View Executive Report</button>
         {% endif %}
 
         {% if current_user.role == 'Admin' %}
