@@ -2,28 +2,56 @@
 
 {% block content %}
 
-<h2>Threat Intelligence</h2>
+<div class="card">
+    <h2>Threat Intelligence Repository</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <p style="color: var(--text-secondary); margin: 0;">Repository containing active vulnerabilities and signatures matched against scan findings to define risk exposure rules.</p>
+        {% if current_user.role in ['Admin', 'Analyst'] %}
+            <a href="/refresh-threats" class="btn" style="padding: 0.5rem 1rem; font-size: 0.85rem; background-color: var(--accent);">Refresh Threat Feed</a>
+        {% endif %}
+    </div>
 
-<table>
-
-<tr>
-    <th>Technology</th>
-    <th>Risk Level</th>
-    <th>Threat Title</th>
-    <th>Source</th>
-</tr>
-
-{% for threat in threats %}
-<tr>
-
-    <td>{{ threat[0] }}</td>
-    <td>{{ threat[1] }}</td>
-    <td>{{ threat[2] }}</td>
-    <td>{{ threat[3] }}</td>
-
-</tr>
-{% endfor %}
-
-</table>
+    <table style="table-layout: fixed; width: 100%; word-wrap: break-word;">
+        <colgroup>
+            <col style="width: 14%;">
+            <col style="width: 12%;">
+            <col style="width: 18%;">
+            <col style="width: 44%;">
+            <col style="width: 12%;">
+        </colgroup>
+        <thead>
+            <tr>
+                <th>Technology</th>
+                <th>Risk Level</th>
+                <th>Reference</th>
+                <th>Threat Details</th>
+                <th>Source Feed</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for threat in threats %}
+                <tr>
+                    <td><b style="color: var(--primary);">{{ threat[0] }}</b></td>
+                    <td>
+                        {% if threat[1] == 'HIGH' or threat[1] == 'CRITICAL' %}
+                            <span class="badge badge-danger">{{ threat[1] }}</span>
+                        {% elif threat[1] == 'MEDIUM' %}
+                            <span class="badge badge-warning">{{ threat[1] }}</span>
+                        {% else %}
+                            <span class="badge badge-info">{{ threat[1] }}</span>
+                        {% endif %}
+                    </td>
+                    <td><b style="color: var(--text-primary); font-size: 0.9rem;">{{ threat[2] }}</b></td>
+                    <td>
+                        <div style="max-height: 75px; overflow-y: auto; font-size: 0.85rem; line-height: 1.4; color: var(--text-secondary); padding-right: 5px;">
+                            {{ threat[4] }}
+                        </div>
+                    </td>
+                    <td><span class="user-tag" style="font-size: 0.75rem; background-color: var(--bg-hover); padding: 0.2rem 0.5rem; display: inline-block;">{{ threat[3] }}</span></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 {% endblock %}

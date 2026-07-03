@@ -1,0 +1,9 @@
+flask
+flask-login
+sqlalchemy
+reportlab
+requests
+dnspython
+playwright
+openpyxl
+gunicorn

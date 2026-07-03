@@ -1,89 +1,380 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>AEGIS</title>
-
-    <style>
-
-    body {
-        font-family: Arial, sans-serif;
-        margin: 40px;
-    }
-
-    nav {
-        margin-bottom: 20px;
-    }
-
-    nav a {
-        margin-right: 15px;
-        text-decoration: none;
-        font-weight: bold;
-    }
-
-    table {
-        border-collapse: collapse;
-        width: 100%;
-    }
-
-    th, td {
-        border: 1px solid black;
-        padding: 8px;
-    }
-
-    th {
-        background-color: #dddddd;
-    }
-
-    </style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEGIS - Enterprise Security Assessment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-<h1>AEGIS</h1>
+    <div class="{% if current_user.is_authenticated %}app-layout{% endif %}">
+        {% if current_user.is_authenticated %}
+            <!-- Sidebar Drawer -->
+            <div class="sidebar" id="sidebar">
+                <!-- Inline Script to prevent snapping / popping flash on page load -->
+                <script>
+                    if (localStorage.getItem('sidebar-collapsed') === 'true') {
+                        document.getElementById('sidebar').classList.add('collapsed');
+                    }
+                </script>
+                
+                <div class="sidebar-header" style="border-bottom: none; margin-bottom: 1.5rem; padding-bottom: 0;">
+                    <div class="logo-container">
+                        <a href="/" class="logo-link">
+                            <div class="logo-icon">A</div>
+                            <span class="logo-text">AEG<span class="logo-accent">IS</span></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="sidebar-links">
+                    <a href="/"><span class="glass-icon">📊</span> <span class="link-text">Dashboard</span></a>
+                    {% if current_user.role in ['Admin', 'Owner'] %}
+                        <a href="/register-asset"><span class="glass-icon">➕</span> <span class="link-text">Register Asset</span></a>
+                    {% endif %}
+                    <a href="/assessments"><span class="glass-icon">📋</span> <span class="link-text">Assessments</span></a>
+                    {% if current_user.role in ['Admin', 'Analyst'] %}
+                        <a href="/requested-assessments" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                            <span><span class="glass-icon">📥</span> <span class="link-text">Approval Inbox</span></span>
+                            <span class="badge" id="sidebar-pending-badge" style="background: var(--accent); color: white; padding: 0.15rem 0.4rem; font-size: 0.75rem; border-radius: 10px; margin-left: auto; {% if pending_count == 0 %}display:none;{% endif %}">{{ pending_count }}</span>
+                        </a>
+                    {% endif %}
+                    <a href="/threat-intelligence"><span class="glass-icon">🛡️</span> <span class="link-text">Threat Intel</span></a>
+                    <a href="/report-history"><span class="glass-icon">📁</span> <span class="link-text">Reports</span></a>
+                    {% if current_user.role in ['Admin', 'Analyst'] %}
+                        <a href="/recon-history"><span class="glass-icon">🔍</span> <span class="link-text">Recon Logs</span></a>
+                        <a href="/scan-history"><span class="glass-icon">🔌</span> <span class="link-text">Scan Logs</span></a>
+                        <a href="/correlation-history"><span class="glass-icon">⚙️</span> <span class="link-text">Correlation Logs</span></a>
+                        <a href="/audit-logs"><span class="glass-icon">🔒</span> <span class="link-text">Audit Logs</span></a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
 
-<nav>
+        <!-- Main Content wrapper -->
+        <div class="{% if current_user.is_authenticated %}main-content{% endif %}">
+            <header>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    {% if current_user.is_authenticated %}
+                        <div class="menu-toggle open" id="menuToggle" onclick="toggleSidebar()">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <script>
+                            if (localStorage.getItem('sidebar-collapsed') === 'true') {
+                                document.getElementById('menuToggle').classList.remove('open');
+                            }
+                        </script>
+                    {% endif %}
+                    <div class="logo-container">
+                        <a href="/" class="logo-link">
+                            <div class="logo-icon">A</div>
+                            <span class="logo-text">AEG<span class="logo-accent">IS</span></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="auth-nav">
+                    {% if current_user.is_authenticated %}
+                        <div class="bell-container" style="position: relative; margin-right: 1.5rem; display: inline-block;">
+                            <button id="bellButton" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text-secondary); outline: none; position: relative;">
+                                🔔
+                                <span id="bellBadge" class="badge" style="position: absolute; top: -5px; right: -5px; background: var(--accent); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.65rem; display: flex; align-items: center; justify-content: center; {% if unread_notifications_count == 0 %}display: none;{% endif %}">
+                                    {{ unread_notifications_count }}
+                                </span>
+                            </button>
+                            <div id="bellDropdown" style="display: none; position: absolute; right: 0; top: 35px; width: 320px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.5); z-index: 1000; padding: 0.75rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 0.5rem;">
+                                    <h4 style="margin: 0; font-family: 'Outfit', sans-serif;">Notifications</h4>
+                                    <a href="/notifications" style="font-size: 0.8rem; color: var(--primary); text-decoration: none;">View All</a>
+                                </div>
+                                <div id="bellDropdownList" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 250px; overflow-y: auto;">
+                                    {% if not recent_notifications %}
+                                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 1rem 0; text-align: center;">No new alerts.</p>
+                                    {% else %}
+                                        {% for n in recent_notifications %}
+                                            <a href="{% if n.link %}{{ n.link }}{% else %}/notifications{% endif %}" style="display: block; text-decoration: none; padding: 0.5rem; border-radius: 4px; background: {% if not n.read %}rgba(255,255,255,0.03){% else %}transparent{% endif %}; border-left: 3px solid {% if not n.read %}var(--primary){% else %}transparent{% endif %};" onclick="markRead({{ n.id }})">
+                                                <div style="font-weight: 600; font-size: 0.85rem; color: white;">{{ n.title }}</div>
+                                                <div style="font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 0.15rem;">{{ n.message }}</div>
+                                            </a>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <span class="user-tag" style="margin-right: 1.5rem;">{{ current_user.username }} ({{ current_user.role }})</span>
+                        <a href="/logout" class="btn-logout">Logout</a>
+                    {% else %}
+                        <a href="/login" class="btn">Login</a>
+                    {% endif %}
+                </div>
+            </header>
 
-    <a href="/">Dashboard</a>
+            <div class="container" {% if not current_user.is_authenticated %}style="margin-top: 4rem;"{% endif %}>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, msg in messages %}
+                            <div class="card" style="border-left: 4px solid {% if category=='error' %}var(--accent){% else %}var(--accent-green){% endif %}; padding: 1rem; margin-bottom: 1.5rem;">
+                                <p style="font-weight: 500; color: {% if category=='error' %}var(--accent){% else %}var(--accent-green){% endif %};">{{ msg }}</p>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
 
-    <a href="/register-asset">
-        Register Asset
-    </a>
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
 
-    <a href="/assessments">
-        Assessments
-    </a>
+    <style>
+        #aegis-toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        .aegis-toast {
+            background: rgba(17, 12, 28, 0.95);
+            border: 1px solid var(--accent);
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.4);
+            backdrop-filter: blur(10px);
+            padding: 1.25rem;
+            border-radius: 8px;
+            color: var(--text-primary);
+            width: 350px;
+            pointer-events: auto;
+            animation: toast-fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .aegis-toast.success {
+            border-color: var(--accent-green);
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+        }
+        .aegis-toast-header {
+            font-weight: bold;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .aegis-toast-body {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+        .aegis-toast-action {
+            align-self: flex-end;
+            background: var(--accent);
+            color: white;
+            padding: 0.3rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.2s;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+        }
+        .aegis-toast-action:hover {
+            transform: scale(1.05);
+        }
+        @keyframes toast-fade-in {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+    </style>
+
+    <div id="aegis-toast-container"></div>
+
+    <!-- Custom Cursor Glow and Sidebar script -->
+    <script>
+        // Cursor aura tracking
+        const glow = document.createElement('div');
+        glow.className = 'cursor-glow';
+        document.body.appendChild(glow);
         
-    <a href="/threat-intelligence">
-        Threat Intelligence
-    </a>
-    <a href="/report-history">
-        Report History 
-    </a>
+        document.addEventListener('mousemove', (e) => {
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+        });
 
-    <a href="/recon-history">
-        Recon History
-    </a>
+        // Sidebar Toggle with fixed open/close states
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.getElementById('menuToggle');
+            if (sidebar) {
+                sidebar.classList.toggle('collapsed');
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                if (menuToggle) {
+                    if (isCollapsed) {
+                        menuToggle.classList.remove('open');
+                    } else {
+                        menuToggle.classList.add('open');
+                    }
+                }
+                localStorage.setItem('sidebar-collapsed', isCollapsed);
+            }
+        }
 
-    <a href="/scan-history">
-        Scan History
-    </a>
-    
-    <a href="/correlation-history">
-        Correlation History
-    
-    </a>
+        // Live Real-Time Event Listener (SSE)
+        {% if current_user.is_authenticated %}
+        (function() {
+            const userRole = "{{ current_user.role }}";
+            const toastContainer = document.getElementById('aegis-toast-container');
 
+            function showToast(title, body, actionUrl, actionText, type='info') {
+                const toast = document.createElement('div');
+                toast.className = 'aegis-toast' + (type === 'success' ? ' success' : '');
+                
+                let actionHtml = '';
+                if (actionUrl && actionText) {
+                    actionHtml = `<a href="${actionUrl}" class="aegis-toast-action">${actionText}</a>`;
+                }
 
-    <a href="/audit-logs">
-        Audit Logs
-    </a>
+                toast.innerHTML = `
+                    <div class="aegis-toast-header">
+                        <span>${title}</span>
+                        <button style="background:none; border:none; color:var(--text-secondary); cursor:pointer; font-size:1.1rem; line-height:1; font-weight:bold; outline:none;" onclick="this.parentElement.parentElement.remove()">×</button>
+                    </div>
+                    <div class="aegis-toast-body">${body}</div>
+                    ${actionHtml}
+                `;
 
-</nav>
+                toastContainer.appendChild(toast);
+                
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.style.animation = 'toast-fade-in 0.4s reverse forwards';
+                        setTimeout(() => toast.remove(), 400);
+                    }
+                }, 10000);
+            }
 
-<hr>
+            const sseSource = new EventSource("/stream");
+            sseSource.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                if (data.event === "ping") return;
 
-{% block content %}
-{% endblock %}
+                if (data.event === "assessment_requested") {
+                    const badge = document.getElementById('sidebar-pending-badge');
+                    if (badge) {
+                        let count = parseInt(badge.innerText || '0', 10);
+                        count += 1;
+                        badge.innerText = count;
+                        badge.style.display = 'inline-block';
+                    }
 
+                    if (userRole === "Admin") {
+                        showToast(
+                            "🔔 Assessment Request Received",
+                            `Analyst <b>${data.requested_by}</b> requested a security audit scan on target <b>${data.target}</b>.`,
+                            "/requested-assessments",
+                            "Approve Request"
+                        );
+                    }
+                } else if (data.event === "assessment_approved") {
+                    const badge = document.getElementById('sidebar-pending-badge');
+                    if (badge) {
+                        let count = parseInt(badge.innerText || '0', 10);
+                        if (count > 0) {
+                            count -= 1;
+                            badge.innerText = count;
+                            if (count === 0) badge.style.display = 'none';
+                        }
+                    }
+
+                    if (userRole === "Analyst") {
+                        showToast(
+                            "✅ Assessment Request Approved",
+                            `Admin approved scan request for <b>${data.target}</b>. Go generate compliance token now.`,
+                            "/assessments",
+                            "Generate Token",
+                            "success"
+                        );
+                    }
+                } else if (data.event === "scan_started") {
+                    showToast(
+                        "🚀 Security Scan Executing",
+                        `Background scanners triggered automatically for target <b>${data.target}</b>.`,
+                        "/assessment-summary/" + data.assessment_id,
+                        "Track Live Progress",
+                        "success"
+                    );
+                } else if (data.event === "new_notification") {
+                    const userId = parseInt("{{ current_user.id if current_user.is_authenticated else 0 }}", 10);
+                    if (data.recipients && data.recipients.includes(userId)) {
+                        showToast(
+                            "🔔 " + data.title,
+                            data.message,
+                            data.link || "/notifications",
+                            "View Details"
+                        );
+
+                        // Increment bell badge count
+                        const bellBadge = document.getElementById('bellBadge');
+                        if (bellBadge) {
+                            let count = parseInt(bellBadge.innerText.trim() || '0', 10);
+                            count += 1;
+                            bellBadge.innerText = count;
+                            bellBadge.style.display = 'flex';
+                        }
+
+                        // Add to dropdown list dynamically
+                        const list = document.getElementById('bellDropdownList');
+                        if (list) {
+                            const emptyTxt = list.querySelector('p');
+                            if (emptyTxt) emptyTxt.remove();
+
+                            const item = document.createElement('a');
+                            item.href = data.link || "/notifications";
+                            item.style = "display: block; text-decoration: none; padding: 0.5rem; border-radius: 4px; background: rgba(255,255,255,0.03); border-left: 3px solid var(--primary);";
+                            item.innerHTML = `
+                                <div style="font-weight: 600; font-size: 0.85rem; color: white;">${data.title}</div>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 0.15rem;">${data.message}</div>
+                            `;
+                            list.insertBefore(item, list.firstChild);
+                        }
+                    }
+                }
+            };
+            
+            // Dropdown Toggle & Mark Read API helpers
+            window.markRead = function(id) {
+                fetch('/notifications/read/' + id, {method: 'POST'})
+                    .catch(err => console.error(err));
+            };
+
+            const bellButton = document.getElementById('bellButton');
+            const bellDropdown = document.getElementById('bellDropdown');
+            if (bellButton && bellDropdown) {
+                bellButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    bellDropdown.style.display = bellDropdown.style.display === 'none' ? 'block' : 'none';
+                });
+                document.addEventListener('click', function() {
+                    bellDropdown.style.display = 'none';
+                });
+                bellDropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+
+            window.addEventListener('beforeunload', function() {
+                if (sseSource) {
+                    sseSource.close();
+                }
+            });
+        })();
+        {% endif %}
+    </script>
 </body>
 </html>

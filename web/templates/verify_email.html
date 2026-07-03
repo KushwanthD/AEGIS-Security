@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card" style="max-width: 600px; margin: 0 auto; padding: 2rem;">
+    <h2 style="font-family: 'Outfit', sans-serif; margin-bottom: 1.5rem; background: linear-gradient(to right, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Email Ownership Authentication</h2>
+    
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
+        A security verification code has been dispatched to your email address: <b><code>{{ asset.asset_value }}</code></b>.
+        Please type the 6-digit code below to authenticate ownership of this asset.
+    </p>
+
+    <div style="background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-color); padding: 1rem; border-radius: 8px; margin-bottom: 2rem; font-size: 0.9rem; color: var(--text-secondary);">
+        💡 <b>Presentation Tip:</b> Because this is a local setup, the email is mock-logged. Open the file <code>mock_emails.txt</code> in the root of the project directory to read the OTP code.
+    </div>
+
+    <form method="POST">
+        <div class="form-group" style="margin-bottom: 2rem;">
+            <label style="font-weight: bold; margin-bottom: 0.5rem; display: block;">6-Digit OTP Code</label>
+            <input type="text" name="code" placeholder="e.g. 123456" required autocomplete="off" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 4px; padding: 0.75rem;">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <button type="submit" style="background-color: var(--accent); color: white; width: 100%;">Verify Email Code</button>
+            
+            {% if simulation_active %}
+                <button type="submit" name="bypass" value="true" class="btn" style="background-color: rgba(255, 255, 255, 0.05); border: 1px dashed var(--border-color); color: var(--text-secondary); width: 100%;">
+                    ⚠️ Force Verification (Simulation Bypass)
+                </button>
+            {% endif %}
+            
+            <a href="/" class="btn btn-secondary" style="text-align: center;">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

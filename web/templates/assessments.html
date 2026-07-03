@@ -2,85 +2,112 @@
 
 {% block content %}
 
-<h2>Assessments</h2>
+{% if current_user.role in ['Admin', 'Analyst'] %}
+    <!-- Filter pending assessments -->
+    {% set pending_runs = assessments | selectattr("status", "equalto", "PENDING") | list %}
+    {% if pending_runs %}
+        <div class="card" style="margin-bottom: 2.5rem; border-top: 4px solid var(--accent-yellow);">
+            <h3 style="color: var(--accent-yellow); font-family: 'Outfit', sans-serif;">📥 Pending Scan Requests Queue</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Assessments requested by Security Analysts awaiting Admin approval and token generation.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ref ID</th>
+                        <th>Asset Target</th>
+                        <th>Scope</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ass in pending_runs %}
+                        <tr>
+                            <td><b>{{ ass.assessment_reference }}</b></td>
+                            <td>{{ ass.asset.asset_value if ass.asset else "Unknown Target" }}</td>
+                            <td><span class="badge badge-info">{{ ass.scope_status }}</span></td>
+                            <td>
+                                {% if current_user.role == 'Admin' %}
+                                    <a href="/approve-assessment/{{ ass.id }}" class="btn" style="padding: 0.35rem 1rem; font-size: 0.85rem; background-color: var(--accent-yellow); color: black; font-weight: bold; text-decoration: none;">Approve & Generate Token</a>
+                                {% else %}
+                                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Awaiting Admin Approval</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endif %}
 
-<table>
+<div class="card">
+    <h2>Security Assessments History</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Track requested security assessments. Approving an assessment requires an Analyst/Admin role. Active runs check scope restrictions and quota status.</p>
 
-<tr>
-    <th>ID</th>
-    <th>Reference</th>
-    <th>Status</th>
-    <th>Actions</th>
-</tr>
-
-{% for assessment in assessments %}
-<tr>
-
-    <td>{{ assessment[0] }}</td>
-    <td>{{ assessment[1] }}</td>
-    <td>{{ assessment[2] }}</td>
-
-    <td>
-
-    {% if assessment[2] == "PENDING" %}
-
-        <a href="/approve-assessment/{{ assessment[0] }}">
-            Approve
-        </a>
-    
-        <a href="/assessment-summary/{{ assessment[0] }}">
-            Summary
-        </a>
-
-
-
-    {% elif assessment[2] == "APPROVED" %}
-
-        <a href="/generate-token/{{ assessment[0] }}">
-            Generate Token
-        </a>
-
-        |
-
-        <a href="/run-recon/{{ assessment[0] }}">
-            Run Recon
-        </a>
-
-        |
-
-        <a href="/run-scan/{{ assessment[0] }}">
-            Run Scan
-        </a>
-
-        |
-
-        <a href="/run-correlation/{{ assessment[0] }}">
-            Run Correlation
-        </a>
-
-        |
-
-        <a href="/generate-executive-report/{{ assessment[0] }}">
-            Executive Report
-        </a>
-
-        |
-
-        <a href="/generate-technical-report/{{ assessment[0] }}">
-            Technical Report
-        </a>
-
+    <!-- Filter non-pending assessments -->
+    {% if current_user.role in ['Admin', 'Analyst'] %}
+        {% set history_runs = assessments | rejectattr("status", "equalto", "PENDING") | list %}
     {% else %}
-
-        -
-
+        {% set history_runs = assessments %}
     {% endif %}
 
-    </td>
-
-</tr>
-{% endfor %}
-
-</table>
+    {% if not history_runs %}
+        <p style="color: var(--text-secondary);">No active or completed assessments found.</p>
+    {% else %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Ref ID</th>
+                    <th>Asset Target</th>
+                    <th>Status</th>
+                    <th>Scope Status</th>
+                    <th>Scan Limit</th>
+                    <th>Usage</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ass in history_runs %}
+                    <tr>
+                        <td><b>{{ ass.assessment_reference }}</b></td>
+                        <td>{{ ass.asset.asset_value if ass.asset else "Unknown Target" }}</td>
+                        <td>
+                            {% if ass.status == 'COMPLETED' %}
+                                <span class="badge badge-success">Completed</span>
+                            {% elif ass.status == 'APPROVED' %}
+                                <span class="badge badge-success" style="background-color: var(--accent-green); color: black;">Approved</span>
+                            {% elif ass.status == 'RUNNING' %}
+                                <span class="badge badge-warning">Running</span>
+                            {% else %}
+                                <span class="badge badge-danger">{{ ass.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if ass.scope_status == 'IN_SCOPE' %}
+                                <span class="badge badge-info">In Scope</span>
+                            {% else %}
+                                <span class="badge badge-danger">{{ ass.scope_status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ ass.scan_limit }}</td>
+                        <td>{{ ass.scan_usage }}</td>
+                        <td>
+                            {% if ass.status == 'APPROVED' %}
+                                {% if current_user.role == 'Analyst' %}
+                                    <a href="/verify-token/{{ ass.id }}" class="btn" style="padding: 0.3rem 0.8rem; font-size: 0.85rem; background-color: var(--accent-green); color: black;">Verify Token</a>
+                                {% elif current_user.role == 'Admin' %}
+                                    <a href="/regenerate-token/{{ ass.id }}" class="btn btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.85rem; background-color: var(--accent); color: white;">Regenerate Token</a>
+                                {% else %}
+                                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Pending Verification</span>
+                                {% endif %}
+                            {% else %}
+                                <a href="/assessment-summary/{{ ass.id }}" class="btn btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.85rem;">View Summary</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
 
 {% endblock %}

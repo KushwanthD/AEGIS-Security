@@ -2,41 +2,26 @@
 
 {% block content %}
 
-<h2>Register Asset</h2>
-
-<form method="POST">
-
-    <p>
-        <label>Asset Type:</label>
-        <select name="asset_type">
-            <option value="domain">Domain</option>
-            <option value="website">Website</option>
-        </select>
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <h2>Register New Target Asset</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+        Register your target domain, website, or network IP address. The system will automatically detect the asset type, choose the optimal verification mechanism, and provide instructions to authenticate ownership.
     </p>
 
-    <p>
-        <label>Asset Value:</label>
-        <input
-            type="text"
-            name="asset_value"
-            required
-        >
-    </p>
+    <form method="POST">
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Asset Target Address / URL</label>
+            <input type="text" name="asset_value" placeholder="e.g. example.com, user@example.com, 192.168.1.50, or https://example.com" required autocomplete="off" style="width: 100%;">
+            <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem; font-size: 0.8rem;">
+                Enter a domain (e.g. <code>example.com</code>), an email address (e.g. <code>user@example.com</code>), a web address (e.g. <code>https://example.com</code>), or an IP address.
+            </small>
+        </div>
 
-    <p>
-        <label>Verification Method:</label>
-        <select name="verification_method">
-            <option value="DNS">DNS</option>
-            <option value="FILE">FILE</option>
-        </select>
-    </p>
-
-    <p>
-        <button type="submit">
-            Register Asset
-        </button>
-    </p>
-
-</form>
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" style="background-color: var(--accent); color: white;">Register & Authenticate Asset</button>
+            <a href="/" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
 
 {% endblock %}

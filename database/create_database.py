@@ -1,163 +1,72 @@
-import sqlite3
+import os
+import sys
 
-connection = sqlite3.connect("database/aegis.db")
+# Ensure project root is in path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-cursor = connection.cursor()
+from database.connection import engine, SessionLocal, Base
+from database.models import User, ThreatIntel
 
-# Users Table
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS Users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL UNIQUE,
-    email TEXT NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
-    is_active BOOLEAN NOT NULL DEFAULT 1,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
-""")
+def init_db():
+    print("Creating tables in database/aegis.db...")
+    Base.metadata.create_all(engine)
+    
+    db = SessionLocal()
+    try:
+        # Check if threat intel needs seeding
+        if db.query(ThreatIntel).count() == 0:
+            print("Seeding ThreatIntel table...")
+            seeds = [
+                ThreatIntel(
+                    technology="SSH",
+                    risk_level="HIGH",
+                    threat_title="Exposed Administrative Service (SSH)",
+                    threat_description="SSH service is exposed to the internet. Attacker can perform brute force or vulnerability exploit.",
+                    recommended_action="Restrict SSH access to trusted networks, use strong key-based authentication, or enforce VPN requirements.",
+                    source="AEGIS Internal Threat Feed"
+                ),
+                ThreatIntel(
+                    technology="HTTP",
+                    risk_level="MEDIUM",
+                    threat_title="Unencrypted HTTP Web Service",
+                    threat_description="The site allows HTTP connections, exposing user credentials and data to man-in-the-middle attacks.",
+                    recommended_action="Enforce HTTPS with automatic redirection and configure HSTS headers.",
+                    source="AEGIS Internal Threat Feed"
+                ),
+                ThreatIntel(
+                    technology="HTTPS",
+                    risk_level="LOW",
+                    threat_title="Public HTTPS Web Interface",
+                    threat_description="HTTPS is correctly configured, but public exposure of web interfaces increases the attack surface.",
+                    recommended_action="Keep web services updated and verify secure cookie flag policies.",
+                    source="AEGIS Internal Threat Feed"
+                )
+            ]
+            db.add_all(seeds)
+            db.commit()
+            print("ThreatIntel seeded successfully.")
+            
+        # Check if default admin needs seeding
+        if db.query(User).count() == 0:
+            print("Seeding default admin user...")
+            # Using simple text password_hash since password hashing function will be added in auth.py
+            admin = User(
+                username="admin",
+                email="admin@aegis.local",
+                password_hash="admin", # Plain text placeholder, auth module will auto-upgrade to pbkdf2 hash on first login
+                role="Admin",
+                is_active=True
+            )
+            db.add(admin)
+            db.commit()
+            print("Admin user seeded successfully.")
+            
+        print("Database initialized and verified successfully.")
+    except Exception as e:
+        print(f"Error seeding database: {e}")
+        db.rollback()
+    finally:
+        db.close()
 
-# Assets Table
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS Assets (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
-    asset_type TEXT NOT NULL,
-    asset_value TEXT NOT NULL UNIQUE,
-    verification_status TEXT NOT NULL DEFAULT 'PENDING',
-    verification_token_hash TEXT,
-    verification_date TIMESTAMP,
-    is_active BOOLEAN NOT NULL DEFAULT 1,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(user_id) REFERENCES Users(id)
-)
-""")
-
-# CorrelatedFindings Table
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS CorrelatedFindings (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    assessment_id INTEGER NOT NULL,
-    correlation_title TEXT NOT NULL,
-    risk_level TEXT NOT NULL,
-    correlation_reason TEXT NOT NULL,
-    recommended_action TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(assessment_id) REFERENCES Assessments(id)
-)
-""")
-
-# AuditLogs Table
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS AuditLogs (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER,
-    asset_id INTEGER,
-    assessment_id INTEGER,
-    event_type TEXT NOT NULL,
-    event_details TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(user_id) REFERENCES Users(id),
-    FOREIGN KEY(asset_id) REFERENCES Assets(id)
-)
-""")
-
-# Assessments Table
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS Assessments (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    asset_id INTEGER NOT NULL,
-    assessment_reference TEXT NOT NULL UNIQUE,
-    status TEXT NOT NULL DEFAULT 'PENDING',
-    requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    approved_at TIMESTAMP,
-    started_at TIMESTAMP,
-    completed_at TIMESTAMP,
-    FOREIGN KEY(asset_id) REFERENCES Assets(id)
-)
-""")
-
-# Approvals Table
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS Approvals (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    assessment_id INTEGER NOT NULL,
-    requested_by TEXT NOT NULL,
-    approved_by TEXT NOT NULL,
-    decision TEXT NOT NULL,
-    comments TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(assessment_id) REFERENCES Assessments(id)
-)
-""")
-
-# AuthorizationTokens Table
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS AuthorizationTokens (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    assessment_id INTEGER NOT NULL,
-    token_hash TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    expires_at TIMESTAMP,
-    used BOOLEAN NOT NULL DEFAULT 0,
-    used_at TIMESTAMP,
-    FOREIGN KEY(assessment_id) REFERENCES Assessments(id)
-)
-""")
-
-# ReconResults Table
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS ReconResults (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    assessment_id INTEGER NOT NULL,
-    recon_type TEXT NOT NULL,
-    result_data TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(assessment_id) REFERENCES Assessments(id)
-)
-""")
-
-# ReconExecutions Table
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS ReconExecutions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    assessment_id INTEGER NOT NULL,
-    started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    completed_at TIMESTAMP,
-    status TEXT NOT NULL,
-    FOREIGN KEY(assessment_id) REFERENCES Assessments(id)
-)
-""")
-
-# ScanExecutions Table
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS ScanExecutions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    assessment_id INTEGER NOT NULL,
-    started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    completed_at TIMESTAMP,
-    status TEXT NOT NULL,
-    FOREIGN KEY(assessment_id) REFERENCES Assessments(id)
-)
-""")
-
-# ScanResults Table
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS ScanResults (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    assessment_id INTEGER NOT NULL,
-    tool_name TEXT NOT NULL,
-    finding_title TEXT NOT NULL,
-    finding_category TEXT,
-    severity TEXT,
-    description TEXT,
-    evidence TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(assessment_id) REFERENCES Assessments(id)
-)
-""")
-
-connection.commit()
-
-print("Users, Assets, Assessments,  AuditLogsa, ReconResults, Approvals,  AuthorizationTokens, ReconExecutions, ScanExecutions, CorrelatedFindings  and ScanResults tables created successfully.")
-
-connection.close()
+if __name__ == "__main__":
+    init_db()

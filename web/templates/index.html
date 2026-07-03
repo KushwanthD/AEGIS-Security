@@ -2,78 +2,95 @@
 
 {% block content %}
 
-<h2>Dashboard</h2>
+<h2>Security Dashboard</h2>
 
-<table>
+{% if current_user.role == 'Analyst' %}
+    <!-- Analyst Search Console (Outside Auditor Mode) -->
+    <div class="card" style="max-width: 600px; margin: 3rem auto; padding: 2.5rem; border-top: 4px solid var(--primary); background: var(--bg-card); border-radius: 8px;">
+        <h2 style="font-family: 'Outfit', sans-serif; margin-bottom: 1rem; background: linear-gradient(to right, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem;">Target Audit Console</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.6;">
+            Enter the registered target asset value below to verify its status and proceed to the scan execution lifecycle. 
+            <br><span style="color: var(--accent-yellow);">⚠️ Attempts to lookup unregistered or unverified targets are logged and reported.</span>
+        </p>
+        
+        <form action="/analyst/assess-target" method="POST" style="display: flex; flex-direction: column; gap: 1.25rem;">
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <label style="font-weight: 500; font-size: 0.9rem; color: var(--text-secondary);">Target Identifier (Domain, IP, or Email):</label>
+                <input type="text" name="target" placeholder="e.g. example.com" required style="padding: 0.8rem; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white; outline: none; font-size: 1rem;">
+            </div>
+            <button type="submit" class="btn" style="padding: 0.8rem; font-weight: bold; background: var(--primary); color: white; border: none; cursor: pointer; border-radius: 6px; transition: background 0.2s;">
+                Verify & Initiate Assessment
+            </button>
+        </form>
+    </div>
+{% else %}
+    <!-- Admin & Owner Console (Internal Asset Management) -->
+    <div class="grid-metrics">
+        <div class="metric-card">
+            <span class="metric-title">Assets Registered</span>
+            <span class="metric-value">{{ asset_count }}</span>
+        </div>
+        <div class="metric-card warning">
+            <span class="metric-title">Assessments Requested</span>
+            <span class="metric-value">{{ assessment_count }}</span>
+        </div>
+        <div class="metric-card success">
+            <span class="metric-title">Approved Runs</span>
+            <span class="metric-value">{{ approved_count }}</span>
+        </div>
+        <div class="metric-card critical">
+            <span class="metric-title">Critical & High Risks</span>
+            <span class="metric-value">{{ high_risk_count }}</span>
+        </div>
+    </div>
 
-<tr>
-    <th>Metric</th>
-    <th>Value</th>
-</tr>
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3>Managed Targets / Assets</h3>
+            <a href="/register-asset" class="btn">Register New Asset</a>
+        </div>
 
-<tr>
-    <td>Assets Registered</td>
-    <td>{{ asset_count }}</td>
-</tr>
-
-<tr>
-    <td>Assessments</td>
-    <td>{{ assessment_count }}</td>
-</tr>
-
-<tr>
-    <td>Approved Assessments</td>
-    <td>{{ approved_count }}</td>
-</tr>
-
-<tr>
-    <td>High Risk Findings</td>
-    <td>{{ high_risk_count }}</td>
-</tr>
-
-</table>
-
-<br>
-
-<h2>Assets</h2>
-
-<table>
-
-<tr>
-    <th>ID</th>
-    <th>Asset</th>
-    <th>Status</th>
-    <th>Action</th>
-</tr>
-
-{% for asset in assets %}
-<tr>
-
-    <td>{{ asset[0] }}</td>
-    <td>{{ asset[1] }}</td>
-    <td>{{ asset[2] }}</td>
-
-    <td>
-
-    {% if asset[2] != "VERIFIED" %}
-
-        <a href="/verify-asset/{{ asset[0] }}">
-            Verify
-        </a>
-
-    {% else %}
-
-        <a href="/request-assessment/{{ asset[0] }}">
-            Request Assessment
-        </a>
-
-    {% endif %}
-
-    </td>
-
-</tr>
-{% endfor %}
-
-</table>
+        {% if not assets %}
+            <p style="color: var(--text-secondary);">No assets registered. Click "Register New Asset" to begin.</p>
+        {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Asset Target</th>
+                        <th>Type</th>
+                        <th>Ownership Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for asset in assets %}
+                        <tr>
+                            <td>{{ asset.id }}</td>
+                            <td><b>{{ asset.asset_value }}</b></td>
+                            <td>{{ asset.asset_type.capitalize() }}</td>
+                            <td>
+                                {% if asset.verification_status == 'VERIFIED' %}
+                                    <span class="badge badge-success">Verified</span>
+                                {% elif asset.verification_status == 'TOKEN_GENERATED' %}
+                                    <span class="badge badge-warning">Pending Token</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Unverified</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if asset.verification_status != 'VERIFIED' %}
+                                    <a href="/verify-asset/{{ asset.id }}" class="btn btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.85rem;">Verify Ownership</a>
+                                {% else %}
+                                    <a href="/request-assessment/{{ asset.id }}" class="btn" style="padding: 0.3rem 0.8rem; font-size: 0.85rem; background-color: var(--accent-green);">Run Assessment</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endif %}
 
 {% endblock %}

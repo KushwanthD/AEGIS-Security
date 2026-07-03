@@ -2,37 +2,44 @@
 
 {% block content %}
 
-<h2>Scan Executions</h2>
+<div class="card">
+    <h2>Vulnerability Scanning Executions</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">List of Nmap and Pixel Auditor execution pipelines.</p>
 
-<table>
-
-<tr>
-    <th>ID</th>
-    <th>Assessment</th>
-    <th>Status</th>
-    <th>Started</th>
-    <th>Completed</th>
-    <th>Action</th>
-</tr>
-
-{% for execution in executions %}
-<tr>
-
-    <td>{{ execution[0] }}</td>
-    <td>{{ execution[1] }}</td>
-    <td>{{ execution[2] }}</td>
-    <td>{{ execution[3] }}</td>
-    <td>{{ execution[4] }}</td>
-
-    <td>
-        <a href="/scan-results/{{ execution[0] }}">
-            View Findings
-        </a>
-    </td>
-
-</tr>
-{% endfor %}
-
-</table>
+    {% if not executions %}
+        <p style="color: var(--text-secondary);">No scans have been performed yet.</p>
+    {% else %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Execution ID</th>
+                    <th>Assessment ID</th>
+                    <th>Status</th>
+                    <th>Started At</th>
+                    <th>Completed At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ex in executions %}
+                    <tr>
+                        <td><a href="/scan-results/{{ ex[0] }}" style="color: var(--accent-green); font-weight: bold;">#{{ ex[0] }}</a></td>
+                        <td>Assessment #{{ ex[1] }}</td>
+                        <td>
+                            {% if ex[2] == 'COMPLETED' %}
+                                <span class="badge badge-success">Completed</span>
+                            {% elif ex[2] == 'RUNNING' %}
+                                <span class="badge badge-warning">Running</span>
+                            {% else %}
+                                <span class="badge badge-danger">{{ ex[2] }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ ex[3] }}</td>
+                        <td>{{ ex[4] or 'N/A' }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
 
 {% endblock %}

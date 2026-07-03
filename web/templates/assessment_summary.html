@@ -2,95 +2,155 @@
 
 {% block content %}
 
-<h2>Assessment Summary</h2>
+<h2>Assessment Summary: {{ assessment_reference }}</h2>
+<p style="color: var(--text-secondary); margin-bottom: 2.5rem;">Target Domain: <b>{{ asset_value }}</b></p>
 
-<p>
-<b>Assessment:</b>
-{{ assessment_reference }}
-</p>
+<div class="grid-metrics">
+    <div class="metric-card {% if overall_risk == 'CRITICAL' or overall_risk == 'HIGH' %}critical{% elif overall_risk == 'MEDIUM' %}warning{% else %}success{% endif %}">
+        <span class="metric-title">Risk Rating</span>
+        <span class="metric-value">{{ overall_risk }}</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-title">Risk Score</span>
+        <span class="metric-value">{{ risk_score }}</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-title">Recon Executions</span>
+        <span class="metric-value" style="font-size: 1.1rem; margin-top: 10px;">Status: 
+            {% if recon_status == 'RUNNING' %}
+                <span class="badge badge-warning">Running</span>
+            {% elif recon_status == 'COMPLETED' %}
+                <span class="badge badge-success">Completed</span>
+            {% else %}
+                <span class="badge badge-info">{{ recon_status }}</span>
+            {% endif %}
+        </span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-title">Scan Executions</span>
+        <span class="metric-value" style="font-size: 1.1rem; margin-top: 10px;">Status: 
+            {% if scan_status == 'RUNNING' %}
+                <span class="badge badge-warning">Running</span>
+            {% elif scan_status == 'COMPLETED' %}
+                <span class="badge badge-success">Completed</span>
+            {% else %}
+                <span class="badge badge-info">{{ scan_status }}</span>
+            {% endif %}
+        </span>
+    </div>
+</div>
 
-<p>
-<b>Asset:</b>
-{{ asset_value }}
-</p>
+<div class="card">
+    <h3>Assessment Operations & Governance</h3>
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Manage and execute scanning tasks for this assessment target.</p>
+    
+    <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; width: 100%;">
+        {% if assessment_status == 'RUNNING' %}
+            <div id="scan-progress-container" style="width: 100%; margin-top: 0.5rem; padding: 1rem; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 6px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <span id="scan-status-text" style="font-weight: bold; color: var(--accent-yellow); font-size: 0.95rem; text-shadow: 0 0 4px rgba(234, 179, 8, 0.2);">⏳ Initializing security audit...</span>
+                    <span id="scan-percentage-text" style="font-weight: bold; color: var(--text-primary); font-size: 0.95rem;">5%</span>
+                </div>
+                <div style="width: 100%; background: rgba(255,255,255,0.05); height: 10px; border-radius: 5px; overflow: hidden; border: 1px solid var(--border-color); position: relative;">
+                    <div id="scan-progress-bar" style="width: 5%; height: 100%; background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%); transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px var(--accent);"></div>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem; margin-bottom: 0;">System is processing scans in the background. Page will automatically refresh when reports compile.</p>
+            </div>
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    const assessmentId = "{{ assessment_id }}";
+                    const statusText = document.getElementById("scan-status-text");
+                    const percentageText = document.getElementById("scan-percentage-text");
+                    const progressBar = document.getElementById("scan-progress-bar");
 
-<p>
-<b>Status:</b>
-{{ assessment_status }}
-</p>
+                    function pollStatus() {
+                        fetch("/assessment-status/" + assessmentId)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.error) return;
+                                
+                                statusText.innerHTML = "⏳ " + data.status_text;
+                                percentageText.innerText = data.progress_percent + "%";
+                                progressBar.style.width = data.progress_percent + "%";
 
-<p>
-<p>
-<b>Overall Risk:</b>
-{{ overall_risk }}
-</p>
+                                if (data.status === "COMPLETED" || data.status === "FAILED") {
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 1000);
+                                }
+                            })
+                            .catch(err => console.error("Error polling scan status:", err));
+                    }
 
-<p>
-<b>Risk Score:</b>
-{{ risk_score }}
-</p>
-<hr>
+                    pollStatus();
+                    const intervalId = setInterval(pollStatus, 1500);
+                });
+            </script>
+        {% else %}
+            <a href="/execute-assessment/{{ assessment_id }}" class="btn" style="background-color: var(--accent); font-weight: bold;">
+                🚀 Execute Unified Security Scan
+            </a>
+        {% endif %}
 
-<h3>Execution Status</h3>
+        {% if assessment_status == 'COMPLETED' %}
+            <a href="/generate-technical-report/{{ assessment_id }}" class="btn" style="background-color: var(--accent-green);">Download Tech PDF</a>
+            <a href="/generate-executive-report/{{ assessment_id }}" class="btn" style="background-color: var(--accent-green);">Download Executive PDF</a>
+        {% endif %}
 
-<table>
+        {% if current_user.role == 'Admin' %}
+            <a href="#" class="btn btn-secondary" onclick="extendQuota({{ assessment_id }}); return false;">Extend Quota</a>
+            <script>
+                function extendQuota(assessmentId) {
+                    let amount = prompt("Enter the number of scans to add to the quota:", "10");
+                    if (amount !== null) {
+                        let parsed = parseInt(amount, 10);
+                        if (!isNaN(parsed) && parsed > 0) {
+                            window.location.href = "/extend-quota/" + assessmentId + "?amount=" + parsed;
+                        } else {
+                            alert("Please enter a valid positive number.");
+                        }
+                    }
+                }
+            </script>
+        {% endif %}
+    </div>
+</div>
 
-<tr>
-    <th>Component</th>
-    <th>Status</th>
-</tr>
+<div class="card">
+    <h3>Correlated Security Risks & Findings</h3>
+    
+    {% if not findings %}
+        <p style="color: var(--text-secondary); margin-top: 1rem;">No findings generated yet. Run Recon/Scans and launch the Correlation Engine.</p>
+    {% else %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Risk Level</th>
+                    <th>Vulnerability Title</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for f in findings %}
+                    <tr>
+                        <td>
+                            {% if f[1] == 'CRITICAL' or f[1] == 'HIGH' %}
+                                <span class="badge badge-danger">{{ f[1] }}</span>
+                            {% elif f[1] == 'MEDIUM' %}
+                                <span class="badge badge-warning">{{ f[1] }}</span>
+                            {% else %}
+                                <span class="badge badge-info">{{ f[1] }}</span>
+                            {% endif %}
+                        </td>
+                        <td><b>{{ f[0] }}</b></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
 
-<tr>
-    <td>Recon</td>
-    <td>{{ recon_status }}</td>
-</tr>
-
-<tr>
-    <td>Scan</td>
-    <td>{{ scan_status }}</td>
-</tr>
-
-<tr>
-    <td>Correlation</td>
-    <td>{{ correlation_status }}</td>
-</tr>
-
-</table>
-
-<hr>
-
-<h3>Correlated Findings</h3>
-
-<table>
-
-<tr>
-    <th>Title</th>
-    <th>Risk</th>
-</tr>
-
-{% for finding in findings %}
-<tr>
-
-    <td>{{ finding[0] }}</td>
-    <td>{{ finding[1] }}</td>
-
-</tr>
-{% endfor %}
-
-</table>
-
-<hr>
-
-<h3>Reports</h3>
-
-<a href="/generate-executive-report/{{ assessment_id }}">
-    Executive Report
-</a>
-
-|
-
-<a href="/generate-technical-report/{{ assessment_id }}">
-    Technical Report
-</a>
+<div style="margin-top: 2rem;">
+    <a href="/assessments" class="btn btn-secondary">Back to Assessments List</a>
+</div>
 
 {% endblock %}

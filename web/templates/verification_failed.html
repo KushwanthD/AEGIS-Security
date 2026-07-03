@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card" style="max-width: 650px; margin: 0 auto; padding: 2rem; border-top: 4px solid var(--accent);">
+    <h2 style="font-family: 'Outfit', sans-serif; margin-bottom: 1rem; color: var(--accent);">⚠️ Real-Time Ownership Challenge Failed</h2>
+    
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
+        The automated compliance scanner attempted to verify ownership of the target asset, but the network checks failed.
+    </p>
+
+    <div style="background: rgba(220, 38, 38, 0.05); border: 1px solid rgba(220, 38, 38, 0.2); padding: 1.25rem; border-radius: 8px; margin-bottom: 1.5rem;">
+        <p style="margin: 0 0 0.5rem 0; font-weight: bold; color: var(--accent);">Error Diagnostic Details:</p>
+        <p style="margin: 0; font-family: monospace; font-size: 0.9rem; color: var(--text-primary); line-height: 1.5;">
+            {{ error_msg|safe }}
+        </p>
+    </div>
+
+    <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.9rem; line-height: 1.5;">
+        <b>How to resolve:</b><br>
+        *   <b>DNS Challenge:</b> Ensure you have added the TXT record to your DNS zone provider and allowed it time to propagate.<br>
+        *   <b>Hosted File Challenge:</b> Verify your web server is running on port 80/443 of that address, and is serving the file at the required <code>.well-known/aegis-verification.txt</code> path.
+    </p>
+
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <a href="/verify-asset/{{ asset.id }}" class="btn" style="background-color: var(--accent); color: white; text-align: center;">
+            🔄 Retry Verification Check
+        </a>
+        
+        {% if simulation_active %}
+            <form method="POST" action="/verify-asset/{{ asset.id }}" style="margin: 0; padding: 0;">
+                <input type="hidden" name="bypass" value="true">
+                <button type="submit" class="btn" style="background-color: rgba(255, 255, 255, 0.05); border: 1px dashed var(--border-color); color: var(--text-secondary); width: 100%;">
+                    ⚠️ Bypass Real Check (Simulation Mode Active)
+                </button>
+            </form>
+        {% endif %}
+        
+        <a href="/" class="btn btn-secondary" style="text-align: center;">Return to Dashboard</a>
+    </div>
+</div>
+
+{% endblock %}

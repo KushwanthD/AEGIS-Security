@@ -2,35 +2,24 @@
 
 {% block content %}
 
-<h2>Verify Authorization Token</h2>
+<div class="card" style="max-width: 500px; margin: 0 auto;">
+    <h2>Verify Assessment Token</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Submit the generated assessment authorization token. Once verified, scanners can be legally launched against the scope.</p>
 
-<form method="POST">
+    <form method="POST">
+        <div class="form-group">
+            <label>Authorization Token</label>
+            <input type="text" name="token" placeholder="Paste the hex token here..." required autocomplete="off">
+        </div>
 
-    <p>
-        <label>Assessment ID:</label>
-        <input
-            type="number"
-            name="assessment_id"
-            value="{{ assessment_id }}"
-            readonly
-        >
-    </p>
+        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+            <button type="submit">Verify Token</button>
+            <a href="/assessments" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
 
-    <p>
-        <label>Authorization Token:</label>
-        <input
-            type="text"
-            name="token"
-            required
-        >
-    </p>
-
-    <p>
-        <button type="submit">
-            Verify Token
-        </button>
-    </p>
-
-</form>
+{% block content_footer %}
+{% endblock %}
 
 {% endblock %}
