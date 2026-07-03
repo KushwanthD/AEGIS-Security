@@ -4,8 +4,9 @@ from database.connection import SessionLocal
 from database.models import User
 
 def create_app():
+    import os
     app = Flask(__name__)
-    app.config["SECRET_KEY"] = "aegis_super_secret_key_change_me_in_prod"
+    app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "aegis_super_secret_key_change_me_in_prod")
     app.config["VERIFICATION_SIMULATION_MODE"] = True
     app.config["VERIFICATION_TOKEN_EXPIRY_HOURS"] = 48
 
