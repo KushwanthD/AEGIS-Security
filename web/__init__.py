@@ -39,4 +39,45 @@ def create_app():
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         return response
 
+    # Run startup database self-healing maintenance check
+    try:
+        from database.models import Assessment, ScanExecution, ReconExecution, AuditLog
+        import datetime
+        db_start = SessionLocal()
+        
+        running_scans = db_start.query(ScanExecution).filter(ScanExecution.status == "RUNNING").all()
+        for scan in running_scans:
+            scan.status = "FAILED"
+            scan.completed_at = datetime.datetime.now()
+            db_start.add(AuditLog(
+                assessment_id=scan.assessment_id,
+                event_type="SYSTEM_INTERRUPTED",
+                event_details="Scan execution was interrupted due to a system restart/crash."
+            ))
+
+        running_recons = db_start.query(ReconExecution).filter(ReconExecution.status == "RUNNING").all()
+        for recon in running_recons:
+            recon.status = "FAILED"
+            recon.completed_at = datetime.datetime.now()
+            db_start.add(AuditLog(
+                assessment_id=recon.assessment_id,
+                event_type="SYSTEM_INTERRUPTED",
+                event_details="Reconnaissance was interrupted due to a system restart/crash."
+            ))
+
+        running_assessments = db_start.query(Assessment).filter(Assessment.status == "RUNNING").all()
+        for ass in running_assessments:
+            ass.status = "FAILED"
+            ass.completed_at = datetime.datetime.now()
+            db_start.add(AuditLog(
+                assessment_id=ass.id,
+                event_type="SYSTEM_INTERRUPTED",
+                event_details="Assessment execution was interrupted due to a system restart/crash."
+            ))
+        db_start.commit()
+    except Exception as e:
+        print(f"Startup maintenance failed: {e}")
+    finally:
+        db_start.close()
+
     return app
