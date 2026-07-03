@@ -4,9 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AEGIS - Enterprise Security Assessment</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        @keyframes pulse-shield {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 25px #a855f7); }
+        }
+        @keyframes loader-bar {
+            0% { left: -50%; width: 30%; }
+            50% { left: 25%; width: 50%; }
+            100% { left: 100%; width: 30%; }
+        }
+    </style>
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            const preloader = document.getElementById('preloader');
+            if (preloader) {
+                setTimeout(() => {
+                    preloader.style.opacity = '0';
+                    preloader.style.visibility = 'hidden';
+                }, 500);
+            }
+        });
+        document.addEventListener('submit', function() {
+            const preloader = document.getElementById('preloader');
+            if (preloader) {
+                preloader.style.visibility = 'visible';
+                preloader.style.opacity = '1';
+            }
+        });
+    </script>
 </head>
 <body>
+    <!-- Premium Preloader Loader -->
+    <div id="preloader" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0b0716; z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s ease, visibility 0.3s ease;">
+        <div style="text-align: center;">
+            <div class="loader-shield" style="font-size: 4.5rem; animation: pulse-shield 1.5s infinite ease-in-out; display: inline-block; filter: drop-shadow(0 0 20px #8b5cf6);">🛡️</div>
+            <div style="margin-top: 1.5rem; color: #ffffff; font-family: 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase;">
+                AEGIS <span style="color: #a855f7;">Shield</span>
+            </div>
+            <div style="width: 140px; height: 3px; background: rgba(255,255,255,0.05); border-radius: 3px; margin: 1.25rem auto 0; overflow: hidden; position: relative;">
+                <div style="position: absolute; left: 0; top: 0; height: 100%; width: 50%; background: linear-gradient(to right, #8b5cf6, #a855f7); border-radius: 3px; animation: loader-bar 1.2s infinite ease-in-out;"></div>
+            </div>
+        </div>
+    </div>
 
     <div class="{% if current_user.is_authenticated %}app-layout{% endif %}">
         {% if current_user.is_authenticated %}
