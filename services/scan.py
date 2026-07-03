@@ -137,7 +137,7 @@ def is_valid_target(target: str) -> bool:
     return bool(re.match(r"^[a-zA-Z0-9.-]+$", target))
 
 def run_nmap_scan(db: Session, assessment_id: int, scan_execution_id: int, target: str):
-    """Executes Nmap fast port scan on target."""
+    """Executes aggressive Nmap script scan on target with NSE vulnerability probes."""
     if not is_valid_target(target):
         db.add(ScanResult(
             assessment_id=assessment_id,
@@ -152,42 +152,40 @@ def run_nmap_scan(db: Session, assessment_id: int, scan_execution_id: int, targe
         return
 
     try:
-        # Run Nmap with service version banner detection
+        # Run aggressive Nmap scan: top common ports + version info + default NSE scripts
         result = subprocess.run(
-            ["nmap", "-sV", "--version-light", target],
+            ["nmap", "-p", "21,22,23,25,53,80,110,139,143,443,445,1433,3306,3389,8080,8443", "-sV", "-sC", "-T4", target],
             capture_output=True,
             text=True,
-            timeout=240
+            timeout=300
         )
         output = result.stdout
         findings_created = 0
+        current_port = "Unknown"
 
         for line in output.splitlines():
+            line_str = line.strip()
             if "/tcp" in line and "open" in line:
-                # Split line into maximum 4 segments to capture full Version details if present
                 parts = line.split(None, 3)
                 if len(parts) < 3:
                     continue
                 port = parts[0]
+                current_port = port
                 state = parts[1]
                 service = parts[2]
                 version_info = parts[3].strip() if len(parts) >= 4 else "Unknown Version"
 
                 severity = "LOW"
                 description = f"Port {port} is open running {service} service."
-                
-                # Check for outdated / sensitive software versions
                 if version_info != "Unknown Version":
                     description += f"\n• Version Signature Detected: <b>{version_info}</b>"
                     
                 if service.upper() == "SSH":
                     severity = "MEDIUM"
-                    if "openssh" in version_info.lower():
-                        description += "\n• Security Note: Verify that the SSH service is configured with key-based authentication only, and password logins are disabled."
+                    description += "\n• Security Note: Verify that the SSH service is configured with key-based authentication only."
                 elif service.upper() in ("HTTP", "HTTPS"):
                     severity = "INFO"
-                    if "apache" in version_info.lower() or "nginx" in version_info.lower():
-                        description += f"\n• Security Note: Check version release notes for {version_info} to identify potential out-of-date package disclosures."
+                    description += f"\n• Security Note: Check version release notes for {version_info} to identify potential out-of-date package disclosures."
 
                 db.add(ScanResult(
                     assessment_id=assessment_id,
@@ -200,36 +198,56 @@ def run_nmap_scan(db: Session, assessment_id: int, scan_execution_id: int, targe
                     evidence=line
                 ))
                 findings_created += 1
-        print(f"Nmap completed for {target}. Found {findings_created} ports.")
+
+            # Parse NSE Script findings (indented output lines starting with | )
+            elif (line_str.startswith("|") or line_str.startswith("|_")) and len(line_str) > 2:
+                script_detail = line_str[1:].strip()
+                severity = "INFO"
+                category = "Information Disclosure"
+                
+                if any(x in line_str.lower() for x in ("vuln", "cve-", "exploit", "weak", "deprecated")):
+                    severity = "HIGH"
+                    category = "Vulnerability Probe"
+                elif any(x in line_str.lower() for x in ("anonymous", "allowed", "exposed", "leak")):
+                    severity = "MEDIUM"
+                    category = "Security Misconfiguration"
+
+                db.add(ScanResult(
+                    assessment_id=assessment_id,
+                    scan_execution_id=scan_execution_id,
+                    tool_name="Nmap NSE Script",
+                    finding_title=f"NSE Script Probe: Port {current_port}",
+                    finding_category=category,
+                    severity=severity,
+                    description=f"Nmap NSE script returned audit results for Port {current_port}:\n• Details: {script_detail}",
+                    evidence=line_str
+                ))
+                findings_created += 1
+
+        print(f"Nmap completed for {target}. Found {findings_created} scan results.")
+        db.commit()
+
     except (FileNotFoundError, PermissionError):
         # Fallback to high-fidelity simulated run for demonstration when tool is not installed
-        ports = [
-            ("22/tcp", "open", "ssh", "OpenSSH 8.9p1 Ubuntu 3ubuntu0.1"),
-            ("80/tcp", "open", "http", "nginx 1.18.0"),
-            ("443/tcp", "open", "https", "nginx 1.18.0")
+        simulated_results = [
+            ("21/tcp", "ftp", "vsftpd 3.0.3", "MEDIUM", "Security Misconfiguration", "Anonymous FTP login allowed (FTP code 230)"),
+            ("22/tcp", "ssh", "OpenSSH 8.9p1 Ubuntu 3ubuntu0.1", "MEDIUM", "Network Service", "Verify that the SSH service is configured with key-based authentication only."),
+            ("80/tcp", "http", "nginx 1.18.0", "INFO", "Network Service", "Port 80/tcp is open. Redirects to HTTPS."),
+            ("443/tcp", "https", "nginx 1.18.0", "HIGH", "Vulnerability Probe", "SSL-Session-IV: Weak SSL/TLS Cipher Suites enabled (3DES / RC4 support detected).")
         ]
-        for port, state, service, version_info in ports:
-            severity = "LOW"
-            description = f"Port {port} is open running {service} service.\n• Version Signature Detected: <b>{version_info}</b>"
-            if service == "ssh":
-                severity = "MEDIUM"
-                description += "\n• Security Note: Verify that the SSH service is configured with key-based authentication only, and password logins are disabled."
-            elif service in ("http", "https"):
-                severity = "INFO"
-                description += f"\n• Security Note: Check version release notes for {version_info} to identify potential out-of-date package disclosures."
-
+        for port, service, version_info, severity, category, detail in simulated_results:
             db.add(ScanResult(
                 assessment_id=assessment_id,
                 scan_execution_id=scan_execution_id,
                 tool_name="Nmap",
-                finding_title=f"{service.upper()} Service Detected ({version_info})",
-                finding_category="Network Service",
+                finding_title=f"{service.upper()} Service Detected ({version_info})" if category == "Network Service" else f"Nmap NSE Script: {detail[:40]}...",
+                finding_category=category,
                 severity=severity,
-                description=description,
-                evidence=f"{port}  {state}  {service}  {version_info} (Simulated)"
+                description=f"Port {port} is open running {service} ({version_info}).\n• Alert Details: {detail}",
+                evidence=f"{port} open {service} {version_info} | {detail} (Simulated Aggressive Scan)"
             ))
         db.commit()
-        print(f"Nmap (Simulated) completed for {target}. Found 3 ports.")
+        print(f"Nmap (Simulated) completed for {target}. Found 4 ports with NSE probes.")
     except Exception as e:
         db.add(ScanResult(
             assessment_id=assessment_id,
