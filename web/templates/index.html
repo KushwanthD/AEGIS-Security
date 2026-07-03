@@ -30,18 +30,18 @@
             <span class="metric-title">Assets Registered</span>
             <span class="metric-value">{{ asset_count }}</span>
         </div>
-        <div class="metric-card warning">
+        <a href="/requested-assessments" class="metric-card warning" style="text-decoration: none; color: inherit; display: flex; flex-direction: column;">
             <span class="metric-title">Assessments Requested</span>
             <span class="metric-value">{{ assessment_count }}</span>
-        </div>
+        </a>
         <div class="metric-card success">
             <span class="metric-title">Approved Runs</span>
             <span class="metric-value">{{ approved_count }}</span>
         </div>
-        <div class="metric-card critical">
+        <a href="/high-risks-assessments" class="metric-card critical" style="text-decoration: none; color: inherit; display: flex; flex-direction: column;">
             <span class="metric-title">Critical & High Risks</span>
             <span class="metric-value">{{ high_risk_count }}</span>
-        </div>
+        </a>
     </div>
 
     <div class="card">

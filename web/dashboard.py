@@ -1742,3 +1742,23 @@ def download_pdf(filename):
         return send_file(pdf_path, as_attachment=True)
     return "Report file not found", 404
 
+@dashboard_bp.route("/high-risks-assessments")
+@login_required
+def high_risks_assessments():
+    db = SessionLocal()
+    try:
+        if current_user.role == "Owner":
+            assessments = db.query(Assessment).join(Asset).join(CorrelatedFinding).filter(
+                Asset.user_id == current_user.id,
+                CorrelatedFinding.risk_level.in_(["CRITICAL", "HIGH"])
+            ).distinct().order_by(Assessment.id.desc()).all()
+        else:
+            assessments = db.query(Assessment).join(CorrelatedFinding).filter(
+                CorrelatedFinding.risk_level.in_(["CRITICAL", "HIGH"])
+            ).distinct().order_by(Assessment.id.desc()).all()
+            
+        return render_template("high_risks_assessments.html", assessments=assessments)
+    finally:
+        db.close()
+
+
