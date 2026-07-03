@@ -1516,7 +1516,7 @@ def report_history():
             reports = db.query(Report).join(Assessment).join(Asset).filter(Asset.user_id == current_user.id).order_by(Report.id.desc()).all()
         else:
             reports = db.query(Report).order_by(Report.id.desc()).all()
-        reports_list = [(r.id, r.assessment_id, r.report_type, r.created_at.strftime("%Y-%m-%d %H:%M")) for r in reports]
+        reports_list = [(r.id, r.assessment_id, r.report_type, r.created_at.strftime("%Y-%m-%d %H:%M"), r.file_name, r.assessment.assessment_reference) for r in reports]
         return render_template("report_history.html", reports=reports_list)
     finally:
         db.close()

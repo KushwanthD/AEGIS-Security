@@ -20,7 +20,7 @@
                 <select id="reportSelect" onchange="viewReportFromDropdown()" style="width: 100%; padding: 0.5rem 1rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 6px; color: white; outline: none; cursor: pointer;">
                     <option value="">-- Choose a report to view --</option>
                     {% for r in reports %}
-                        <option value="{{ r[4] }}" data-title="{{ r[2].title() }} Report - Assessment #{{ r[1] }}">{{ r[2].title() }} Report - Assessment #{{ r[1] }} ({{ r[3] }})</option>
+                        <option value="{{ r[4] }}" data-title="{{ r[2].title() }} Report - {{ r[5] }}">{{ r[2].title() }} Report - {{ r[5] }} ({{ r[3] }})</option>
                     {% endfor %}
                 </select>
             </div>
@@ -30,7 +30,7 @@
             <thead>
                 <tr>
                     <th>Report ID</th>
-                    <th>Assessment ID</th>
+                    <th>Assessment Ref</th>
                     <th>Report Class</th>
                     <th>Timestamp</th>
                     <th>Actions</th>
@@ -40,7 +40,7 @@
                 {% for r in reports %}
                     <tr>
                         <td>{{ r[0] }}</td>
-                        <td><b>Assessment #{{ r[1] }}</b></td>
+                        <td><b>{{ r[5] }}</b></td>
                         <td>
                             {% if r[2] == 'EXECUTIVE' %}
                                 <span class="badge badge-success">Executive Summary</span>
@@ -50,7 +50,7 @@
                         </td>
                         <td>{{ r[3] }}</td>
                         <td style="display: flex; gap: 0.5rem;">
-                            <button onclick="openPdfModal('{{ r[4] }}', '{{ r[2].title() }} Report - Assessment #{{ r[1] }}')" class="btn" style="padding: 0.3rem 0.8rem; font-size: 0.85rem; background-color: var(--accent);">View Report</button>
+                            <button onclick="openPdfModal('{{ r[4] }}', '{{ r[2].title() }} Report - {{ r[5] }}')" class="btn" style="padding: 0.3rem 0.8rem; font-size: 0.85rem; background-color: var(--accent);">View Report</button>
                             <a href="/download-pdf/{{ r[4] }}" class="btn btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.85rem; background-color: var(--accent-green); color: black; font-weight: bold; text-decoration: none;">Download PDF</a>
                         </td>
                     </tr>
