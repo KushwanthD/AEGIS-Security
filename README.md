@@ -40,11 +40,12 @@ AEGIS Shield is a modern web application designed for compliance validation and 
     ```
     Access the application at `http://localhost:5000`.
 
-## Production Deployment on Render
-1.  Connect your GitHub repository to **Render.com**.
-2.  Create a new **Web Service**.
-3.  Set the start command to:
-    ```bash
-    gunicorn app:app
-    ```
-4.  Optionally, configure the environment variable `FLASK_SECRET_KEY` in the Render dashboard for enhanced security.
+## Production Deployment
+The live production instance is deployed on **Render** at:
+👉 **[https://aegis-shield.onrender.com](https://aegis-shield.onrender.com)**
+
+### Build Config (on Render)
+*   **Runtime:** `Python`
+*   **Build Command:** `pip install -r requirements.txt`
+*   **Start Command:** `gunicorn app:app`
+*   **Environment Variable:** `FLASK_SECRET_KEY` (configured for session encryption)
