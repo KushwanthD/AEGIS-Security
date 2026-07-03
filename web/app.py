@@ -1181,14 +1181,9 @@ def run_correlation(assessment_id):
     latest_scan = cursor.fetchone()
 
     if latest_recon is None or latest_scan is None:
-
-        print(
-            "Recon or scan execution not found."
-    )
-
-    connection.close()
-
-    exit()
+        print("Recon or scan execution not found.")
+        connection.close()
+        return "<h1>Error: Recon or scan results missing</h1>"
 
     latest_recon_id = latest_recon[0]
     latest_scan_id = latest_scan[0]
@@ -1200,7 +1195,7 @@ def run_correlation(assessment_id):
         result_data
     FROM ReconResults
     WHERE recon_execution_id = ?
-    """, (assessment_id,))
+    """, (latest_recon_id,))
 
     recon_results = cursor.fetchall()
 
@@ -1211,7 +1206,7 @@ def run_correlation(assessment_id):
         evidence
     FROM ScanResults
     WHERE scan_execution_id = ?
-    """, (assessment_id,))
+    """, (latest_scan_id,))
 
     scan_results = cursor.fetchall()
 
