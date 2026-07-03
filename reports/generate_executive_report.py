@@ -1,3 +1,5 @@
+import os
+os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
 import sqlite3
 import argparse
 
@@ -220,7 +222,7 @@ for row in cursor.fetchall():
 if api_key and len(correlated_findings) > 0:
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-2.5-flash')
         
         findings_text = "\n".join([f"- {row[0]} ({row[1]} risk) - Detail: {row[2]}" for row in correlated_findings])
         
