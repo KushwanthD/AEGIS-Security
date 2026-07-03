@@ -30,8 +30,8 @@
             </thead>
             <tbody>
                 {% for ass in assessments %}
-                    {% set crit_count = ass.findings | selectattr("risk_level", "equalto", "CRITICAL") | list | length %}
-                    {% set high_count = ass.findings | selectattr("risk_level", "equalto", "HIGH") | list | length %}
+                    {% set crit_count = ass.correlated_findings | selectattr("risk_level", "equalto", "CRITICAL") | list | length %}
+                    {% set high_count = ass.correlated_findings | selectattr("risk_level", "equalto", "HIGH") | list | length %}
                     <tr>
                         <td><b>{{ ass.assessment_reference }}</b></td>
                         <td>{{ ass.asset.asset_value if ass.asset else "Unknown Target" }}</td>
