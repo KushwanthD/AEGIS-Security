@@ -286,6 +286,31 @@ def run_correlation_engine(db: Session, assessment_id: int):
             ))
             findings_created += 1
 
+    # Rule 11: Dynamic CISA KEV Threat Intelligence Match
+    threat_intel_pool = db.query(ThreatIntel).all()
+    if threat_intel_pool:
+        added_titles = set()
+        for s in scan_results:
+            if s.tool_name == "Nmap" and s.finding_category == "Open Port":
+                # Split service name (e.g. "HTTP", "SSH", "MYSQL", "FTP")
+                service_prefix = s.finding_title.split(" ")[0].upper()
+                for intel in threat_intel_pool:
+                    intel_tech = intel.technology.upper()
+                    # Check if finding title or service matches CISA technology keyword
+                    if service_prefix in intel_tech or intel_tech in service_prefix or (s.description and intel_tech in s.description.upper()):
+                        title_key = f"CISA KEV Active Exploitation Match: {intel.threat_title}"
+                        if title_key not in added_titles:
+                            added_titles.add(title_key)
+                            db.add(CorrelatedFinding(
+                                assessment_id=assessment_id,
+                                correlation_execution_id=exec_entry.id,
+                                correlation_title=title_key,
+                                risk_level=intel.risk_level,
+                                correlation_reason=f"Exposed service matches technology in CISA's catalog of actively exploited vulnerabilities. Detail: {intel.threat_description}",
+                                recommended_action=intel.recommended_action
+                            ))
+                            findings_created += 1
+
     # Complete correlation execution
     exec_entry.status = "COMPLETED"
     exec_entry.completed_at = datetime.datetime.now()
