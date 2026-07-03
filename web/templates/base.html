@@ -16,6 +16,19 @@
             0% { transform: rotate(360deg); }
             100% { transform: rotate(0deg); }
         }
+        @keyframes bell-wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            15% { transform: rotate(15deg); }
+            30% { transform: rotate(-12deg); }
+            45% { transform: rotate(10deg); }
+            60% { transform: rotate(-8deg); }
+            75% { transform: rotate(4deg); }
+            90% { transform: rotate(-2deg); }
+        }
+        .wiggle-active {
+            animation: bell-wiggle 0.6s ease-in-out;
+            transform-origin: top center;
+        }
     </style>
     <script>
         window.addEventListener('DOMContentLoaded', function() {
@@ -121,10 +134,10 @@
                 </div>
                 <div class="auth-nav">
                     {% if current_user.is_authenticated %}
-                        <div class="bell-container" style="position: relative; margin-right: 1.5rem; display: inline-block;">
-                            <button id="bellButton" style="font-size: 1.25rem; cursor: pointer; color: var(--text-secondary); outline: none; position: relative; padding: 0.6rem 0.8rem; width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px;">
-                                🔔
-                                <span id="bellBadge" class="badge" style="position: absolute; top: -5px; right: -5px; background: var(--accent); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.65rem; display: flex; align-items: center; justify-content: center; {% if unread_notifications_count == 0 %}display: none;{% endif %}">
+                        <div class="bell-container" style="position: relative; margin-right: 1.5rem; display: inline-block; vertical-align: middle;">
+                            <button id="bellButton" style="background: none !important; border: none !important; padding: 0 !important; box-shadow: none !important; backdrop-filter: none !important; transform: none !important; cursor: pointer; color: var(--text-secondary); outline: none; position: relative; display: inline-flex; align-items: center; justify-content: center; overflow: visible;">
+                                <span id="bellEmoji" style="display: inline-block; font-size: 1.45rem;">🔔</span>
+                                <span id="bellBadge" class="badge" style="position: absolute; top: -7px; right: -7px; background: var(--accent); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.65rem; display: flex; align-items: center; justify-content: center; {% if unread_notifications_count == 0 %}display: none;{% endif %}">
                                     {{ unread_notifications_count }}
                                 </span>
                             </button>
@@ -404,6 +417,14 @@
                 bellButton.addEventListener('click', function(e) {
                     e.stopPropagation();
                     bellDropdown.style.display = bellDropdown.style.display === 'none' ? 'block' : 'none';
+                    
+                    const bellEmoji = document.getElementById('bellEmoji');
+                    if (bellEmoji) {
+                        bellEmoji.classList.add('wiggle-active');
+                        setTimeout(() => {
+                            bellEmoji.classList.remove('wiggle-active');
+                        }, 600);
+                    }
                 });
                 document.addEventListener('click', function() {
                     bellDropdown.style.display = 'none';
