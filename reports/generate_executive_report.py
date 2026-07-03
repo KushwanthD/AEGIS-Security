@@ -176,35 +176,104 @@ content.append(
 )
 
 # =====================
+# AI-POWERED NARRATIVE GENERATION
+# =====================
+import os
+import google.generativeai as genai
+from dotenv import load_dotenv
+
+# Load API key from workspace root .env file
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env"))
+api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+
+# Fetch all correlated findings to provide context to Gemini
+cursor.execute("""
+SELECT correlation_title, risk_level, correlation_reason, recommended_action
+FROM CorrelatedFindings
+WHERE assessment_id = ?
+""", (ASSESSMENT_ID,))
+correlated_findings = cursor.fetchall()
+
+ai_summary = (
+    f"The authorized assessment of {asset_value} identified "
+    f"internet-facing services and security-relevant infrastructure. "
+    f"The overall risk level for this assessment is classified as "
+    f"{overall_risk} based on correlated findings and threat intelligence analysis."
+)
+ai_impact = (
+    "Exposed administrative and web services may increase attack "
+    "surface visibility and create opportunities for unauthorized "
+    "access attempts. Continuous monitoring and security control "
+    "validation are recommended."
+)
+ai_recommendations = []
+
+# Fetch default static recommendations as fallbacks
+cursor.execute("""
+SELECT DISTINCT recommended_action
+FROM CorrelatedFindings
+WHERE assessment_id = ?
+""", (ASSESSMENT_ID,))
+for row in cursor.fetchall():
+    ai_recommendations.append(row[0])
+
+if api_key and len(correlated_findings) > 0:
+    try:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        findings_text = "\n".join([f"- {row[0]} ({row[1]} risk) - Detail: {row[2]}" for row in correlated_findings])
+        
+        prompt = f"""
+You are Aegis AI, a security assessment expert writing an Executive Security Assessment Report for target {asset_value}.
+Overall Risk Rating: {overall_risk}
+
+Findings detected during scan:
+{findings_text}
+
+Write three sections for the report:
+1. Executive Summary (2-3 sentences summarizing the critical exposure).
+2. Business Impact (2-3 sentences outlining the corporate risk and operational threat).
+3. Recommendations (3-4 concise, high-level remediation steps).
+
+Respond strictly in this template:
+[EXECUTIVE_SUMMARY]
+<summary here>
+[BUSINESS_IMPACT]
+<impact here>
+[RECOMMENDATIONS]
+• <rec 1>
+• <rec 2>
+• <rec 3>
+"""
+        response = model.generate_content(prompt)
+        text = response.text
+        
+        if "[EXECUTIVE_SUMMARY]" in text and "[BUSINESS_IMPACT]" in text and "[RECOMMENDATIONS]" in text:
+            ai_summary = text.split("[EXECUTIVE_SUMMARY]")[1].split("[BUSINESS_IMPACT]")[0].strip()
+            ai_impact = text.split("[BUSINESS_IMPACT]")[1].split("[RECOMMENDATIONS]")[0].strip()
+            recs_raw = text.split("[RECOMMENDATIONS]")[1].strip().split("\n")
+            parsed_recs = [r.replace("•", "").replace("-", "").strip() for r in recs_raw if r.strip()]
+            if len(parsed_recs) > 0:
+                ai_recommendations = parsed_recs
+    except Exception as e:
+        print(f"Gemini API error, falling back to static templates: {e}")
+
+# =====================
 # EXECUTIVE SUMMARY
 # =====================
-
 content.append(
     Paragraph(
         "Executive Summary",
         styles["Heading1"]
     )
 )
-
-summary = (
-    f"The authorized assessment of "
-    f"{asset_value} identified "
-    f"internet-facing services and "
-    f"security-relevant infrastructure. "
-    f"The overall risk level for this "
-    f"assessment is classified as "
-    f"{overall_risk} based on "
-    f"correlated findings and threat "
-    f"intelligence analysis."
-)
-
 content.append(
     Paragraph(
-        summary,
+        ai_summary,
         styles["BodyText"]
     )
 )
-
 content.append(
     Spacer(1, 12)
 )
@@ -212,31 +281,19 @@ content.append(
 # =====================
 # KEY FINDINGS
 # =====================
-
 content.append(
     Paragraph(
         "Key Findings",
         styles["Heading1"]
     )
 )
-
-cursor.execute("""
-SELECT
-    correlation_title,
-    risk_level
-FROM CorrelatedFindings
-WHERE assessment_id = ?
-""", (ASSESSMENT_ID,))
-
-for title, risk in cursor.fetchall():
-
+for title, risk in [(row[0], row[1]) for row in correlated_findings]:
     content.append(
         Paragraph(
             f"• {title} ({risk})",
             styles["BodyText"]
         )
     )
-
 content.append(
     Spacer(1, 12)
 )
@@ -244,30 +301,20 @@ content.append(
 # =====================
 # THREAT INTELLIGENCE
 # =====================
-
 content.append(
     Paragraph(
         "Threat Intelligence Summary",
         styles["Heading1"]
     )
 )
-
-cursor.execute("""
-SELECT DISTINCT
-    correlation_reason
-FROM CorrelatedFindings
-WHERE assessment_id = ?
-""", (ASSESSMENT_ID,))
-
-for row in cursor.fetchall():
-
+unique_reasons = list(set([row[2] for row in correlated_findings if row[2]]))
+for reason in unique_reasons:
     content.append(
         Paragraph(
-            f"• {row[0]}",
+            f"• {reason}",
             styles["BodyText"]
         )
     )
-
 content.append(
     Spacer(1, 12)
 )
@@ -275,27 +322,18 @@ content.append(
 # =====================
 # BUSINESS IMPACT
 # =====================
-
 content.append(
     Paragraph(
         "Business Impact",
         styles["Heading1"]
     )
 )
-
 content.append(
     Paragraph(
-        "Exposed administrative and web "
-        "services may increase attack "
-        "surface visibility and create "
-        "opportunities for unauthorized "
-        "access attempts. Continuous "
-        "monitoring and security control "
-        "validation are recommended.",
+        ai_impact,
         styles["BodyText"]
     )
 )
-
 content.append(
     Spacer(1, 12)
 )
@@ -303,30 +341,19 @@ content.append(
 # =====================
 # RECOMMENDATIONS
 # =====================
-
 content.append(
     Paragraph(
         "Recommendations",
         styles["Heading1"]
     )
 )
-
-cursor.execute("""
-SELECT DISTINCT
-    recommended_action
-FROM CorrelatedFindings
-WHERE assessment_id = ?
-""", (ASSESSMENT_ID,))
-
-for row in cursor.fetchall():
-
+for rec in ai_recommendations:
     content.append(
         Paragraph(
-            f"• {row[0]}",
+            f"• {rec}",
             styles["BodyText"]
         )
     )
-
 content.append(
     Spacer(1, 12)
 )

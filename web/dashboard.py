@@ -84,6 +84,19 @@ dashboard_bp = Blueprint("dashboard", __name__)
 # Asynchronous Task Executor
 executor = ThreadPoolExecutor(max_workers=4)
 
+import time
+last_threat_sync_time = 0
+
+@dashboard_bp.before_app_request
+def trigger_threat_sync_on_click():
+    global last_threat_sync_time
+    if current_user and current_user.is_authenticated:
+        current_time = time.time()
+        # Throttled at most once every 30 seconds to prevent overloading CISA's servers
+        if current_time - last_threat_sync_time > 30:
+            last_threat_sync_time = current_time
+            executor.submit(fetch_latest_cisa_threats, SessionLocal())
+
 def db_session(f):
     """Decorator to inject database session cleanly and handle rollback/close."""
     @wraps(f)

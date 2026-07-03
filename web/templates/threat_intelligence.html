@@ -6,9 +6,6 @@
     <h2>Threat Intelligence Repository</h2>
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
         <p style="color: var(--text-secondary); margin: 0;">Repository containing active vulnerabilities and signatures matched against scan findings to define risk exposure rules.</p>
-        {% if current_user.role in ['Admin', 'Analyst'] %}
-            <a href="/refresh-threats" class="btn" style="padding: 0.5rem 1rem; font-size: 0.85rem; background-color: var(--accent);">Refresh Threat Feed</a>
-        {% endif %}
     </div>
 
     <table style="table-layout: fixed; width: 100%; word-wrap: break-word;">
