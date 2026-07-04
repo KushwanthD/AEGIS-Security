@@ -5,8 +5,28 @@
 <h2>Security Dashboard</h2>
 
 {% if current_user.role == 'Analyst' %}
+    <!-- Analyst Metrics Grid -->
+    <div class="grid-metrics" style="margin-bottom: 2rem;">
+        <div class="metric-card">
+            <span class="metric-title">Assets Registered</span>
+            <span class="metric-value">{{ asset_count }}</span>
+        </div>
+        <a href="/requested-assessments" class="metric-card warning" style="text-decoration: none; color: inherit; display: flex; flex-direction: column;">
+            <span class="metric-title">Assessments Requested</span>
+            <span class="metric-value">{{ assessment_count }}</span>
+        </a>
+        <div class="metric-card success">
+            <span class="metric-title">Approved Runs</span>
+            <span class="metric-value">{{ approved_count }}</span>
+        </div>
+        <a href="/high-risks-assessments" class="metric-card critical" style="text-decoration: none; color: inherit; display: flex; flex-direction: column;">
+            <span class="metric-title">Critical &amp; High Risks</span>
+            <span class="metric-value">{{ high_risk_count }}</span>
+        </a>
+    </div>
+
     <!-- Analyst Search Console (Outside Auditor Mode) -->
-    <div class="card" style="max-width: 600px; margin: 3rem auto; padding: 2.5rem; border-top: 4px solid var(--primary); background: var(--bg-card); border-radius: 8px;">
+    <div class="card" style="max-width: 600px; margin: 0 auto; padding: 2.5rem; border-top: 4px solid var(--primary); background: var(--bg-card); border-radius: 8px;">
         <h2 style="font-family: 'Outfit', sans-serif; margin-bottom: 1rem; background: linear-gradient(to right, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem;">Target Audit Console</h2>
         <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.6;">
             Enter the registered target asset value below to verify its status and proceed to the scan execution lifecycle. 
@@ -19,10 +39,11 @@
                 <input type="text" name="target" placeholder="e.g. example.com" required style="padding: 0.8rem; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white; outline: none; font-size: 1rem;">
             </div>
             <button type="submit" class="btn" style="padding: 0.8rem; font-weight: bold; background: var(--primary); color: white; border: none; cursor: pointer; border-radius: 6px; transition: background 0.2s;">
-                Verify & Initiate Assessment
+                Verify &amp; Initiate Assessment
             </button>
         </form>
     </div>
+
 {% else %}
     <!-- Admin & Owner Console (Internal Asset Management) -->
     <div class="grid-metrics">
