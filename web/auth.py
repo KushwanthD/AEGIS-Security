@@ -48,7 +48,8 @@ def login():
                         user.password_hash = generate_password_hash("admin")
                         db.commit()
 
-                if is_valid and user.is_active:
+                # is_active=None (NULL in DB) is treated as active to handle legacy rows
+                if is_valid and (user.is_active is None or user.is_active):
                     login_user(user)
                     
                     db.add(AuditLog(
@@ -114,7 +115,8 @@ def register():
                 username=username,
                 email=email,
                 password_hash=password_hash,
-                role=role
+                role=role,
+                is_active=True
             )
             db.add(new_user)
             db.commit()
