@@ -6,7 +6,7 @@ import json
 import datetime
 from urllib.parse import urlparse, unquote
 from sqlalchemy.orm import Session
-from database.models import ScanExecution, ScanResult, AuditLog
+from database.models import ScanExecution, ScanResult, AuditLog, CorrelatedFinding, CorrelationExecution, ReconResult, ReconExecution
 
 # Import playwright dynamically to avoid crashes if not yet configured
 try:
@@ -838,6 +838,38 @@ def run_sqlmap_probe(db: Session, assessment_id: int, scan_execution_id: int, ta
 
 def execute_security_scans(db: Session, assessment_id: int, target: str):
     """Orchestrator for Nmap, Playwright Pixel, SSL/TLS, and HTTP Headers auditing scans."""
+
+    # --- Purge all previous results for this assessment so scores don't stack ---
+    # Delete old correlated findings and their execution records
+    old_corr_exec_ids = [row.id for row in db.query(CorrelationExecution).filter(
+        CorrelationExecution.assessment_id == assessment_id).all()]
+    if old_corr_exec_ids:
+        db.query(CorrelatedFinding).filter(
+            CorrelatedFinding.correlation_execution_id.in_(old_corr_exec_ids)).delete(synchronize_session=False)
+        db.query(CorrelationExecution).filter(
+            CorrelationExecution.assessment_id == assessment_id).delete(synchronize_session=False)
+
+    # Delete old scan results and their execution records
+    old_scan_exec_ids = [row.id for row in db.query(ScanExecution).filter(
+        ScanExecution.assessment_id == assessment_id).all()]
+    if old_scan_exec_ids:
+        db.query(ScanResult).filter(
+            ScanResult.scan_execution_id.in_(old_scan_exec_ids)).delete(synchronize_session=False)
+        db.query(ScanExecution).filter(
+            ScanExecution.assessment_id == assessment_id).delete(synchronize_session=False)
+
+    # Delete old recon results and their execution records
+    old_recon_exec_ids = [row.id for row in db.query(ReconExecution).filter(
+        ReconExecution.assessment_id == assessment_id).all()]
+    if old_recon_exec_ids:
+        db.query(ReconResult).filter(
+            ReconResult.recon_execution_id.in_(old_recon_exec_ids)).delete(synchronize_session=False)
+        db.query(ReconExecution).filter(
+            ReconExecution.assessment_id == assessment_id).delete(synchronize_session=False)
+
+    db.commit()
+    # --- End purge ---
+
     exec_entry = ScanExecution(
         assessment_id=assessment_id,
         status="RUNNING"

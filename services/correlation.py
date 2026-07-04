@@ -12,12 +12,24 @@ def run_correlation_engine(db: Session, assessment_id: int):
     Correlates Recon and Scan findings with Threat Intelligence rules.
     Automatically identifies risks for DNS, DMARC, SPF, open ports, exposed directories, and Pixel leaks.
     """
+    # --- Purge old correlated findings for this assessment to prevent stacking ---
+    old_exec_ids = [row.id for row in db.query(CorrelationExecution).filter(
+        CorrelationExecution.assessment_id == assessment_id).all()]
+    if old_exec_ids:
+        db.query(CorrelatedFinding).filter(
+            CorrelatedFinding.correlation_execution_id.in_(old_exec_ids)).delete(synchronize_session=False)
+        db.query(CorrelationExecution).filter(
+            CorrelationExecution.assessment_id == assessment_id).delete(synchronize_session=False)
+    db.commit()
+    # --- End purge ---
+
     exec_entry = CorrelationExecution(
         assessment_id=assessment_id,
         status="RUNNING"
     )
     db.add(exec_entry)
     db.commit()
+
 
     # Get latest results
     recon_results = db.query(ReconResult).filter(ReconResult.assessment_id == assessment_id).all()
