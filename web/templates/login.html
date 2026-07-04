@@ -75,8 +75,29 @@
 
             <div class="form-group" style="margin-bottom: 1.5rem;">
                 <label>Password</label>
-                <input type="password" name="password" placeholder="••••••••" required>
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input id="login-password" type="password" name="password" placeholder="••••••••" required style="width: 100%; padding-right: 2.8rem;">
+                    <button type="button" id="toggle-login-pw" onclick="togglePassword('login-password','toggle-login-pw')" tabindex="-1"
+                        style="position: absolute; right: 0.75rem; background: none; border: none; cursor: pointer; color: var(--text-secondary); font-size: 1.1rem; padding: 0; line-height: 1; transition: color 0.2s;"
+                        title="Show / Hide password">👁</button>
+                </div>
             </div>
+
+            <script>
+                function togglePassword(inputId, btnId) {
+                    const input = document.getElementById(inputId);
+                    const btn   = document.getElementById(btnId);
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        btn.textContent = '🙈';
+                        btn.style.color = 'var(--primary)';
+                    } else {
+                        input.type = 'password';
+                        btn.textContent = '👁';
+                        btn.style.color = 'var(--text-secondary)';
+                    }
+                }
+            </script>
 
             <button type="submit" style="width: 100%; background-color: var(--accent); color: white;">Sign In</button>
         </form>
