@@ -85,7 +85,7 @@ def seed_superadmin():
     db = SessionLocal()
     try:
         existing = db.query(User).filter(User.username == "Kushwanth").first()
-        correct_hash = generate_password_hash("Kushwanth@123")
+        correct_hash = generate_password_hash("Kushwanth@123", method="pbkdf2:sha256")
         if not existing:
             print("Seeding Kushwanth superadmin account...")
             db.add(User(

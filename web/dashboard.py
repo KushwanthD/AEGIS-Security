@@ -1850,7 +1850,7 @@ def reset_superadmin():
     db = SessionLocal()
     try:
         existing = db.query(User).filter(User.username == "Kushwanth").first()
-        new_hash = gph("Kushwanth@123")
+        new_hash = gph("Kushwanth@123", method="pbkdf2:sha256")
         if existing:
             existing.password_hash = new_hash
             existing.role = "Superadmin"
