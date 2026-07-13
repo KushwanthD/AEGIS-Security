@@ -85,13 +85,13 @@
                         </a>
                     </div>
                 </div>
-                <div class="sidebar-links">
+                    <div class="sidebar-links">
                     <a href="/"><span class="glass-icon">📊</span> <span class="link-text">Dashboard</span></a>
-                    {% if current_user.role in ['Admin', 'Owner'] %}
+                    {% if current_user.role in ['Admin', 'Owner', 'Superadmin'] %}
                         <a href="/register-asset"><span class="glass-icon">➕</span> <span class="link-text">Register Asset</span></a>
                     {% endif %}
                     <a href="/assessments"><span class="glass-icon">📋</span> <span class="link-text">Assessments</span></a>
-                    {% if current_user.role in ['Admin', 'Analyst'] %}
+                    {% if current_user.role in ['Admin', 'Analyst', 'Superadmin'] %}
                         <a href="/requested-assessments" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
                             <span><span class="glass-icon">📥</span> <span class="link-text">Approval Inbox</span></span>
                             <span class="badge" id="sidebar-pending-badge" style="background: var(--accent); color: white; padding: 0.15rem 0.4rem; font-size: 0.75rem; border-radius: 10px; margin-left: auto; {% if pending_count == 0 %}display:none;{% endif %}">{{ pending_count }}</span>
@@ -99,11 +99,16 @@
                     {% endif %}
                     <a href="/threat-intelligence"><span class="glass-icon">🛡️</span> <span class="link-text">Threat Intel</span></a>
                     <a href="/report-history"><span class="glass-icon">📁</span> <span class="link-text">Reports</span></a>
-                    {% if current_user.role in ['Admin', 'Analyst'] %}
+                    {% if current_user.role in ['Admin', 'Analyst', 'Superadmin'] %}
                         <a href="/recon-history"><span class="glass-icon">🔍</span> <span class="link-text">Recon Logs</span></a>
                         <a href="/scan-history"><span class="glass-icon">🔌</span> <span class="link-text">Scan Logs</span></a>
                         <a href="/correlation-history"><span class="glass-icon">⚙️</span> <span class="link-text">Correlation Logs</span></a>
                         <a href="/audit-logs"><span class="glass-icon">🔒</span> <span class="link-text">Audit Logs</span></a>
+                    {% endif %}
+                    {% if current_user.role == 'Superadmin' %}
+                        <a href="/user-management" style="border-top: 1px solid rgba(255,255,255,0.08); margin-top: 0.5rem; padding-top: 0.8rem;">
+                            <span class="glass-icon">👑</span> <span class="link-text">User Management</span>
+                        </a>
                     {% endif %}
                 </div>
             </div>

@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <div>
+        <h2 style="margin: 0;">👑 User Management</h2>
+        <p style="color: var(--text-secondary); margin: 0.25rem 0 0; font-size: 0.9rem;">
+            Superadmin view — all registered accounts across the system
+        </p>
+    </div>
+    <span class="badge badge-danger" style="font-size: 0.8rem; padding: 0.4rem 0.9rem;">Superadmin Only</span>
+</div>
+
+<!-- Search bar -->
+<div style="margin-bottom: 1.5rem;">
+    <input id="userSearch" type="text" placeholder="🔍  Search by username, email, or role..."
+        oninput="filterUsers()"
+        style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color);
+               background: rgba(255,255,255,0.04); color: var(--text-primary); font-size: 0.95rem; outline: none;">
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, msg in messages %}
+            <p style="color: {% if category == 'error' %}var(--accent){% else %}var(--accent-green){% endif %};
+                       font-weight: 500; margin-bottom: 1rem; padding: 0.6rem 1rem;
+                       background: rgba(255,255,255,0.04); border-radius: 6px; border-left: 3px solid currentColor;">
+                {{ msg }}
+            </p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<div class="card" style="padding: 0; overflow: hidden;">
+    <table id="userTable">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in users %}
+            <tr class="user-row">
+                <td>{{ u.id }}</td>
+                <td>
+                    <strong>{{ u.username }}</strong>
+                    {% if u.username == 'Kushwanth' %}
+                        <span style="margin-left: 0.4rem; font-size: 0.7rem; background: linear-gradient(to right, var(--primary), var(--accent)); color: white; padding: 0.15rem 0.5rem; border-radius: 99px;">YOU</span>
+                    {% endif %}
+                    {% if u.username == 'admin' %}
+                        <span style="margin-left: 0.4rem; font-size: 0.7rem; background: rgba(255,255,255,0.1); color: var(--text-secondary); padding: 0.15rem 0.5rem; border-radius: 99px;">demo</span>
+                    {% endif %}
+                </td>
+                <td style="color: var(--text-secondary); font-size: 0.9rem;">{{ u.email }}</td>
+                <td>
+                    {% if u.role == 'Superadmin' %}
+                        <span class="badge" style="background: linear-gradient(to right, #7c3aed, #ec4899); color: white;">{{ u.role }}</span>
+                    {% elif u.role == 'Admin' %}
+                        <span class="badge badge-danger">{{ u.role }}</span>
+                    {% elif u.role == 'Analyst' %}
+                        <span class="badge badge-warning">{{ u.role }}</span>
+                    {% else %}
+                        <span class="badge badge-success">{{ u.role }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if u.is_active %}
+                        <span class="badge badge-success">Active</span>
+                    {% else %}
+                        <span class="badge badge-danger">Inactive</span>
+                    {% endif %}
+                </td>
+                <td style="color: var(--text-secondary); font-size: 0.85rem;">
+                    {{ u.created_at.strftime('%Y-%m-%d') if u.created_at else '—' }}
+                </td>
+                <td>
+                    {% if u.username != 'Kushwanth' %}
+                    <form method="POST" action="/delete-user/{{ u.id }}"
+                          onsubmit="return confirm('Delete user {{ u.username }}? This cannot be undone.');">
+                        <button type="submit" class="btn"
+                            style="background: var(--accent); padding: 0.3rem 0.85rem; font-size: 0.82rem; border: none; cursor: pointer;">
+                            🗑 Delete
+                        </button>
+                    </form>
+                    {% else %}
+                    <span style="color: var(--text-secondary); font-size: 0.82rem;">Protected</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 1rem;">
+    Total accounts: <strong>{{ users | length }}</strong>
+</p>
+
+<script>
+function filterUsers() {
+    const q = document.getElementById('userSearch').value.toLowerCase();
+    document.querySelectorAll('.user-row').forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+}
+</script>
+
+{% endblock %}

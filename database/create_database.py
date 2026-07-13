@@ -6,14 +6,28 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from database.connection import engine, SessionLocal, Base
 from database.models import User, ThreatIntel
+from werkzeug.security import generate_password_hash
+from sqlalchemy import text
+
+def run_migrations(db):
+    """Apply schema migrations not handled by create_all (e.g. new columns on existing tables)."""
+    try:
+        db.execute(text("ALTER TABLE Reports ADD COLUMN pdf_data BLOB"))
+        db.commit()
+        print("Migration: added pdf_data column to Reports.")
+    except Exception:
+        db.rollback()  # Column already exists — that's fine
 
 def init_db():
     print("Creating tables in database/aegis.db...")
     Base.metadata.create_all(engine)
-    
+
     db = SessionLocal()
     try:
-        # Check if threat intel needs seeding
+        # Run schema migrations for new columns on existing tables
+        run_migrations(db)
+
+        # Seed ThreatIntel if empty
         if db.query(ThreatIntel).count() == 0:
             print("Seeding ThreatIntel table...")
             seeds = [
@@ -45,22 +59,36 @@ def init_db():
             db.add_all(seeds)
             db.commit()
             print("ThreatIntel seeded successfully.")
-            
-        # Check if default admin needs seeding
+
+        # Seed demo admin account if no users exist at all
         if db.query(User).count() == 0:
-            print("Seeding default admin user...")
-            # Using simple text password_hash since password hashing function will be added in auth.py
+            print("Seeding default demo admin user...")
             admin = User(
                 username="admin",
                 email="admin@aegis.local",
-                password_hash="admin", # Plain text placeholder, auth module will auto-upgrade to pbkdf2 hash on first login
+                password_hash="admin",  # Auto-upgraded to pbkdf2 on first login
                 role="Admin",
                 is_active=True
             )
             db.add(admin)
             db.commit()
-            print("Admin user seeded successfully.")
-            
+            print("Demo admin user seeded successfully.")
+
+        # Seed Kushwanth superadmin account if it doesn't exist
+        existing_kush = db.query(User).filter(User.username == "Kushwanth").first()
+        if not existing_kush:
+            print("Seeding Kushwanth superadmin account...")
+            kush = User(
+                username="Kushwanth",
+                email="kushwanth@aegis.local",
+                password_hash=generate_password_hash("Kushwanth@123"),
+                role="Superadmin",
+                is_active=True
+            )
+            db.add(kush)
+            db.commit()
+            print("Kushwanth superadmin account created.")
+
         print("Database initialized and verified successfully.")
     except Exception as e:
         print(f"Error seeding database: {e}")

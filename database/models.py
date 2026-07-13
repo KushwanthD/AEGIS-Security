@@ -188,6 +188,7 @@ class Report(Base):
     assessment_id = Column(Integer, ForeignKey("Assessments.id"), nullable=False)
     report_type = Column(String, nullable=False) # TECHNICAL, EXECUTIVE
     file_name = Column(String, nullable=False)
+    pdf_data = Column("pdf_data", type_=__import__('sqlalchemy').LargeBinary, nullable=True)  # PDF bytes stored in DB
     created_at = Column(DateTime, server_default=func.now())
 
     assessment = relationship("Assessment", back_populates="reports")

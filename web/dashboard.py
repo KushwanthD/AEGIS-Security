@@ -1723,12 +1723,25 @@ def mark_notification_read(notification_id):
 def serve_pdf(filename):
     if not filename.endswith(".pdf") or ".." in filename:
         return "Access Denied", 403
-    
+
+    db = SessionLocal()
+    try:
+        report = db.query(Report).filter(Report.file_name == filename).order_by(Report.id.desc()).first()
+        if report and report.pdf_data:
+            return Response(
+                report.pdf_data,
+                mimetype='application/pdf',
+                headers={'Content-Disposition': f'inline; filename="{filename}"'}
+            )
+    finally:
+        db.close()
+
+    # Fallback: try disk
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     pdf_path = os.path.join(project_root, filename)
     if os.path.exists(pdf_path):
         return send_file(pdf_path, mimetype='application/pdf')
-    return "Report file not found", 404
+    return "Report not found. Please regenerate the report.", 404
 
 @dashboard_bp.route("/download-pdf/<path:filename>")
 @login_required
@@ -1736,11 +1749,24 @@ def download_pdf(filename):
     if not filename.endswith(".pdf") or ".." in filename:
         return "Access Denied", 403
 
+    db = SessionLocal()
+    try:
+        report = db.query(Report).filter(Report.file_name == filename).order_by(Report.id.desc()).first()
+        if report and report.pdf_data:
+            return Response(
+                report.pdf_data,
+                mimetype='application/pdf',
+                headers={'Content-Disposition': f'attachment; filename="{filename}"'}
+            )
+    finally:
+        db.close()
+
+    # Fallback: try disk
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     pdf_path = os.path.join(project_root, filename)
     if os.path.exists(pdf_path):
         return send_file(pdf_path, as_attachment=True)
-    return "Report file not found", 404
+    return "Report not found. Please regenerate the report.", 404
 
 @dashboard_bp.route("/high-risks-assessments")
 @login_required
@@ -1762,3 +1788,48 @@ def high_risks_assessments():
         db.close()
 
 
+# ─── Superadmin: User Management (Kushwanth only) ───────────────────────────
+
+@dashboard_bp.route("/user-management")
+@login_required
+def user_management():
+    if current_user.role != "Superadmin":
+        flash("Access Denied: Superadmin privileges required.", "error")
+        return redirect(url_for("dashboard.home"))
+    db = SessionLocal()
+    try:
+        users = db.query(User).order_by(User.id).all()
+        return render_template("user_management.html", users=users)
+    finally:
+        db.close()
+
+@dashboard_bp.route("/delete-user/<int:user_id>", methods=["POST"])
+@login_required
+def delete_user(user_id):
+    if current_user.role != "Superadmin":
+        flash("Access Denied: Superadmin privileges required.", "error")
+        return redirect(url_for("dashboard.home"))
+    if user_id == current_user.id:
+        flash("You cannot delete your own account.", "error")
+        return redirect(url_for("dashboard.user_management"))
+    db = SessionLocal()
+    try:
+        target_user = db.query(User).filter(User.id == user_id).first()
+        if not target_user:
+            flash("User not found.", "error")
+            return redirect(url_for("dashboard.user_management"))
+        username = target_user.username
+        db.delete(target_user)
+        db.add(AuditLog(
+            user_id=current_user.id,
+            event_type="USER_DELETED",
+            event_details=f"Superadmin {current_user.username} deleted user: {username} (ID {user_id})."
+        ))
+        db.commit()
+        flash(f"User '{username}' has been deleted.", "success")
+    except Exception as e:
+        db.rollback()
+        flash(f"Error deleting user: {str(e)}", "error")
+    finally:
+        db.close()
+    return redirect(url_for("dashboard.user_management"))

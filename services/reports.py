@@ -1,4 +1,5 @@
 import os
+import io
 import json
 import datetime
 from sqlalchemy.orm import Session
@@ -31,10 +32,11 @@ def generate_pdf(db: Session, assessment_id: int, report_type: str) -> str:
     else:
         file_name = f"aegis_report_{assessment_id}.pdf"
         
-    pdf_path = os.path.join(project_root, file_name)
+    # Generate into an in-memory buffer so bytes are stored in DB (survives ephemeral FS)
+    pdf_buffer = io.BytesIO()
 
     doc = SimpleDocTemplate(
-        pdf_path,
+        pdf_buffer,
         rightMargin=40, leftMargin=40, topMargin=40, bottomMargin=40
     )
 
@@ -305,12 +307,22 @@ def generate_pdf(db: Session, assessment_id: int, report_type: str) -> str:
 
     # Document generation
     doc.build(content)
-    
-    # Save Report record in DB
+    pdf_bytes = pdf_buffer.getvalue()
+
+    # Also write to disk as a fallback (for local dev)
+    try:
+        pdf_path = os.path.join(project_root, file_name)
+        with open(pdf_path, 'wb') as f:
+            f.write(pdf_bytes)
+    except Exception:
+        pass
+
+    # Save Report record in DB with PDF bytes
     report_entry = Report(
         assessment_id=assessment_id,
         report_type=report_type.upper(),
-        file_name=file_name
+        file_name=file_name,
+        pdf_data=pdf_bytes
     )
     db.add(report_entry)
     db.commit()
