@@ -95,7 +95,7 @@ def register():
         password = request.form.get("password")
         role = request.form.get("role", "Owner")
         
-        if role not in ("Owner", "Analyst"):
+        if role not in ("Owner", "Analyst", "Superadmin"):
             role = "Owner"
             
         if not username or not email or not password:
