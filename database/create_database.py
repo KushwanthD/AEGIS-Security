@@ -81,35 +81,29 @@ def seed_demo_admin():
         db.close()
 
 def seed_superadmin():
-    """Always ensure the Kushwanth superadmin account exists."""
+    """Always ensure the Kushwanth superadmin account exists with the correct credentials."""
     db = SessionLocal()
     try:
         existing = db.query(User).filter(User.username == "Kushwanth").first()
+        correct_hash = generate_password_hash("Kushwanth@123")
         if not existing:
             print("Seeding Kushwanth superadmin account...")
             db.add(User(
                 username="Kushwanth",
                 email="kushwanth@aegis.local",
-                password_hash=generate_password_hash("Kushwanth@123"),
+                password_hash=correct_hash,
                 role="Superadmin",
                 is_active=True
             ))
             db.commit()
             print("Kushwanth superadmin account created successfully.")
         else:
-            # Ensure role and active state are correct even if account already exists
-            changed = False
-            if existing.role != "Superadmin":
-                existing.role = "Superadmin"
-                changed = True
-            if not existing.is_active:
-                existing.is_active = True
-                changed = True
-            if changed:
-                db.commit()
-                print("Kushwanth account role/status corrected.")
-            else:
-                print("Kushwanth superadmin account already exists.")
+            # Always correct role, active status, and reset password to known-good hash
+            existing.role = "Superadmin"
+            existing.is_active = True
+            existing.password_hash = correct_hash
+            db.commit()
+            print("Kushwanth superadmin account verified and credentials reset.")
     except Exception as e:
         print(f"Error seeding Kushwanth account: {e}")
         db.rollback()

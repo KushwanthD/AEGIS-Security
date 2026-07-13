@@ -1833,3 +1833,39 @@ def delete_user(user_id):
     finally:
         db.close()
     return redirect(url_for("dashboard.user_management"))
+
+
+# ─── Emergency: Force-reset Kushwanth superadmin (one-time URL call) ─────────
+
+@dashboard_bp.route("/reset-superadmin")
+def reset_superadmin():
+    """
+    Emergency route: creates or resets the Kushwanth superadmin account directly in the DB.
+    Safe to call multiple times. No authentication required (needed to recover locked-out admin).
+    """
+    from werkzeug.security import generate_password_hash as gph
+    db = SessionLocal()
+    try:
+        existing = db.query(User).filter(User.username == "Kushwanth").first()
+        new_hash = gph("Kushwanth@123")
+        if existing:
+            existing.password_hash = new_hash
+            existing.role = "Superadmin"
+            existing.is_active = True
+            db.commit()
+            return "<h2 style='font-family:sans-serif;color:green'>✅ Kushwanth superadmin password RESET successfully.<br><a href='/login'>Go to Login</a></h2>", 200
+        else:
+            db.add(User(
+                username="Kushwanth",
+                email="kushwanth@aegis.local",
+                password_hash=new_hash,
+                role="Superadmin",
+                is_active=True
+            ))
+            db.commit()
+            return "<h2 style='font-family:sans-serif;color:green'>✅ Kushwanth superadmin account CREATED successfully.<br><a href='/login'>Go to Login</a></h2>", 200
+    except Exception as e:
+        db.rollback()
+        return f"<h2 style='color:red'>Error: {str(e)}</h2>", 500
+    finally:
+        db.close()
