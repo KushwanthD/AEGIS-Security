@@ -1873,3 +1873,25 @@ def reset_superadmin():
     finally:
         db.close()
 
+@dashboard_bp.route("/debug-login")
+def debug_login():
+    if request.args.get("token") != "aegis-kush-2026":
+        return "403", 403
+    from werkzeug.security import check_password_hash as cph
+    db = SessionLocal()
+    try:
+        u = db.query(User).filter(User.username == "Kushwanth").first()
+        if not u:
+            return "<pre>USER NOT FOUND IN DB</pre>"
+        test_result = cph(u.password_hash, "Kushwanth@123")
+        return f"""<pre>
+username    : {u.username}
+role        : {u.role}
+is_active   : {u.is_active}
+hash_method : {u.password_hash[:40]}...
+check_result: {test_result}
+</pre>"""
+    finally:
+        db.close()
+
+
