@@ -31,11 +31,14 @@ def login():
 
         db = SessionLocal()
         try:
-            # Query case-insensitively to prevent casing login issues
-            from sqlalchemy import func
-            user = db.query(User).filter(func.lower(User.username) == func.lower(username)).first()
+            # Query exactly first to prioritize casing matches (e.g., 'kushwanth' vs 'Kushwanth')
+            user = db.query(User).filter(User.username == username).first()
+            if not user:
+                from sqlalchemy import func
+                user = db.query(User).filter(func.lower(User.username) == func.lower(username)).first()
             
             if user:
+
                 is_valid = False
                 if ":" in user.password_hash:
                     # Standard Werkzeug hash check (supports pbkdf2, scrypt, etc.)
