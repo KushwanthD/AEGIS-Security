@@ -110,6 +110,26 @@ def seed_superadmin():
     finally:
         db.close()
 
+def purge_stale_threat_intel_logs():
+    """Purges old THREAT_FEED_REFRESH logs on startup to keep the database size down."""
+    db = SessionLocal()
+    try:
+        from database.models import AuditLog
+        # Keep only the single latest log entry so that age tracking works, delete the rest
+        last_log = db.query(AuditLog).filter(AuditLog.event_type == "THREAT_FEED_REFRESH").order_by(AuditLog.id.desc()).first()
+        if last_log:
+            db.query(AuditLog).filter(
+                AuditLog.event_type == "THREAT_FEED_REFRESH",
+                AuditLog.id != last_log.id
+            ).delete(synchronize_session=False)
+            db.commit()
+            print("Purged duplicate/repetitive threat intelligence sync logs.")
+    except Exception as e:
+        print(f"Error purging threat intel logs: {e}")
+        db.rollback()
+    finally:
+        db.close()
+
 def init_db():
     print("Creating tables...")
     Base.metadata.create_all(engine)
@@ -119,6 +139,7 @@ def init_db():
     seed_threat_intel()
     seed_demo_admin()
     seed_superadmin()
+    purge_stale_threat_intel_logs()
 
     print("Database initialization complete.")
 

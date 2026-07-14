@@ -1526,7 +1526,7 @@ def report_history():
 def audit_logs():
     db = SessionLocal()
     try:
-        logs = db.query(AuditLog).order_by(AuditLog.id.desc()).all()
+        logs = db.query(AuditLog).filter(AuditLog.event_type != "THREAT_FEED_REFRESH").order_by(AuditLog.id.desc()).all()
         logs_list = [(l.id, l.assessment_id, l.event_type, l.event_details, l.created_at.strftime("%Y-%m-%d %H:%M")) for l in logs]
         return render_template("audit_logs.html", logs=logs_list)
     finally:
