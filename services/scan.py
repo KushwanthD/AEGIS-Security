@@ -751,39 +751,135 @@ def run_nikto_scan(db: Session, assessment_id: int, scan_execution_id: int, targ
         db.commit()
 
 def run_dirb_scan(db: Session, assessment_id: int, scan_execution_id: int, target: str):
-    """Audits target for exposed administrative or critical directory paths (Dirb/Gobuster style)."""
+    """
+    Enhanced Web Crawler & Directory Audit (Dirb/Gobuster style).
+    Crawls internal links recursively up to depth 2 to discover pages, 
+    and checks all discovered endpoints for exposed secrets, repositories, or backup configurations (.env, .git/config, etc.).
+    """
     import requests
+    from urllib.parse import urlparse, urljoin
+    from bs4 import BeautifulSoup
+
     clean_target = target if target.startswith("http") else f"https://{target}"
-    common_paths = ["/admin", "/login", "/config.json", "/backup.zip", "/.git/config"]
-    findings_created = 0
+    base_parsed = urlparse(clean_target)
     
+    # Files/Paths to audit
+    sensitive_paths = [
+        "/.env", "/.git/config", "/.git/HEAD", "/config.json", "/wp-config.php", 
+        "/config.php", "/secrets.json", "/credentials.json", "/database.sqlite", 
+        "/backup.zip", "/backup.sql", "/dump.sql", "/passwords.txt", "/users.csv"
+    ]
+    
+    crawled_urls = set()
+    to_crawl = [clean_target]
+    discovered_dirs = set(["/"])
+
+    # 1. Recursive Web Crawler (Depth 2 limit)
     try:
-        for path in common_paths:
-            url = f"{clean_target.rstrip('/')}{path}"
+        current_depth = 0
+        max_depth = 2
+        pages_limit = 15 # Avoid infinite loops
+        
+        while to_crawl and len(crawled_urls) < pages_limit and current_depth < max_depth:
+            next_level = []
+            for url in to_crawl:
+                if url in crawled_urls or len(crawled_urls) >= pages_limit:
+                    continue
+                crawled_urls.add(url)
+                
+                try:
+                    res = requests.get(url, timeout=4, headers={"User-Agent": "AEGIS-Crawler/1.0"})
+                    if res.status_code == 200:
+                        # Extract directory paths from the URL structure to fuzz later
+                        parsed_url = urlparse(url)
+                        path_parts = parsed_url.path.strip("/").split("/")
+                        current_path = "/"
+                        for part in path_parts:
+                            if part and not part.endswith((".html", ".php", ".js", ".css")):
+                                current_path = urljoin(current_path, part + "/")
+                                discovered_dirs.add(current_path)
+
+                        # Extract new links for recursive crawling
+                        soup = BeautifulSoup(res.text, "html.parser")
+                        for a_tag in soup.find_all("a", href=True):
+                            href = a_tag["href"]
+                            full_url = urljoin(url, href)
+                            parsed_full = urlparse(full_url)
+                            
+                            # Stay within the target domain
+                            if parsed_full.netloc == base_parsed.netloc:
+                                clean_url = full_url.split("?")[0].split("#")[0].rstrip("/")
+                                if clean_url not in crawled_urls:
+                                    next_level.append(full_url)
+                except Exception:
+                    pass
+            to_crawl = next_level
+            current_depth += 1
+    except Exception as e:
+        print(f"Crawler failure: {e}")
+
+    # 2. Exposed Repo / File Audit on discovered paths
+    findings_created = 0
+    audited_urls = set()
+    
+    # Deduplicate directory paths to fuzz
+    fuzz_bases = [clean_target.rstrip("/")]
+    for d in discovered_dirs:
+        if d != "/":
+            fuzz_bases.append(urljoin(clean_target, d).rstrip("/"))
+
+    for base in fuzz_bases[:5]: # Limit base directories to scan to prevent rate limits/timeouts
+        for path in sensitive_paths:
+            test_url = f"{base}{path}"
+            if test_url in audited_urls:
+                continue
+            audited_urls.add(test_url)
+            
             try:
-                res = requests.get(url, timeout=3)
-                if res.status_code in (200, 403):
-                    severity = "MEDIUM" if res.status_code == 403 else "HIGH"
-                    category = "Security Misconfiguration"
-                    title = f"Exposed Directory Path Discovered: {path}"
-                    desc = f"Path {path} returned HTTP {res.status_code}. Exposed administrative dashboards, repository files, or system configuration endpoints can lead to data exposure and compromise."
+                # Use a lightweight HEAD request first to verify existence
+                res = requests.head(test_url, timeout=3, allow_redirects=False)
+                status = res.status_code
+                
+                # Double check with GET if HEAD is not allowed/returns 405
+                if status == 405:
+                    res = requests.get(test_url, timeout=3)
+                    status = res.status_code
+
+                if status in (200, 403):
+                    # Check if it's not a generic custom 200 error page
+                    is_real = True
+                    if status == 200:
+                        # Fetch snippet of the response content to check for false positives
+                        get_res = requests.get(test_url, timeout=3)
+                        content = get_res.text.lower()
+                        # If it contains generic page templates, it's likely a soft 404
+                        if "<html" in content and "page not found" in content:
+                            is_real = False
                     
-                    db.add(ScanResult(
-                        assessment_id=assessment_id,
-                        scan_execution_id=scan_execution_id,
-                        tool_name="Dirb",
-                        finding_title=title,
-                        finding_category=category,
-                        severity=severity,
-                        description=desc,
-                        evidence=f"GET {url} -> HTTP {res.status_code}"
-                    ))
-                    findings_created += 1
+                    if is_real:
+                        severity = "CRITICAL" if any(x in path for x in (".env", "password", "secret", ".git")) else "HIGH"
+                        if status == 403:
+                            severity = "MEDIUM"
+                            
+                        desc = f"Sensitive file or repository configuration '{path}' discovered at '{test_url}' (HTTP Status: {status}). "
+                        desc += "Exposing these endpoints leaks database credentials, API secrets, source code repos, or system configurations."
+                        
+                        db.add(ScanResult(
+                            assessment_id=assessment_id,
+                            scan_execution_id=scan_execution_id,
+                            tool_name="Dirb Web Crawler",
+                            finding_title=f"Exposed System File: {path}",
+                            finding_category="Information Disclosure",
+                            severity=severity,
+                            description=desc,
+                            evidence=f"GET {test_url} -> HTTP {status}"
+                        ))
+                        findings_created += 1
             except Exception:
                 pass
-        db.commit()
-    except Exception as e:
-        print(f"Dirb scan failed: {e}")
+                
+    db.commit()
+    print(f"Crawler/Dirb scan completed. Found {findings_created} exposed files/paths.")
 
 def run_dependency_check(db: Session, assessment_id: int, scan_execution_id: int, target: str):
     """Scans application packages against Snyk and NVD database definitions."""
@@ -812,29 +908,95 @@ def run_dependency_check(db: Session, assessment_id: int, scan_execution_id: int
         db.commit()
 
 def run_sqlmap_probe(db: Session, assessment_id: int, scan_execution_id: int, target: str):
-    """Probes target web forms for SQL Injection vulnerabilities (SQLmap style)."""
+    """Probes target web login forms and endpoints for SQL Injection vulnerabilities (SQLmap style)."""
     import requests
     clean_target = target if target.startswith("http") else f"https://{target}"
-    url = f"{clean_target.rstrip('/')}/login?user=admin' OR 1=1--"
+    
+    # Common login and form injection test payloads
+    payloads = [
+        "admin' OR '1'='1",
+        "admin' OR 1=1--",
+        "' UNION SELECT NULL, NULL, NULL--",
+        "admin' AND 1=0 UNION ALL SELECT 'admin', 'pass'--"
+    ]
+    
+    endpoints = ["/login", "/api/login", "/auth/login"]
+    db_errors = [
+        "sql syntax", "mysql_fetch", "sqlite3.OperationalError", 
+        "driver error", "unclosed quotation mark", "postgre"
+    ]
+    
     try:
-        res = requests.get(url, timeout=3)
-        db_errors = ["sql syntax", "mysql_fetch", "sqlite3.OperationalError", "driver error"]
-        for err in db_errors:
-            if err in res.text.lower():
-                db.add(ScanResult(
-                    assessment_id=assessment_id,
-                    scan_execution_id=scan_execution_id,
-                    tool_name="SQLmap",
-                    finding_title="SQL Injection Vulnerability Detected",
-                    finding_category="Injection Vulnerability",
-                    severity="CRITICAL",
-                    description=f"SQL Injection vulnerability discovered via URL query parameter fuzzing. The database returned a syntax error indicator: '{err}'.",
-                    evidence=f"Payload: ' OR 1=1-- -> Response contains: '{err}'"
-                ))
-                db.commit()
-                return
-    except Exception:
-        pass
+        for ep in endpoints:
+            url = f"{clean_target.rstrip('/')}{ep}"
+            for payload in payloads:
+                # 1. Test GET parameters (Query Injection)
+                try:
+                    res_get = requests.get(url, params={"username": payload, "password": "password"}, timeout=3)
+                    for err in db_errors:
+                        if err in res_get.text.lower():
+                            db.add(ScanResult(
+                                assessment_id=assessment_id,
+                                scan_execution_id=scan_execution_id,
+                                tool_name="SQLmap Form Auditor",
+                                finding_title="SQL Injection Vulnerability Detected (GET)",
+                                finding_category="Injection Vulnerability",
+                                severity="CRITICAL",
+                                description=f"SQL Injection vulnerability discovered via query parameters at '{ep}'. Database returned: '{err}'.",
+                                evidence=f"GET {url}?username={payload} -> Response contains: '{err}'"
+                            ))
+                            db.commit()
+                            return
+                except Exception:
+                    pass
+
+                # 2. Test POST requests (Form Authentication Injection)
+                try:
+                    res_post = requests.post(url, data={"username": payload, "password": "password"}, timeout=3)
+                    for err in db_errors:
+                        if err in res_post.text.lower():
+                            db.add(ScanResult(
+                                assessment_id=assessment_id,
+                                scan_execution_id=scan_execution_id,
+                                tool_name="SQLmap Form Auditor",
+                                finding_title="SQL Injection Vulnerability Detected (POST Form)",
+                                finding_category="Injection Vulnerability",
+                                severity="CRITICAL",
+                                description=f"POST SQL Injection vulnerability discovered in the authentication fields at '{ep}'. Database returned: '{err}'.",
+                                evidence=f"POST {url} with username={payload} -> Response contains: '{err}'"
+                            ))
+                            db.commit()
+                            return
+                except Exception:
+                    pass
+
+                # 3. Test JSON POST request (API endpoint)
+                try:
+                    res_json = requests.post(
+                        url, 
+                        json={"username": payload, "password": "password"}, 
+                        headers={"Content-Type": "application/json"},
+                        timeout=3
+                    )
+                    for err in db_errors:
+                        if err in res_json.text.lower():
+                            db.add(ScanResult(
+                                assessment_id=assessment_id,
+                                scan_execution_id=scan_execution_id,
+                                tool_name="SQLmap Form Auditor",
+                                finding_title="SQL Injection Vulnerability Detected (POST JSON)",
+                                finding_category="Injection Vulnerability",
+                                severity="CRITICAL",
+                                description=f"JSON POST SQL Injection vulnerability discovered in the API authentication fields at '{ep}'. Database returned: '{err}'.",
+                                evidence=f"POST JSON {url} with username={payload} -> Response contains: '{err}'"
+                            ))
+                            db.commit()
+                            return
+                except Exception:
+                    pass
+    except Exception as e:
+        print(f"SQLmap probe warning: {e}")
+
 
 def execute_security_scans(db: Session, assessment_id: int, target: str):
     """Orchestrator for Nmap, Playwright Pixel, SSL/TLS, and HTTP Headers auditing scans."""

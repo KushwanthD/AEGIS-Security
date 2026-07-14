@@ -7,3 +7,5 @@ dnspython
 playwright
 openpyxl
 gunicorn
+beautifulsoup4
+
