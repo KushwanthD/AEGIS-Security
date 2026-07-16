@@ -353,27 +353,42 @@ def generate_pdf(db: Session, assessment_id: int, report_type: str) -> str:
             content.append(Spacer(1, 4))
         content.append(Spacer(1, 8))
 
-        content.append(Spacer(1, 10))
-
-        # 5. Code & Dependencies Audit (Snyk / OWASP Dependency Check)
+        # 5. Code & Dependencies Audit (Snyk)
         content.append(Paragraph("5. Code & Dependency Audit (Snyk)", h1_style))
         content.append(Paragraph(
             "<b>What We Tested:</b> Software composition analysis (SCA) of active dependencies.<br/>"
-            "<b>What We Looked For:</b> Libraries matching open vulnerability reports (CVE entries) in the National Vulnerability Database (NVD) or Snyk vulnerability catalog.", body_style
+            "<b>What We Looked For:</b> Libraries matching open vulnerability reports (CVE entries) in the National Vulnerability Database (NVD) or Snyk catalog, cross-referencing real-time exploit intelligence (EPSS probability values).", body_style
         ))
         snyk_results = [s for s in scan_results if s.tool_name == "Snyk"]
         if snyk_results:
             for s in snyk_results:
+                eps_str = f"Exploit Probability: {s.epss_score * 100:.2f}% (Percentile: {s.epss_percentile * 100:.2f}%)" if s.epss_score else "Exploit Probability: Unknown"
                 content.append(Paragraph(f"<b>Result:</b> <font color='orange'><b>{s.severity}</b></font> - {s.finding_title}", body_style))
                 content.append(Paragraph(s.description.replace("\n", "<br/>"), body_style))
+                content.append(Paragraph(f"<b>Predictive Risk:</b> {eps_str}", body_style))
                 content.append(Spacer(1, 4))
         else:
             content.append(Paragraph("<b>Result:</b> <font color='green'><b>PASS</b></font> - Scanned requirements list contains no vulnerabilities matching known CVE database listings.", body_style))
         
         content.append(Spacer(1, 10))
 
-        # 6. DNS Reconnaissance (DNSRecon / Amass / Sublist3r)
-        content.append(Paragraph("6. Domain Intelligence & DNS Recon (DNSRecon)", h1_style))
+        # 6. SSH Host Auditing (Authenticated Compliance)
+        content.append(Paragraph("6. Operating System Configuration & Local Patch Compliance (SSH Auditor)", h1_style))
+        content.append(Paragraph(
+            "<b>What We Tested:</b> Secure SSH remote execution audits.<br/>"
+            "<b>What We Looked For:</b> Outdated host packages (unpatched kernels, libraries), vulnerable daemon version configurations, and compliance alignment metrics.", body_style
+        ))
+        ssh_results = [s for s in scan_results if s.tool_name == "SSH Authenticated Auditor"]
+        for s in ssh_results:
+            color = "orange" if s.severity == "MEDIUM" else "green"
+            content.append(Paragraph(f"<b>Result:</b> <font color='{color}'><b>{s.severity}</b></font> - {s.finding_title}", body_style))
+            content.append(Paragraph(s.description.replace("\n", "<br/>"), body_style))
+            content.append(Paragraph(f"Evidence output snippet:\n{s.evidence[:300]}...", code_style))
+            content.append(Spacer(1, 4))
+        content.append(Spacer(1, 8))
+
+        # 7. DNS Reconnaissance (DNSRecon / Amass / Sublist3r)
+        content.append(Paragraph("7. Domain Intelligence & DNS Recon (DNSRecon)", h1_style))
         content.append(Paragraph(
             "<b>What We Tested:</b> DNS resolver zone queries.<br/>"
             "<b>What We Looked For:</b> Unsecured zones, active MX server routing parameters, and valid email security configurations (DMARC / SPF records).", body_style
@@ -385,8 +400,8 @@ def generate_pdf(db: Session, assessment_id: int, report_type: str) -> str:
 
         content.append(PageBreak())
 
-        # 7. Technical Audit Log
-        content.append(Paragraph("7. Assessment Technical Audit Trail", h1_style))
+        # 8. Technical Audit Log
+        content.append(Paragraph("8. Assessment Technical Audit Trail", h1_style))
         audit_rows = [["Timestamp", "System Log Event Type", "Details"]]
         for log in audit_logs:
             audit_rows.append([
@@ -406,6 +421,7 @@ def generate_pdf(db: Session, assessment_id: int, report_type: str) -> str:
             ('TOPPADDING', (0, 0), (-1, -1), 4),
         ]))
         content.append(audit_table)
+
 
     # Document generation
     doc.build(content)

@@ -323,6 +323,39 @@ def run_correlation_engine(db: Session, assessment_id: int):
                             ))
                             findings_created += 1
 
+    # Rule 12: Snyk Dependency Vulnerability & FIRST.org EPSS Predictive Score Correlation
+    snyk_findings = [s for s in scan_results if s.tool_name == "Snyk"]
+    for sf in snyk_findings:
+        epss_score = sf.epss_score
+        epss_percent_val = sf.epss_percentile
+        
+        risk_level = sf.severity
+        if epss_score and epss_score > 0.05:
+            risk_level = "CRITICAL"
+            
+        prob_str = f"{epss_score * 100:.2f}%" if epss_score is not None else "Unknown"
+        percentile_str = f"{epss_percent_val * 100:.2f}%" if epss_percent_val is not None else "Unknown"
+        
+        reason = (
+            f"A vulnerable package dependency was flagged during scanning. "
+            f"Exploit Prediction Scoring System (EPSS) calculated real-time threat probability: {prob_str} "
+            f"(Percentile: {percentile_str})."
+        )
+        if risk_level == "CRITICAL":
+            reason += " This vulnerability is elevated to CRITICAL due to an active, high probability of real-world exploitation."
+            
+        db.add(CorrelatedFinding(
+            assessment_id=assessment_id,
+            correlation_execution_id=exec_entry.id,
+            correlation_title=f"Predictive Threat: Software Dependency Vulnerability ({sf.finding_title})",
+            risk_level=risk_level,
+            correlation_reason=reason,
+            recommended_action="Update the vulnerable library package (e.g., 'requests') to the latest version immediately, or replace it with a secure alternative.",
+            epss_score=epss_score,
+            epss_percentile=epss_percent_val
+        ))
+        findings_created += 1
+
     # Complete correlation execution
     exec_entry.status = "COMPLETED"
     exec_entry.completed_at = datetime.datetime.now()
@@ -335,3 +368,4 @@ def run_correlation_engine(db: Session, assessment_id: int):
     db.commit()
 
     print(f"Correlation completed. Findings generated: {findings_created}")
+

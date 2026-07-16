@@ -184,8 +184,124 @@
     {% endif %}
 </div>
 
+{% if network_edges %}
+<!-- Topological Attack Path Mapping Card -->
+<div class="card" style="margin-top: 2rem;">
+    <h3>🕸️ Attack Path & Pivoting Topography</h3>
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.9rem;">
+        Interactive node graph illustrating external-to-internal network paths. Highlighted <font color="#ef4444"><b>red</b></font> nodes identify vulnerable assets with critical exposure weights.
+    </p>
+    
+    <div id="topology-map-canvas" style="width: 100%; height: 380px; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; position: relative;"></div>
+</div>
+
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const rawEdges = {{ network_edges | tojson }};
+    const nodeSet = new Set();
+    const edges = [];
+
+    // Parse distinct nodes and dynamic edges from backend list
+    rawEdges.forEach(edge => {
+        nodeSet.add(edge.source);
+        nodeSet.add(edge.target);
+        
+        let labelText = "";
+        if (edge.port) labelText += "Port " + edge.port;
+        if (edge.protocol) labelText += " (" + edge.protocol + ")";
+
+        edges.push({
+            from: edge.source,
+            to: edge.target,
+            label: labelText,
+            font: { color: '#a855f7', size: 9, face: 'Courier New', strokeWidth: 0, background: 'rgba(0,0,0,0.6)' },
+            arrows: 'to',
+            color: { color: edge.weight > 2.0 ? '#ef4444' : '#8b5cf6', highlight: '#a855f7' },
+            width: edge.weight > 2.0 ? 3 : 1.5,
+            length: 180
+        });
+    });
+
+    const nodes = [];
+    nodeSet.forEach(nodeName => {
+        let isCritical = false;
+        let isInternet = nodeName === "External Internet";
+        
+        // Find if target node is linked via heavy risk weights (e.g. SQLi / disclosures)
+        rawEdges.forEach(e => {
+            if (e.target === nodeName && e.weight > 2.0) {
+                isCritical = true;
+            }
+        });
+
+        let bgColor = "rgba(139, 92, 246, 0.15)";
+        let borderColor = "#8b5cf6";
+        let shadowColor = "rgba(139, 92, 246, 0.3)";
+
+        if (isInternet) {
+            bgColor = "rgba(34, 197, 94, 0.1)";
+            borderColor = "#22c55e";
+            shadowColor = "rgba(34, 197, 94, 0.2)";
+        } else if (isCritical) {
+            bgColor = "rgba(239, 68, 68, 0.2)";
+            borderColor = "#ef4444";
+            shadowColor = "rgba(239, 68, 68, 0.4)";
+        }
+
+        nodes.push({
+            id: nodeName,
+            label: nodeName,
+            shape: 'box',
+            margin: 12,
+            font: { color: '#ffffff', face: 'Outfit, sans-serif', size: 12, bold: true },
+            color: {
+                background: bgColor,
+                border: borderColor,
+                highlight: { background: bgColor, border: '#a855f7' },
+                hover: { background: bgColor, border: '#a855f7' }
+            },
+            shadow: {
+                enabled: true,
+                color: shadowColor,
+                size: 8,
+                x: 0,
+                y: 0
+            },
+            borderWidth: 2,
+            borderWidthSelected: 3
+        });
+    });
+
+    const container = document.getElementById('topology-map-canvas');
+    const data = {
+        nodes: new vis.DataSet(nodes),
+        edges: new vis.DataSet(edges)
+    };
+    const options = {
+        physics: {
+            stabilization: true,
+            barnesHut: {
+                gravitationalConstant: -2000,
+                centralGravity: 0.3,
+                springLength: 150,
+                springConstant: 0.04
+            }
+        },
+        interaction: {
+            hover: true,
+            dragNodes: true,
+            zoomView: true
+        }
+    };
+    new vis.Network(container, data, options);
+});
+</script>
+{% endif %}
+
 <div style="margin-top: 2rem;">
     <a href="/assessments" class="btn btn-secondary">Back to Assessments List</a>
 </div>
 
 {% endblock %}
+

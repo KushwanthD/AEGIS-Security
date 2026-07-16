@@ -8,4 +8,5 @@ playwright
 openpyxl
 gunicorn
 beautifulsoup4
+paramiko
 

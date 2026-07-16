@@ -17,6 +17,15 @@
             </small>
         </div>
 
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">SSH Host Auditing Credentials (Optional JSON)</label>
+            <textarea name="ssh_credentials" placeholder='e.g. {"username": "ubuntu", "password": "password123", "port": 22}' style="width: 100%; height: 80px; background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: 6px; color: white; padding: 0.75rem; font-family: monospace; font-size: 0.85rem; outline: none;"></textarea>
+            <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem; font-size: 0.8rem;">
+                Optional. Supply JSON configurations (username, password, private_key, or port) to run authenticated OS patch auditing checks.
+            </small>
+        </div>
+
+
         <div style="display: flex; gap: 1rem; margin-top: 2rem;">
             <button type="submit" style="background-color: var(--accent); color: white;">Register & Authenticate Asset</button>
             <a href="/" class="btn btn-secondary">Cancel</a>

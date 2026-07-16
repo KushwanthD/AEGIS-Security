@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Text, func
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Text, Float, func
 from sqlalchemy.orm import relationship
 from .connection import Base
 from flask_login import UserMixin
@@ -29,6 +29,7 @@ class Asset(Base):
     verification_method = Column(String, nullable=True) # DNS, FILE
     verification_date = Column(DateTime, nullable=True)
     is_active = Column(Boolean, nullable=False, default=True)
+    ssh_credentials = Column(Text, nullable=True) # JSON configuration for SSH host audits
     created_at = Column(DateTime, server_default=func.now())
 
     user = relationship("User", back_populates="assets")
@@ -138,6 +139,8 @@ class ScanResult(Base):
     severity = Column(String, nullable=True) # CRITICAL, HIGH, MEDIUM, LOW, INFO
     description = Column(Text, nullable=True)
     evidence = Column(Text, nullable=True) # JSON encoded data for pixel audit
+    epss_score = Column(Float, nullable=True) # FIRST.org EPSS exploit probability
+    epss_percentile = Column(Float, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
 
     scan_execution = relationship("ScanExecution", back_populates="scan_results")
@@ -164,6 +167,8 @@ class CorrelatedFinding(Base):
     risk_level = Column(String, nullable=False) # CRITICAL, HIGH, MEDIUM, LOW, INFO
     correlation_reason = Column(Text, nullable=False)
     recommended_action = Column(Text, nullable=False)
+    epss_score = Column(Float, nullable=True)
+    epss_percentile = Column(Float, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
 
     assessment = relationship("Assessment", back_populates="correlated_findings")
@@ -218,3 +223,21 @@ class Notification(Base):
     read = Column(Boolean, nullable=False, default=False)
     link = Column(String, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
+
+class NetworkEdge(Base):
+    __tablename__ = "NetworkEdges"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    assessment_id = Column(Integer, ForeignKey("Assessments.id"), nullable=False)
+    source = Column(String, nullable=False) # e.g. "Internet", "Web Server"
+    target = Column(String, nullable=False) # e.g. "Web Server", "Database Server"
+    port = Column(Integer, nullable=True)
+    protocol = Column(String, nullable=True) # e.g. "HTTPS", "SSH"
+    risk_weight = Column(Float, default=1.0)
+    created_at = Column(DateTime, server_default=func.now())
+
+    assessment = relationship("Assessment", back_populates="network_edges")
+
+# Add relation inside Assessment class
+Assessment.network_edges = relationship("NetworkEdge", back_populates="assessment", cascade="all, delete-orphan")
+

@@ -259,13 +259,24 @@ def register_asset():
                 token = secrets.token_hex(16)
                 token_hash = hashlib.sha256(token.encode()).hexdigest()
 
+            ssh_creds_raw = request.form.get("ssh_credentials", "").strip()
+            ssh_creds_json = None
+            if ssh_creds_raw:
+                try:
+                    # Validate JSON structure
+                    json.loads(ssh_creds_raw)
+                    ssh_creds_json = ssh_creds_raw
+                except Exception:
+                    flash("Warning: Provided SSH credentials are not valid JSON. Asset registered without credentials.", "error")
+
             new_asset = Asset(
                 user_id=current_user.id,
                 asset_type=asset_type,
                 asset_value=asset_value,
                 verification_status="TOKEN_GENERATED",
                 verification_token_hash=token_hash,
-                verification_method=verification_method
+                verification_method=verification_method,
+                ssh_credentials=ssh_creds_json
             )
             db.add(new_asset)
             db.commit()
@@ -1075,6 +1086,11 @@ def assessment_summary(assessment_id):
         elif risk_score >= 5: overall_risk = "MEDIUM"
         elif risk_score >= 1: overall_risk = "LOW"
 
+        # Fetch attack path mapping edges
+        from database.models import NetworkEdge
+        edges = db.query(NetworkEdge).filter(NetworkEdge.assessment_id == assessment_id).all()
+        edges_list = [{"source": e.source, "target": e.target, "port": e.port, "protocol": e.protocol, "weight": e.risk_weight} for e in edges]
+
         return render_template(
             "assessment_summary.html",
             assessment_id=assessment_id,
@@ -1086,7 +1102,8 @@ def assessment_summary(assessment_id):
             scan_status=scan_status,
             correlation_status=correlation_status,
             findings=findings_list,
-            assessment_status=assessment.status
+            assessment_status=assessment.status,
+            network_edges=edges_list
         )
     finally:
         db.close()

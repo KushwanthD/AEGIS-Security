@@ -13,16 +13,26 @@ def run_migrations():
     """Apply schema migrations not handled by create_all.
     Each migration runs in its own session so a failure never blocks the others.
     """
-    # Migration 1: add pdf_data column to Reports
-    db = SessionLocal()
-    try:
-        db.execute(text("ALTER TABLE Reports ADD COLUMN pdf_data BLOB"))
-        db.commit()
-        print("Migration: added pdf_data column to Reports.")
-    except Exception:
-        db.rollback()  # Column already exists — that's fine
-    finally:
-        db.close()
+    migrations = [
+        ("ALTER TABLE Reports ADD COLUMN pdf_data BLOB", "pdf_data on Reports"),
+        ("ALTER TABLE Assets ADD COLUMN ssh_credentials TEXT", "ssh_credentials on Assets"),
+        ("ALTER TABLE ScanResults ADD COLUMN epss_score FLOAT", "epss_score on ScanResults"),
+        ("ALTER TABLE ScanResults ADD COLUMN epss_percentile FLOAT", "epss_percentile on ScanResults"),
+        ("ALTER TABLE CorrelatedFindings ADD COLUMN epss_score FLOAT", "epss_score on CorrelatedFindings"),
+        ("ALTER TABLE CorrelatedFindings ADD COLUMN epss_percentile FLOAT", "epss_percentile on CorrelatedFindings")
+    ]
+    
+    for sql, name in migrations:
+        db = SessionLocal()
+        try:
+            db.execute(text(sql))
+            db.commit()
+            print(f"Migration successful: {name}")
+        except Exception:
+            db.rollback()  # Column/table likely already exists
+        finally:
+            db.close()
+
 
 def seed_threat_intel():
     db = SessionLocal()
