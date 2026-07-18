@@ -351,7 +351,11 @@ def register_asset():
             </html>
             """
         except Exception as e:
-            flash(f"Asset already registered or error occurred: {str(e)}", "error")
+            # Simplify error message to display only necessary user-facing context
+            err_msg = "An error occurred during asset registration."
+            if "UNIQUE constraint failed" in str(e) or "IntegrityError" in type(e).__name__:
+                err_msg = "This asset is already registered in the system."
+            flash(err_msg, "error")
             return redirect(url_for("dashboard.register_asset"))
         finally:
             db.close()
