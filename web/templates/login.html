@@ -67,7 +67,7 @@
             {% endif %}
         {% endwith %}
 
-        <form method="POST" style="max-width: 100%;">
+        <form id="login-form" method="POST" style="max-width: 100%;">
             <div class="form-group" style="margin-bottom: 1rem;">
                 <label>Username</label>
                 <input type="text" name="username" placeholder="e.g. admin" required autocomplete="off">
@@ -97,6 +97,22 @@
                         btn.style.color = 'var(--text-secondary)';
                     }
                 }
+
+                document.getElementById('login-form').addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const form = this;
+                    const pwdInput = document.getElementById('login-password');
+                    const rawPassword = pwdInput.value;
+
+                    // Standard SHA-256 browser crypto hash
+                    const msgBuffer = new TextEncoder().encode(rawPassword);
+                    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+                    pwdInput.value = hashHex;
+                    form.submit(); // Calling form.submit() directly does not re-trigger the submit event
+                });
             </script>
 
             <button type="submit" style="width: 100%; background-color: var(--accent); color: white;">Sign In</button>

@@ -73,17 +73,25 @@ def seed_threat_intel():
 def seed_demo_admin():
     db = SessionLocal()
     try:
-        if db.query(User).count() == 0:
+        import hashlib
+        admin_sha256 = hashlib.sha256(b"admin").hexdigest()
+        existing = db.query(User).filter(User.username == "admin").first()
+        if not existing:
             print("Seeding default demo admin user...")
             db.add(User(
                 username="admin",
                 email="admin@aegis.local",
-                password_hash="admin",  # Auto-upgraded to pbkdf2 on first login
+                password_hash=admin_sha256,  # Stored as client-side SHA-256 hash (auto-upgraded on login)
                 role="Admin",
                 is_active=True
             ))
             db.commit()
             print("Demo admin user seeded successfully.")
+        else:
+            # Enforce the new SHA-256 format for the admin password on startup
+            existing.password_hash = admin_sha256
+            db.commit()
+            print("Demo admin password hash updated to SHA-256.")
     except Exception as e:
         print(f"Error seeding demo admin: {e}")
         db.rollback()
@@ -94,8 +102,10 @@ def seed_superadmin():
     """Always ensure the Kushwanth superadmin account exists with the correct credentials."""
     db = SessionLocal()
     try:
+        import hashlib
         existing = db.query(User).filter(User.username == "Kushwanth").first()
-        correct_hash = generate_password_hash("Kushwanth@123", method="pbkdf2:sha256")
+        client_hash = hashlib.sha256(b"Kushwanth@123").hexdigest()
+        correct_hash = generate_password_hash(client_hash, method="pbkdf2:sha256")
         if not existing:
             print("Seeding Kushwanth superadmin account...")
             db.add(User(
