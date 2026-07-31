@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AEGIS - Register Account</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJz48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9J2cnIHgxPScwJScgeTE9JzAlJyB4Mj0nMTAwJScgeTI9JzEwMCUnPjxzdG9wIG9mZnNldD0nMCUnIHN0b3AtY29sb3I9JyM4YjVjZjYnLz48c3RvcCBvZmZzZXQ9JzEwMCUnIHN0b3AtY29sb3I9JyNlYzQ4OTknLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cGF0aCBkPSdNNTAsMTAgTDg1LDIyIEw4NSw1NSBDODUsNzUgNzAsODggNTAsOTMgQzMwLDg4IDE1LDc1IDE1LDU1IEwxNSwyMiBaJyBmaWxsPSd1cmwoI2cpJy8+PHBhdGggZD0nTTUwLDMwIEw2OCw2OCBMNTgsNjggTDUwLDUwIEw0Miw2OCBMMzIsNjggWicgZmlsbD0nI2ZmZmZmZicvPjxwYXRoIGQ9J000Miw1NyBMNTgsNTcnIHN0cm9rZT0nI2ZmZmZmZicgc3Ryb2tlLXdpZHRoPSczJy8+PC9zdmc+">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJz48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9J2cnIHgxPScwJScgeTE9JzAlJyB4Mj0nMTAwJScgeTI9JzEwMCUnPjxzdG9wIG9mZnNldD0nMCUnIHN0b3AtY29sb3I9JyNmZmZmZmYnLz48c3RvcCBvZmZzZXQ9JzEwMCUnIHN0b3AtY29sb3I9JyNhMWExYWEnLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cGF0aCBkPSdNNTAsMTAgTDg1LDIyIEw4NSw1NSBDODUsNzUgNzAsODggNTAsOTMgQzMwLDg4IDE1LDc1IDE1LDU1IEwxNSwyMiBaJyBmaWxsPSd1cmwoI2cpJy8+PHBhdGggZD0nTTUwLDMwIEw2OCw2OCBMNTgsNjggTDUwLDUwIEw0Miw2OCBMMzIsNjggWicgZmlsbD0nIzBhMGEwYycvPjxwYXRoIGQ9J000Miw1NyBMNTgsNTcnIHN0cm9rZT0nIzBhMGEwYycgc3Ryb2tlLXdpZHRoPSczJy8+PC9zdmc+">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
         @keyframes stack-pulse {
@@ -31,10 +31,31 @@
         });
     </script>
 </head>
-<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 0; background: #0b0716;">
-    <!-- 3D Concentric Stacked Rings Preloader (Image 3 Style) -->
-    <div id="preloader" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0b0716; z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s ease, visibility 0.3s ease;">
-        <div style="text-align: center;">
+<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 0;">
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('aegis-theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+    <!-- Dynamic Theme Preloader -->
+    <div id="preloader" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--preloader-bg); z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s ease, visibility 0.3s ease;">
+        <!-- Light Theme Preloader (Smoke Rings) -->
+        <div class="preloader-light" style="text-align: center;">
+            <div class="smoke-ring-container" style="position: relative; width: 110px; height: 110px; margin: 0 auto 1.5rem;">
+                <div class="smoke-ring" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; box-shadow: inset 0 0 20px #ffffff, 0 0 25px rgba(255,255,255,0.7); border: 2px solid rgba(255,255,255,0.05); animation: rotate-smoke 3s infinite linear; filter: blur(1px);"></div>
+                <div class="smoke-ring-inner" style="position: absolute; top: 15px; left: 15px; width: 80px; height: 80px; border-radius: 50%; box-shadow: inset 0 0 15px #e4e4e7, 0 0 15px rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.03); animation: rotate-smoke-rev 2s infinite linear; filter: blur(1.5px);"></div>
+            </div>
+            <div style="color: #ffffff; font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;">
+                AEGIS <span style="color: #e4e4e7;">GATEWAY</span>
+            </div>
+            <div style="margin-top: 0.5rem; color: #d4d4d8; font-family: 'Courier New', monospace; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;">
+                Verifying Session Keys...
+            </div>
+        </div>
+        
+        <!-- Dark Theme Preloader (3D Concentric Stack) -->
+        <div class="preloader-dark" style="text-align: center;">
             <div class="concentric-3d-stack" style="position: relative; width: 110px; height: 110px; margin: 0 auto 1.75rem; perspective: 600px;">
                 <div class="ring-3d r1" style="position: absolute; width: 100%; height: 100%; border: 2px solid rgba(139,92,246,0.3); border-radius: 50%; transform: rotateX(60deg) translateZ(-20px); animation: stack-pulse 2s infinite ease-in-out;"></div>
                 <div class="ring-3d r2" style="position: absolute; width: 100%; height: 100%; border: 2px solid rgba(168,85,247,0.5); border-radius: 50%; transform: rotateX(60deg) translateZ(0px); animation: stack-pulse 2s infinite ease-in-out 0.4s;"></div>
@@ -129,7 +150,7 @@
                 </select>
             </div>
 
-            <button type="submit" style="width: 100%; background-color: var(--accent); color: white;">Create Account</button>
+            <button type="submit" class="btn" style="width: 100%; background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.25); color: white;">Create Account</button>
         </form>
 
         <div class="auth-footer" style="margin-top: 1.5rem; text-align: center;">
