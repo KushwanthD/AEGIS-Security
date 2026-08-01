@@ -150,6 +150,23 @@ def home():
             approved_count = db.query(Assessment).join(Asset).filter(Asset.user_id == current_user.id, Assessment.status == "APPROVED").count()
             high_risk_count = db.query(CorrelatedFinding).join(Assessment).join(Asset).filter(Asset.user_id == current_user.id, CorrelatedFinding.risk_level.in_(["HIGH", "CRITICAL"])).count()
             assets = db.query(Asset).filter(Asset.user_id == current_user.id).all()
+        elif current_user.role == "Analyst":
+            # An analyst should only see assets and assessments they requested
+            requested_ids = db.query(AuditLog.assessment_id).filter(
+                AuditLog.user_id == current_user.id,
+                AuditLog.event_type == "ASSESSMENT_REQUESTED"
+            ).all()
+            requested_ids = [r[0] for r in requested_ids if r[0]]
+            
+            assessment_count = len(requested_ids)
+            approved_count = db.query(Assessment).filter(Assessment.id.in_(requested_ids), Assessment.status == "APPROVED").count()
+            high_risk_count = db.query(CorrelatedFinding).filter(CorrelatedFinding.assessment_id.in_(requested_ids), CorrelatedFinding.risk_level.in_(["HIGH", "CRITICAL"])).count()
+            
+            asset_ids = db.query(Assessment.asset_id).filter(Assessment.id.in_(requested_ids)).all()
+            asset_ids = [a[0] for a in asset_ids if a[0]]
+            
+            asset_count = len(set(asset_ids))
+            assets = db.query(Asset).filter(Asset.id.in_(asset_ids)).all()
         else:
             asset_count = db.query(Asset).count()
             assessment_count = db.query(Assessment).count()
@@ -998,6 +1015,15 @@ def verify_token(assessment_id):
         if current_user.role == "Owner" and asset.user_id != current_user.id:
             flash("Access Denied: You do not own the asset associated with this assessment.", "error")
             return redirect(url_for("dashboard.assessments"))
+        if current_user.role == "Analyst":
+            is_requested = db.query(AuditLog).filter(
+                AuditLog.assessment_id == assessment_id,
+                AuditLog.user_id == current_user.id,
+                AuditLog.event_type == "ASSESSMENT_REQUESTED"
+            ).first()
+            if not is_requested:
+                flash("Access Denied: You are not authorized to view this assessment.", "error")
+                return redirect(url_for("dashboard.assessments"))
 
         if request.method == "POST":
             supplied_token = request.form.get("token").strip()
@@ -1535,6 +1561,13 @@ def report_history():
     try:
         if current_user.role == "Owner":
             reports = db.query(Report).join(Assessment).join(Asset).filter(Asset.user_id == current_user.id).order_by(Report.id.desc()).all()
+        elif current_user.role == "Analyst":
+            requested_ids = db.query(AuditLog.assessment_id).filter(
+                AuditLog.user_id == current_user.id,
+                AuditLog.event_type == "ASSESSMENT_REQUESTED"
+            ).all()
+            requested_ids = [r[0] for r in requested_ids if r[0]]
+            reports = db.query(Report).filter(Report.assessment_id.in_(requested_ids)).order_by(Report.id.desc()).all()
         else:
             reports = db.query(Report).order_by(Report.id.desc()).all()
         reports_list = [(r.id, r.assessment_id, r.report_type, r.created_at.strftime("%Y-%m-%d %H:%M"), r.file_name, r.assessment.assessment_reference) for r in reports]
@@ -1547,7 +1580,10 @@ def report_history():
 def audit_logs():
     db = SessionLocal()
     try:
-        logs = db.query(AuditLog).filter(AuditLog.event_type != "THREAT_FEED_REFRESH").order_by(AuditLog.id.desc()).all()
+        if current_user.role == "Analyst":
+            logs = db.query(AuditLog).filter(AuditLog.event_type != "THREAT_FEED_REFRESH", AuditLog.user_id == current_user.id).order_by(AuditLog.id.desc()).all()
+        else:
+            logs = db.query(AuditLog).filter(AuditLog.event_type != "THREAT_FEED_REFRESH").order_by(AuditLog.id.desc()).all()
         logs_list = [(l.id, l.assessment_id, l.event_type, l.event_details, l.created_at.strftime("%Y-%m-%d %H:%M")) for l in logs]
         return render_template("audit_logs.html", logs=logs_list)
     finally:
@@ -1559,6 +1595,13 @@ def recon_history():
     try:
         if current_user.role == "Owner":
             executions = db.query(ReconExecution).join(Assessment).join(Asset).filter(Asset.user_id == current_user.id).order_by(ReconExecution.id.desc()).all()
+        elif current_user.role == "Analyst":
+            requested_ids = db.query(AuditLog.assessment_id).filter(
+                AuditLog.user_id == current_user.id,
+                AuditLog.event_type == "ASSESSMENT_REQUESTED"
+            ).all()
+            requested_ids = [r[0] for r in requested_ids if r[0]]
+            executions = db.query(ReconExecution).filter(ReconExecution.assessment_id.in_(requested_ids)).order_by(ReconExecution.id.desc()).all()
         else:
             executions = db.query(ReconExecution).order_by(ReconExecution.id.desc()).all()
         executions_list = [
@@ -1592,6 +1635,13 @@ def scan_history():
     try:
         if current_user.role == "Owner":
             executions = db.query(ScanExecution).join(Assessment).join(Asset).filter(Asset.user_id == current_user.id).order_by(ScanExecution.id.desc()).all()
+        elif current_user.role == "Analyst":
+            requested_ids = db.query(AuditLog.assessment_id).filter(
+                AuditLog.user_id == current_user.id,
+                AuditLog.event_type == "ASSESSMENT_REQUESTED"
+            ).all()
+            requested_ids = [r[0] for r in requested_ids if r[0]]
+            executions = db.query(ScanExecution).filter(ScanExecution.assessment_id.in_(requested_ids)).order_by(ScanExecution.id.desc()).all()
         else:
             executions = db.query(ScanExecution).order_by(ScanExecution.id.desc()).all()
         executions_list = [
@@ -1625,6 +1675,13 @@ def correlation_history():
     try:
         if current_user.role == "Owner":
             executions = db.query(CorrelationExecution).join(Assessment).join(Asset).filter(Asset.user_id == current_user.id).order_by(CorrelationExecution.id.desc()).all()
+        elif current_user.role == "Analyst":
+            requested_ids = db.query(AuditLog.assessment_id).filter(
+                AuditLog.user_id == current_user.id,
+                AuditLog.event_type == "ASSESSMENT_REQUESTED"
+            ).all()
+            requested_ids = [r[0] for r in requested_ids if r[0]]
+            executions = db.query(CorrelationExecution).filter(CorrelationExecution.assessment_id.in_(requested_ids)).order_by(CorrelationExecution.id.desc()).all()
         else:
             executions = db.query(CorrelationExecution).order_by(CorrelationExecution.id.desc()).all()
         executions_list = [

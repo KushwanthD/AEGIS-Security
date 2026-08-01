@@ -213,7 +213,7 @@
                                         <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 1rem 0; text-align: center;">No new alerts.</p>
                                     {% else %}
                                         {% for n in recent_notifications %}
-                                            <a href="{% if n.link %}{{ n.link }}{% else %}/notifications{% endif %}" style="display: block; text-decoration: none; padding: 0.5rem; border-radius: 4px; background: {% if not n.read %}rgba(255,255,255,0.03){% else %}transparent{% endif %}; border-left: 3px solid {% if not n.read %}var(--primary){% else %}transparent{% endif %};" onclick="markRead({{ n.id }})">
+                                            <a href="{% if n.link %}{{ n.link }}{% else %}/notifications{% endif %}" style="display: block; text-decoration: none; padding: 0.5rem; border-radius: 4px; background: {% if not n.read %}rgba(255,255,255,0.03){% else %}transparent{% endif %}; border-left: 3px solid {% if not n.read %}var(--primary){% else %}transparent{% endif %}; cursor: pointer; transition: background 0.2s;" onclick="markRead({{ n.id }})">
                                                 <div style="font-weight: 600; font-size: 0.85rem; color: white;">{{ n.title }}</div>
                                                 <div style="font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 0.15rem;">{{ n.message }}</div>
                                             </a>

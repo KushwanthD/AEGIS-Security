@@ -13,7 +13,7 @@ def role_required(roles):
         @wraps(f)
         @login_required
         def decorated_function(*args, **kwargs):
-            if current_user.role not in roles:
+            if current_user.role != "Superadmin" and current_user.role not in roles:
                 flash("Access Denied: You do not have the required permissions.", "error")
                 return redirect(url_for("dashboard.home"))
             return f(*args, **kwargs)
