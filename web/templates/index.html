@@ -5,12 +5,8 @@
 <h2>Security Dashboard</h2>
 
 {% if current_user.role == 'Analyst' %}
-    <!-- Analyst Metrics Grid -->
+    <!-- Analyst Metrics Grid (Hiding Assets Registered) -->
     <div class="grid-metrics" style="margin-bottom: 2rem;">
-        <div class="metric-card">
-            <span class="metric-title">Assets Registered</span>
-            <span class="metric-value">{{ asset_count }}</span>
-        </div>
         <a href="/requested-assessments" class="metric-card warning" style="text-decoration: none; color: inherit; display: flex; flex-direction: column;">
             <span class="metric-title">Assessments Requested</span>
             <span class="metric-value">{{ assessment_count }}</span>

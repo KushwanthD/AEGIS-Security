@@ -162,11 +162,9 @@ def home():
             approved_count = db.query(Assessment).filter(Assessment.id.in_(requested_ids), Assessment.status == "APPROVED").count()
             high_risk_count = db.query(CorrelatedFinding).filter(CorrelatedFinding.assessment_id.in_(requested_ids), CorrelatedFinding.risk_level.in_(["HIGH", "CRITICAL"])).count()
             
-            asset_ids = db.query(Assessment.asset_id).filter(Assessment.id.in_(requested_ids)).all()
-            asset_ids = [a[0] for a in asset_ids if a[0]]
-            
-            asset_count = len(set(asset_ids))
-            assets = db.query(Asset).filter(Asset.id.in_(asset_ids)).all()
+            # Hide registered assets counts and list completely from Analyst home view
+            asset_count = 0
+            assets = []
         else:
             asset_count = db.query(Asset).count()
             assessment_count = db.query(Assessment).count()
