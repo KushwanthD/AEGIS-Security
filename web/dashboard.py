@@ -790,8 +790,18 @@ def analyst_assess_target():
             "/assessments"
         )
         
-        # Check if there is an active assessment for this asset
-        assessment = db.query(Assessment).filter(Assessment.asset_id == asset.id).order_by(Assessment.id.desc()).first()
+        # Check if there is an active assessment for this asset requested by this analyst
+        requested_ids = db.query(AuditLog.assessment_id).filter(
+            AuditLog.user_id == current_user.id,
+            AuditLog.event_type == "ASSESSMENT_REQUESTED"
+        ).all()
+        requested_ids = [r[0] for r in requested_ids if r[0]]
+
+        assessment = db.query(Assessment).filter(
+            Assessment.asset_id == asset.id,
+            Assessment.id.in_(requested_ids)
+        ).order_by(Assessment.id.desc()).first()
+        
         if not assessment:
             # Auto-initiate new request
             return redirect(url_for("dashboard.request_assessment", asset_id=asset.id))
