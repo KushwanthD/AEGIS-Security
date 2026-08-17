@@ -1,27 +1,38 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<div class="card">
-    <h2>System Audit Trail Logs</h2>
-    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Chronological logs tracking ownership verification, scan operations, report generations, and admin status updates.</p>
+<div class="glass-card rounded-xl p-8 border border-primary/20 relative animate-fade-slide">
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
+    
+    <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(255,107,0,0.15)]">
+            <span class="material-symbols-outlined">lock</span>
+        </div>
+        <h2 class="text-base font-bold text-white dotted-text">&gt; System Audit Trail Logs</h2>
+    </div>
+    <p class="text-xs text-on-surface-variant mb-6 leading-relaxed">Chronological logs tracking ownership verification, scan operations, report generations, and admin status updates.</p>
 
     {% if not logs %}
-        <p style="color: var(--text-secondary);">No system logs exist.</p>
+        <p class="text-xs text-on-surface-variant">No system logs exist.</p>
     {% else %}
         <!-- Search Input Bar -->
-        <div style="margin-bottom: 1.5rem; position: relative; max-width: 400px;">
-            <input type="text" id="logSearch" placeholder="Search audit logs..." onkeyup="filterLogs()" style="width: 100%; padding: 0.6rem 1.25rem; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; color: white; outline: none; transition: border-color 0.3s; font-size: 0.9rem;">
+        <div class="mb-6 max-w-sm">
+            <label class="text-[10px] text-on-surface-variant font-bold block mb-2 uppercase tracking-wider">&gt; Search Audit Trail:</label>
+            <input type="text" id="logSearch" placeholder="Search audit logs..." onkeyup="filterLogs()" class="w-full bg-[#080808] border border-primary/20 rounded py-2 px-3 text-xs text-primary focus:border-primary focus:ring-0 outline-none font-code-sm">
         </div>
 
-        <div id="logsContainer" style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <div id="logsContainer" class="flex flex-col gap-3">
             {% for log in logs %}
-                <div class="log-item">
-                    <div>
-                        <span class="badge badge-info" style="margin-right: 1rem;">{{ log[2] }}</span>
-                        <span class="log-details">{{ log[3] }}</span>
+                <div class="log-item p-4 bg-white/5 border border-primary/10 rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs table-row-hover transition-colors">
+                    <div class="flex items-start md:items-center gap-3">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-primary/10 text-primary border border-primary/20 font-code-sm font-bold uppercase shrink-0">
+                            {{ log[2] }}
+                        </span>
+                        <span class="text-white leading-relaxed font-code-sm font-medium">{{ log[3] }}</span>
                     </div>
-                    <span class="log-meta">Assessment ID: {{ log[1] or 'Global' }} | {{ log[4] }}</span>
+                    <span class="text-on-surface-variant font-code-sm text-[10px] shrink-0 text-right">
+                        Assessment ID: {{ log[1] or 'Global' }} | {{ log[4] }}
+                    </span>
                 </div>
             {% endfor %}
         </div>
@@ -38,5 +49,4 @@
         </script>
     {% endif %}
 </div>
-
 {% endblock %}

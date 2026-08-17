@@ -1,54 +1,69 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<div class="card">
-    <h2>Threat Intelligence Repository</h2>
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-        <p style="color: var(--text-secondary); margin: 0;">Repository containing active vulnerabilities and signatures matched against scan findings to define risk exposure rules.</p>
+<div class="glass-card rounded-xl p-8 border border-primary/20 relative animate-fade-slide">
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
+    
+    <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(255,107,0,0.15)]">
+            <span class="material-symbols-outlined">security</span>
+        </div>
+        <h2 class="text-base font-bold text-white dotted-text">&gt; Threat Intelligence Repository</h2>
     </div>
+    <p class="text-xs text-on-surface-variant mb-6 leading-relaxed">Repository containing active vulnerabilities and signatures matched against scan findings to define risk exposure rules.</p>
 
-    <table style="table-layout: fixed; width: 100%; word-wrap: break-word;">
-        <colgroup>
-            <col style="width: 14%;">
-            <col style="width: 12%;">
-            <col style="width: 18%;">
-            <col style="width: 44%;">
-            <col style="width: 12%;">
-        </colgroup>
-        <thead>
-            <tr>
-                <th>Technology</th>
-                <th>Risk Level</th>
-                <th>Reference</th>
-                <th>Threat Details</th>
-                <th>Source Feed</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for threat in threats %}
-                <tr>
-                    <td><b style="color: var(--primary);">{{ threat[0] }}</b></td>
-                    <td>
-                        {% if threat[1] == 'HIGH' or threat[1] == 'CRITICAL' %}
-                            <span class="badge badge-danger">{{ threat[1] }}</span>
-                        {% elif threat[1] == 'MEDIUM' %}
-                            <span class="badge badge-warning">{{ threat[1] }}</span>
-                        {% else %}
-                            <span class="badge badge-info">{{ threat[1] }}</span>
-                        {% endif %}
-                    </td>
-                    <td><b style="color: var(--text-primary); font-size: 0.9rem;">{{ threat[2] }}</b></td>
-                    <td>
-                        <div style="max-height: 75px; overflow-y: auto; font-size: 0.85rem; line-height: 1.4; color: var(--text-secondary); padding-right: 5px;">
-                            {{ threat[4] }}
-                        </div>
-                    </td>
-                    <td><span class="user-tag" style="font-size: 0.75rem; background-color: var(--bg-hover); padding: 0.2rem 0.5rem; display: inline-block;">{{ threat[3] }}</span></td>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse table-fixed min-w-[700px]">
+            <colgroup>
+                <col style="width: 15%;">
+                <col style="width: 12%;">
+                <col style="width: 18%;">
+                <col style="width: 43%;">
+                <col style="width: 12%;">
+            </colgroup>
+            <thead>
+                <tr class="border-b border-primary/10 text-on-surface-variant font-label-caps text-xs">
+                    <th class="pb-3 px-4">Technology</th>
+                    <th class="pb-3 px-4">Risk Level</th>
+                    <th class="pb-3 px-4">Reference</th>
+                    <th class="pb-3 px-4">Threat Details</th>
+                    <th class="pb-3 px-4">Source Feed</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody class="divide-y divide-white/5 text-xs">
+                {% for threat in threats %}
+                    <tr class="table-row-hover transition-colors">
+                        <td class="py-4 px-4 font-semibold text-primary font-code-sm">{{ threat[0] }}</td>
+                        <td class="py-4 px-4">
+                            {% if threat[1] == 'HIGH' or threat[1] == 'CRITICAL' %}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-error/15 text-error border border-error/30 font-bold">
+                                    {{ threat[1] }}
+                                </span>
+                            {% elif threat[1] == 'MEDIUM' %}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-warning-amber/15 text-warning-amber border border-warning-amber/30 font-bold">
+                                    {{ threat[1] }}
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-primary/10 text-primary border border-primary/20">
+                                    {{ threat[1] }}
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="py-4 px-4 font-code-sm text-white font-bold">{{ threat[2] }}</td>
+                        <td class="py-4 px-4">
+                            <div class="max-h-20 overflow-y-auto text-on-surface-variant leading-relaxed pr-2 font-code-sm text-[11px]">
+                                {{ threat[4] }}
+                            </div>
+                        </td>
+                        <td class="py-4 px-4">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-white/5 text-on-surface-variant border border-white/10 font-code-sm">
+                                {{ threat[3] }}
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
-
 {% endblock %}

@@ -1,114 +1,111 @@
 {% extends "base.html" %}
 {% block content %}
-
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-    <div>
-        <h2 style="margin: 0;">👑 User Management</h2>
-        <p style="color: var(--text-secondary); margin: 0.25rem 0 0; font-size: 0.9rem;">
-            Superadmin view — all registered accounts across the system
-        </p>
+<div class="glass-card rounded-xl p-8 border border-primary/20 relative animate-fade-slide">
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
+    
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(255,107,0,0.15)]">
+                <span class="material-symbols-outlined">supervisor_account</span>
+            </div>
+            <div>
+                <h2 class="text-base font-bold text-white dotted-text">&gt; User Management</h2>
+                <p class="text-xs text-on-surface-variant mt-1">Superadmin account scope panel.</p>
+            </div>
+        </div>
+        <div>
+            <span class="inline-flex items-center px-3 py-1 rounded bg-error/15 text-error border border-error/30 text-[10px] font-bold">
+                SUPERADMIN_ONLY
+            </span>
+        </div>
     </div>
-    <span class="badge badge-danger" style="font-size: 0.8rem; padding: 0.4rem 0.9rem;">Superadmin Only</span>
+
+    <!-- Search bar -->
+    <div class="mb-6 max-w-sm">
+        <label class="text-[10px] text-on-surface-variant font-bold block mb-2 uppercase tracking-wider">&gt; Search Accounts:</label>
+        <input id="userSearch" type="text" placeholder="Search by username, email, or role..." oninput="filterUsers()" class="w-full bg-[#080808] border border-primary/20 rounded py-2 px-3 text-xs text-primary focus:border-primary focus:ring-0 outline-none font-code-sm">
+    </div>
+
+    <div class="overflow-x-auto">
+        <table id="userTable" class="w-full text-left border-collapse">
+            <thead>
+                <tr class="border-b border-primary/10 text-on-surface-variant font-label-caps text-xs">
+                    <th class="pb-3 px-4">#</th>
+                    <th class="pb-3 px-4">Username</th>
+                    <th class="pb-3 px-4">Email</th>
+                    <th class="pb-3 px-4">Role</th>
+                    <th class="pb-3 px-4">Status</th>
+                    <th class="pb-3 px-4">Created</th>
+                    <th class="pb-3 px-4">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5 text-xs">
+                {% for u in users %}
+                <tr class="user-row table-row-hover transition-colors">
+                    <td class="py-4 px-4 font-code-sm text-on-surface-variant">{{ u.id }}</td>
+                    <td class="py-4 px-4">
+                        <span class="font-bold text-white">{{ u.username }}</span>
+                        {% if u.username == 'Kushwanth' %}
+                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[8px] bg-primary text-black font-extrabold uppercase">YOU</span>
+                        {% endif %}
+                        {% if u.username == 'admin' %}
+                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[8px] bg-white/5 border border-white/10 text-on-surface-variant font-bold uppercase">demo</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-4 px-4 text-on-surface-variant font-code-sm">{{ u.email }}</td>
+                    <td class="py-4 px-4">
+                        {% if u.role == 'Superadmin' %}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-primary text-black font-extrabold border border-primary/20 uppercase">{{ u.role }}</span>
+                        {% elif u.role == 'Admin' %}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-error/10 text-error border border-error/20 font-bold uppercase">{{ u.role }}</span>
+                        {% elif u.role == 'Analyst' %}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-warning-amber/10 text-warning-amber border border-warning-amber/20 font-bold uppercase">{{ u.role }}</span>
+                        {% else %}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-security-green/10 text-security-green border border-security-green/20 uppercase">{{ u.role }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-4 px-4">
+                        {% if u.is_active %}
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-security-green/10 text-security-green font-bold border border-security-green/20">
+                                <span class="w-1 h-1 rounded-full bg-security-green"></span>
+                                Active
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-error/10 text-error border border-error/20 font-bold">
+                                <span class="w-1 h-1 rounded-full bg-error"></span>
+                                Inactive
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="py-4 px-4 text-on-surface-variant font-code-sm">
+                        {{ u.created_at.strftime('%Y-%m-%d') if u.created_at else '—' }}
+                    </td>
+                    <td class="py-4 px-4">
+                        {% if u.username != 'Kushwanth' %}
+                        <form method="POST" action="/delete-user/{{ u.id }}" onsubmit="return confirm('Delete user {{ u.username }}? This cannot be undone.');" class="m-0">
+                            <button type="submit" class="px-2.5 py-1 bg-primary text-black rounded font-label-caps text-[9px] hover:bg-primary/80 transition-all font-bold cursor-pointer">
+                                [REMOVE]
+                            </button>
+                        </form>
+                        {% else %}
+                        <span class="text-on-surface-variant font-semibold">Protected</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
-
-<!-- Search bar -->
-<div style="margin-bottom: 1.5rem;">
-    <input id="userSearch" type="text" placeholder="🔍  Search by username, email, or role..."
-        oninput="filterUsers()"
-        style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color);
-               background: rgba(255,255,255,0.04); color: var(--text-primary); font-size: 0.95rem; outline: none;">
-</div>
-
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, msg in messages %}
-            <p style="color: {% if category == 'error' %}var(--accent){% else %}var(--accent-green){% endif %};
-                       font-weight: 500; margin-bottom: 1rem; padding: 0.6rem 1rem;
-                       background: rgba(255,255,255,0.04); border-radius: 6px; border-left: 3px solid currentColor;">
-                {{ msg }}
-            </p>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
-
-<div class="card" style="padding: 0; overflow: hidden;">
-    <table id="userTable">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Created</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for u in users %}
-            <tr class="user-row">
-                <td>{{ u.id }}</td>
-                <td>
-                    <strong>{{ u.username }}</strong>
-                    {% if u.username == 'Kushwanth' %}
-                        <span style="margin-left: 0.4rem; font-size: 0.7rem; background: linear-gradient(to right, var(--primary), var(--accent)); color: white; padding: 0.15rem 0.5rem; border-radius: 99px;">YOU</span>
-                    {% endif %}
-                    {% if u.username == 'admin' %}
-                        <span style="margin-left: 0.4rem; font-size: 0.7rem; background: rgba(255,255,255,0.1); color: var(--text-secondary); padding: 0.15rem 0.5rem; border-radius: 99px;">demo</span>
-                    {% endif %}
-                </td>
-                <td style="color: var(--text-secondary); font-size: 0.9rem;">{{ u.email }}</td>
-                <td>
-                    {% if u.role == 'Superadmin' %}
-                        <span class="badge" style="background: linear-gradient(to right, #7c3aed, #ec4899); color: white;">{{ u.role }}</span>
-                    {% elif u.role == 'Admin' %}
-                        <span class="badge badge-danger">{{ u.role }}</span>
-                    {% elif u.role == 'Analyst' %}
-                        <span class="badge badge-warning">{{ u.role }}</span>
-                    {% else %}
-                        <span class="badge badge-success">{{ u.role }}</span>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if u.is_active %}
-                        <span class="badge badge-success">Active</span>
-                    {% else %}
-                        <span class="badge badge-danger">Inactive</span>
-                    {% endif %}
-                </td>
-                <td style="color: var(--text-secondary); font-size: 0.85rem;">
-                    {{ u.created_at.strftime('%Y-%m-%d') if u.created_at else '—' }}
-                </td>
-                <td>
-                    {% if u.username != 'Kushwanth' %}
-                    <form method="POST" action="/delete-user/{{ u.id }}"
-                          onsubmit="return confirm('Delete user {{ u.username }}? This cannot be undone.');">
-                        <button type="submit" class="btn"
-                            style="background: var(--accent); padding: 0.3rem 0.85rem; font-size: 0.82rem; border: none; cursor: pointer;">
-                            🗑 Delete
-                        </button>
-                    </form>
-                    {% else %}
-                    <span style="color: var(--text-secondary); font-size: 0.82rem;">Protected</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
-<p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 1rem;">
-    Total accounts: <strong>{{ users | length }}</strong>
-</p>
 
 <script>
-function filterUsers() {
-    const q = document.getElementById('userSearch').value.toLowerCase();
-    document.querySelectorAll('.user-row').forEach(row => {
-        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
-    });
-}
+    function filterUsers() {
+        const query = document.getElementById('userSearch').value.toLowerCase();
+        const rows = document.querySelectorAll('.user-row');
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(query) ? '' : 'none';
+        });
+    }
 </script>
-
 {% endblock %}

@@ -1,57 +1,79 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-    <div>
-        <h2 style="font-family: 'Outfit', sans-serif; background: linear-gradient(to right, var(--accent), var(--accent-yellow)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Critical & High Risks Assessments</h2>
-        <p style="color: var(--text-secondary); margin-top: 0.25rem;">Assessments with identified critical or high severity vulnerabilities.</p>
+<div class="glass-card rounded-xl p-8 border border-primary/20 relative animate-fade-slide">
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
+    
+    <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-lg bg-error/10 border border-error/30 flex items-center justify-center text-error shadow-[0_0_15px_rgba(255,51,51,0.15)] animate-pulse">
+            <span class="material-symbols-outlined">warning</span>
+        </div>
+        <h2 class="text-base font-bold text-white dotted-text">&gt; Critical & High Risks</h2>
     </div>
-</div>
+    <p class="text-xs text-on-surface-variant mb-6 leading-relaxed">Assessments with identified critical or high severity vulnerabilities requiring mitigation actions.</p>
 
-<div class="card">
     <!-- Search Bar -->
-    <div style="margin-bottom: 1.5rem; position: relative; max-width: 400px;">
-        <input type="text" id="highRiskSearch" placeholder="Search assessments..." onkeyup="filterHighRiskAssessments()" style="width: 100%; padding: 0.6rem 1.25rem; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; color: white; outline: none; transition: border-color 0.3s; font-size: 0.9rem;">
+    <div class="mb-6 max-w-sm">
+        <label class="text-[10px] text-on-surface-variant font-bold block mb-2 uppercase tracking-wider">&gt; Search Queue:</label>
+        <input type="text" id="highRiskSearch" placeholder="Search assessments..." onkeyup="filterHighRiskAssessments()" class="w-full bg-[#080808] border border-primary/20 rounded py-2 px-3 text-xs text-primary focus:border-primary focus:ring-0 outline-none font-code-sm">
     </div>
 
     {% if not assessments %}
-        <p style="color: var(--text-secondary);">No assessments with critical or high risks found.</p>
+        <p class="text-xs text-on-surface-variant">No assessments with critical or high risks found.</p>
     {% else %}
-        <table id="highRisksTable">
-            <thead>
-                <tr>
-                    <th>Ref ID</th>
-                    <th>Asset Target</th>
-                    <th>Status</th>
-                    <th>Severity Risks</th>
-                    <th style="text-align: right; padding-right: 2rem;">Reports / Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for ass in assessments %}
-                    {% set crit_count = ass.correlated_findings | selectattr("risk_level", "equalto", "CRITICAL") | list | length %}
-                    {% set high_count = ass.correlated_findings | selectattr("risk_level", "equalto", "HIGH") | list | length %}
-                    <tr>
-                        <td><b>{{ ass.assessment_reference }}</b></td>
-                        <td>{{ ass.asset.asset_value if ass.asset else "Unknown Target" }}</td>
-                        <td><span class="badge badge-danger">Vulnerable</span></td>
-                        <td>
-                            <span class="badge badge-danger" style="background-color: #8B0000; color: white;">{{ crit_count }} Critical</span>
-                            <span class="badge badge-warning" style="background-color: #FF4444; color: black; font-weight: bold; margin-left: 0.25rem;">{{ high_count }} High</span>
-                        </td>
-                        <td style="text-align: right; white-space: nowrap;">
-                            <div style="display: inline-flex; gap: 0.5rem; justify-content: flex-end;">
-                                <button onclick="openPdfModal('aegis_report_{{ ass.id }}.pdf', 'Technical Report - {{ ass.assessment_reference }}')" class="btn" style="padding: 0.3rem 0.8rem; font-size: 0.82rem; background-color: var(--accent);">View Tech</button>
-                                <button onclick="openPdfModal('aegis_executive_report_{{ ass.id }}.pdf', 'Executive Report - {{ ass.assessment_reference }}')" class="btn" style="padding: 0.3rem 0.8rem; font-size: 0.82rem; background-color: var(--accent);">View Exec</button>
-                                <a href="/download-pdf/aegis_report_{{ ass.id }}.pdf" class="btn btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.82rem; background-color: var(--accent-green); color: black; font-weight: bold; text-decoration: none;">Download Tech</a>
-                                <a href="/download-pdf/aegis_executive_report_{{ ass.id }}.pdf" class="btn btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.82rem; background-color: var(--accent-green); color: black; font-weight: bold; text-decoration: none;">Download Exec</a>
-                            </div>
-                        </td>
+        <div class="overflow-x-auto">
+            <table id="highRisksTable" class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-primary/10 text-on-surface-variant font-label-caps text-xs">
+                        <th class="pb-3 px-4">Ref ID</th>
+                        <th class="pb-3 px-4">Asset Target</th>
+                        <th class="pb-3 px-4">Status</th>
+                        <th class="pb-3 px-4">Severity Risks</th>
+                        <th class="pb-3 px-4 text-right">Reports / Actions</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-white/5 text-xs">
+                    {% for ass in assessments %}
+                        {% set crit_count = ass.correlated_findings | selectattr("risk_level", "equalto", "CRITICAL") | list | length %}
+                        {% set high_count = ass.correlated_findings | selectattr("risk_level", "equalto", "HIGH") | list | length %}
+                        <tr class="table-row-hover transition-colors">
+                            <td class="py-4 px-4 font-semibold text-white">{{ ass.assessment_reference }}</td>
+                            <td class="py-4 px-4 font-code-sm text-on-surface-variant">{{ ass.asset.asset_value if ass.asset else "Unknown Target" }}</td>
+                            <td class="py-4 px-4">
+                                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-error/10 text-error border border-error/20 font-bold">
+                                    <span class="w-1 h-1 rounded-full bg-error animate-ping"></span>
+                                    Vulnerable
+                                </span>
+                            </td>
+                            <td class="py-4 px-4 space-x-1.5">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-error/20 text-error border border-error/30 font-bold">
+                                    {{ crit_count }} Critical
+                                </span>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-warning-amber/20 text-warning-amber border border-warning-amber/30 font-bold">
+                                    {{ high_count }} High
+                                </span>
+                            </td>
+                            <td class="py-4 px-4 text-right whitespace-nowrap">
+                                <div class="inline-flex gap-2">
+                                    <button onclick="openPdfModal('aegis_report_{{ ass.id }}.pdf', 'Technical Report - {{ ass.assessment_reference }}')" class="px-2.5 py-1 bg-[#080808] border border-primary/30 text-primary rounded font-label-caps text-[9px] hover:bg-primary/20 hover:border-primary/50 transition-all font-bold">
+                                        [VIEW_TECH]
+                                    </button>
+                                    <button onclick="openPdfModal('aegis_executive_report_{{ ass.id }}.pdf', 'Executive Report - {{ ass.assessment_reference }}')" class="px-2.5 py-1 bg-[#080808] border border-primary/30 text-primary rounded font-label-caps text-[9px] hover:bg-primary/20 hover:border-primary/50 transition-all font-bold">
+                                        [VIEW_EXEC]
+                                    </button>
+                                    <a href="/download-pdf/aegis_report_{{ ass.id }}.pdf" class="px-2.5 py-1 bg-primary text-black rounded font-label-caps text-[9px] hover:bg-primary/80 transition-all no-underline font-bold text-center">
+                                        [DOWN_TECH]
+                                    </a>
+                                    <a href="/download-pdf/aegis_executive_report_{{ ass.id }}.pdf" class="px-2.5 py-1 bg-primary text-black rounded font-label-caps text-[9px] hover:bg-primary/80 transition-all no-underline font-bold text-center">
+                                        [DOWN_EXEC]
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
         <script>
             function filterHighRiskAssessments() {
@@ -65,5 +87,4 @@
         </script>
     {% endif %}
 </div>
-
 {% endblock %}

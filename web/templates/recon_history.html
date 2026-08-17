@@ -1,45 +1,64 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<div class="card">
-    <h2>Reconnaissance Executions History</h2>
-    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">List of all executed DNS and DMARC scans.</p>
+<div class="glass-card rounded-xl p-8 border border-primary/20 relative animate-fade-slide">
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
+    
+    <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(255,107,0,0.15)]">
+            <span class="material-symbols-outlined">search</span>
+        </div>
+        <h2 class="text-base font-bold text-white dotted-text">&gt; Reconnaissance Logs</h2>
+    </div>
+    <p class="text-xs text-on-surface-variant mb-6 leading-relaxed">List of all executed passive DNS, metadata footprinting, and DMARC compliance evaluation runs.</p>
 
     {% if not executions %}
-        <p style="color: var(--text-secondary);">No reconnaissance runs have been performed yet.</p>
+        <p class="text-xs text-on-surface-variant">No reconnaissance runs have been performed yet.</p>
     {% else %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Execution ID</th>
-                    <th>Assessment ID</th>
-                    <th>Status</th>
-                    <th>Started At</th>
-                    <th>Completed At</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for ex in executions %}
-                    <tr>
-                        <td><a href="/recon-results/{{ ex[0] }}" style="color: var(--accent-green); font-weight: bold;">#{{ ex[0] }}</a></td>
-                        <td>Assessment #{{ ex[1] }}</td>
-                        <td>
-                            {% if ex[2] == 'COMPLETED' %}
-                                <span class="badge badge-success">Completed</span>
-                            {% elif ex[2] == 'RUNNING' %}
-                                <span class="badge badge-warning">Running</span>
-                            {% else %}
-                                <span class="badge badge-danger">{{ ex[2] }}</span>
-                            {% endif %}
-                        </td>
-                        <td>{{ ex[3] }}</td>
-                        <td>{{ ex[4] or 'N/A' }}</td>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                    <tr class="border-b border-primary/10 text-on-surface-variant font-label-caps">
+                        <th class="pb-3 px-4">Execution ID</th>
+                        <th class="pb-3 px-4">Assessment ID</th>
+                        <th class="pb-3 px-4">Status</th>
+                        <th class="pb-3 px-4">Started At</th>
+                        <th class="pb-3 px-4">Completed At</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    {% for ex in executions %}
+                        <tr class="table-row-hover transition-colors">
+                            <td class="py-4 px-4">
+                                <a href="/recon-results/{{ ex[0] }}" class="font-bold text-primary hover:underline font-code-sm">
+                                    #{{ ex[0] }}
+                                </a>
+                            </td>
+                            <td class="py-4 px-4 text-white font-code-sm">Assessment #{{ ex[1] }}</td>
+                            <td class="py-4 px-4">
+                                {% if ex[2] == 'COMPLETED' %}
+                                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-security-green/10 text-security-green border border-security-green/20">
+                                        <span class="w-1 h-1 rounded-full bg-security-green"></span>
+                                        Completed
+                                    </span>
+                                {% elif ex[2] == 'RUNNING' %}
+                                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-warning-amber/10 text-warning-amber border border-warning-amber/20">
+                                        <span class="w-1 h-1 rounded-full bg-warning-amber animate-pulse"></span>
+                                        Running
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded bg-error/10 text-error border border-error/20">
+                                        {{ ex[2] }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="py-4 px-4 text-on-surface-variant font-code-sm">{{ ex[3] }}</td>
+                            <td class="py-4 px-4 text-on-surface-variant font-code-sm">{{ ex[4] or 'N/A' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% endif %}
 </div>
-
 {% endblock %}
