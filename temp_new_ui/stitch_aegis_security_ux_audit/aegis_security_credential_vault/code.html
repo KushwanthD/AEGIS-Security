@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AEGIS - Credential Vault</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;900&amp;family=JetBrains+Mono:wght@500;700&amp;family=Hanken+Grotesk:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#b794f4",
+                        "tertiary-fixed": "#cbe6ff",
+                        "on-error": "#690005",
+                        "surface-container-highest": "#2d3449",
+                        "surface-container": "#171f33",
+                        "tertiary-fixed-dim": "#8ecdff",
+                        "on-tertiary": "#00344f",
+                        "critical-ruby": "#f56565",
+                        "on-secondary-container": "#ffcb94",
+                        "surface-dim": "#0b1326",
+                        "secondary-fixed": "#ffddbb",
+                        "tertiary": "#8ecdff",
+                        "surface-container-low": "#131b2e",
+                        "on-primary-fixed": "#270058",
+                        "primary-fixed": "#ebdcff",
+                        "primary": "#d4bbff",
+                        "admin-gold": "#ecc94b",
+                        "surface-tint": "#d4bbff",
+                        "on-secondary-fixed-variant": "#673d00",
+                        "on-tertiary-fixed": "#001e30",
+                        "on-error-container": "#ffdad6",
+                        "primary-fixed-dim": "#d4bbff",
+                        "amethyst-glow": "linear-gradient(135deg, #b794f4 0%, #63b3ed 100%)",
+                        "secondary": "#ffb867",
+                        "on-primary": "#3e1975",
+                        "surface-container-high": "#222a3e",
+                        "secondary-fixed-dim": "#ffb867",
+                        "on-secondary-fixed": "#2b1700",
+                        "on-tertiary-fixed-variant": "#004b71",
+                        "surface-bright": "#31394e",
+                        "secondary-container": "#845000",
+                        "surface": "#0b1326",
+                        "inverse-on-surface": "#283044",
+                        "on-tertiary-container": "#003f5f",
+                        "surface-slate": "#1e293b",
+                        "success-emerald": "#48bb78",
+                        "on-surface-variant": "#ccc3d2",
+                        "error-container": "#93000a",
+                        "outline-variant": "#4a4551",
+                        "on-primary-fixed-variant": "#55338d",
+                        "on-background": "#dbe2fd",
+                        "outline": "#958e9c",
+                        "surface-variant": "#2d3449",
+                        "on-surface": "#dbe2fd",
+                        "tertiary-container": "#6cacdc",
+                        "inverse-primary": "#6d4ca6",
+                        "inverse-surface": "#dbe2fd",
+                        "error": "#ffb4ab",
+                        "surface-container-lowest": "#060d20",
+                        "on-secondary": "#482900",
+                        "on-primary-container": "#492680",
+                        "background": "#0b1326"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "32px",
+                        "sidebar-expanded": "260px",
+                        "margin-mobile": "16px",
+                        "base": "8px",
+                        "sidebar-collapsed": "80px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Sora"],
+                        "headline-lg-mobile": ["Sora"],
+                        "headline-sm": ["Sora"],
+                        "label-caps": ["JetBrains Mono"],
+                        "body-md": ["Hanken Grotesk"],
+                        "data-mono": ["JetBrains Mono"],
+                        "headline-lg": ["Sora"],
+                        "body-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["32px", { "lineHeight": "38px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["32px", { "lineHeight": "38px", "fontWeight": "700" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "12px", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "data-mono": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "headline-lg": ["48px", { "lineHeight": "52px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+        
+        .amethyst-glow-bg {
+            background: theme('colors.amethyst-glow');
+        }
+
+        .credential-mask {
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.2em;
+        }
+
+        .reveal-on-hover .masked {
+            display: inline;
+        }
+        .reveal-on-hover .unmasked {
+            display: none;
+        }
+        .reveal-on-hover:hover .masked {
+            display: none;
+        }
+        .reveal-on-hover:hover .unmasked {
+            display: inline;
+            letter-spacing: normal;
+        }
+
+        /* Subtle atmospheric glow for cards */
+        .card-glow:hover {
+            box-shadow: 0 0 25px rgba(183, 148, 244, 0.15);
+            border-color: rgba(183, 148, 244, 0.4);
+        }
+    </style>
+</head>
+<body class="flex min-h-screen bg-background overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 w-[calc(100%-260px)] z-50 bg-surface-dim/90 backdrop-blur-md border-b-[0.5px] border-primary/20 flex justify-between items-center h-20 px-margin-desktop">
+<div class="flex items-center gap-4">
+<span class="font-headline-sm text-headline-sm font-black text-primary">AEGIS-Security</span>
+<div class="ml-8 relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="bg-surface-container border border-primary/20 rounded-lg pl-10 pr-4 py-2 text-body-md text-on-surface focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all w-64 placeholder-on-surface-variant" placeholder="Search credentials..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-all duration-300">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-all duration-300">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-all duration-300">
+<span class="material-symbols-outlined">dns</span>
+</button>
+</div>
+<button class="amethyst-glow-bg text-on-primary font-body-md font-semibold px-6 py-2 rounded-lg hover:brightness-110 hover:shadow-[0_0_12px_rgba(183,148,244,0.6)] transition-all">
+                Deploy Shield
+            </button>
+<div class="h-10 w-10 rounded-full border border-primary/30 overflow-hidden">
+<img alt="Security Admin" class="w-full h-full object-cover" data-alt="A futuristic, high-tech security administrator avatar portrait in a dark cyber environment with deep slate navy and bright amethyst purple glowing accents. Premium corporate tech aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcCOOqimGWhRYBNkhtPJnvc51oON-augOBsrNsFn6Yd2cTgJoHLr4ak0iaT38wKWw3cO2cVJmiOVSeREaloFN2XZaBfzntaUlgd4N0P-KGtB9OmjQOmDUPRQWTvjMCUl523C-Uei6jd5oowAf9_iL5okV5z49n3VddIYKKOtkJO5WvDFM6PiO4mdbgt6honrqMKLQU9hdvTeN_i9cBoQRczMFyOO8ziCJUGrmvMlhGaiZ1Bl8EwK8VNA"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full w-[260px] bg-surface-container-low dark:bg-surface-container-low/80 backdrop-blur-xl border-r-[0.5px] border-primary/20 shadow-[0_0_20px_rgba(183,148,244,0.1)] flex flex-col gap-base p-margin-desktop z-40">
+<div class="flex items-center gap-3 mb-8">
+<div class="h-12 w-12 rounded-lg border border-primary/30 overflow-hidden flex-shrink-0 bg-surface-container">
+<img alt="User Security Profile" class="w-full h-full object-cover" data-alt="A high-tech glowing geometric crest or shield emblem, symbolizing elite cyber security, rendered in deep navy and vibrant amethyst purple tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBxdRGDI2lFlNJjNO-W2y6GJCmLuP8YUo1elWFUq7lNxaZRDziZ5ZkjDfr4GJPH8x13wfHdXLFl30XzlW7fqsjJ5KBDYJgigsaQY1gAt63UPgNIDMU9Yi8JJz8KZDwaeUeefxvSYrLu8tvX5p3Z5vfqGdAPQx3DVZWNmBmvZriaJmJ2GXcUEodkPrxcGDe98fXIVN8d9x4bC5y0VspTuDBBFUVU34Mjn79d3JTS2igrwDKujgJ0vbLaw"/>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary tracking-tight">AEGIS</h1>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Protocol Level 4</p>
+</div>
+</div>
+<ul class="flex flex-col gap-2 flex-grow">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Command Center</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">terminal</span>
+<span class="font-body-md">Threat Terminal</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary font-bold border-r-2 border-primary bg-primary-container/10" href="#">
+<span class="material-symbols-outlined">vpn_key</span>
+<span class="font-body-md">Credential Vault</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">hub</span>
+<span class="font-body-md">Network Map</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-md">System Audit</span>
+</a>
+</li>
+</ul>
+<div class="mt-auto">
+<button class="w-full amethyst-glow-bg text-on-primary font-body-md font-semibold px-4 py-3 rounded-lg mb-6 hover:brightness-110 hover:shadow-[0_0_12px_rgba(183,148,244,0.6)] transition-all flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-sm">shield</span>
+                Deploy Shield
+            </button>
+<ul class="flex flex-col gap-2 border-t-[0.5px] border-primary/20 pt-4">
+<li>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-sm">help</span>
+<span class="font-body-md text-sm">Support</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-sm">logout</span>
+<span class="font-body-md text-sm">Logout</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-[260px] mt-20 p-margin-desktop w-[calc(100%-260px)]">
+<!-- Page Header & Actions -->
+<div class="flex justify-between items-end mb-8">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">Credential Vault</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Secure access management and rotation protocols.</p>
+</div>
+<button class="flex items-center gap-2 bg-surface-container border border-primary text-primary px-5 py-2.5 rounded-lg hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined">add</span>
+<span class="font-body-md font-semibold">New Credential</span>
+</button>
+</div>
+<!-- Bento Grid Layout for Credentials -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-gutter">
+<!-- Vault Statistics / Guardian Shield Widget -->
+<div class="col-span-1 xl:col-span-3 grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+<div class="bg-surface-slate rounded-xl p-6 border border-primary/20 flex flex-col justify-between">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Total Credentials</span>
+<div class="flex items-end justify-between mt-4">
+<span class="font-headline-lg text-headline-lg text-primary">142</span>
+<span class="material-symbols-outlined text-primary/50 text-3xl">vpn_key</span>
+</div>
+</div>
+<div class="bg-surface-slate rounded-xl p-6 border border-primary/20 flex flex-col justify-between">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Active Sessions</span>
+<div class="flex items-end justify-between mt-4">
+<span class="font-headline-lg text-headline-lg text-tertiary">28</span>
+<span class="material-symbols-outlined text-tertiary/50 text-3xl">cast_connected</span>
+</div>
+</div>
+<div class="bg-surface-slate rounded-xl p-6 border border-critical-ruby/40 flex flex-col justify-between relative overflow-hidden">
+<div class="absolute inset-0 bg-critical-ruby/5"></div>
+<span class="font-label-caps text-label-caps text-critical-ruby relative z-10 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-critical-ruby animate-pulse"></span>
+                        Rotation Due
+                    </span>
+<div class="flex items-end justify-between mt-4 relative z-10">
+<span class="font-headline-lg text-headline-lg text-critical-ruby">3</span>
+<span class="material-symbols-outlined text-critical-ruby/50 text-3xl">warning</span>
+</div>
+</div>
+<div class="bg-surface-slate rounded-xl p-6 border border-admin-gold/40 flex flex-col justify-between">
+<span class="font-label-caps text-label-caps text-admin-gold">Admin Overrides</span>
+<div class="flex items-end justify-between mt-4">
+<span class="font-headline-lg text-headline-lg text-admin-gold">1</span>
+<span class="material-symbols-outlined text-admin-gold/50 text-3xl">admin_panel_settings</span>
+</div>
+</div>
+</div>
+<!-- AWS Credential Card -->
+<div class="bg-surface-slate rounded-xl border border-primary/20 p-6 flex flex-col card-glow transition-all duration-300 relative group overflow-hidden">
+<!-- Subtle background mesh -->
+<div class="absolute inset-0 opacity-10 bg-[radial-gradient(#b794f4_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none"></div>
+<div class="flex justify-between items-start mb-6 relative z-10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container flex items-center justify-center border border-primary/30">
+<span class="material-symbols-outlined text-primary">cloud</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">AWS Prod Admins</h3>
+<p class="font-body-md text-sm text-on-surface-variant">Cloud Infrastructure</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="space-y-4 flex-grow relative z-10">
+<div class="bg-surface-container-lowest rounded-lg p-3 border border-outline-variant/30 flex justify-between items-center group/field reveal-on-hover cursor-pointer">
+<div class="flex flex-col">
+<span class="font-label-caps text-[10px] text-on-surface-variant mb-1">ACCESS KEY ID</span>
+<span class="font-data-mono text-data-mono text-primary-fixed">
+<span class="masked credential-mask">••••••••••••••••</span>
+<span class="unmasked">AKIAIOSFODNN7EXAMPLE</span>
+</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm opacity-0 group-hover/field:opacity-100 transition-opacity">content_copy</span>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-3 border border-outline-variant/30 flex justify-between items-center group/field reveal-on-hover cursor-pointer">
+<div class="flex flex-col">
+<span class="font-label-caps text-[10px] text-on-surface-variant mb-1">SECRET ACCESS KEY</span>
+<span class="font-data-mono text-data-mono text-primary-fixed">
+<span class="masked credential-mask">••••••••••••••••••••••••</span>
+<span class="unmasked">wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY</span>
+</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm opacity-0 group-hover/field:opacity-100 transition-opacity">content_copy</span>
+</div>
+</div>
+<div class="mt-6 flex justify-between items-center pt-4 border-t border-outline-variant/20 relative z-10">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-success-emerald"></span>
+<span class="font-label-caps text-[10px] text-on-surface-variant">Rotated 12d ago</span>
+</div>
+<button class="font-label-caps text-[11px] text-primary hover:text-primary-container uppercase tracking-wider">Inject Session</button>
+</div>
+</div>
+<!-- PostgreSQL Credential Card -->
+<div class="bg-surface-slate rounded-xl border border-critical-ruby/30 p-6 flex flex-col card-glow transition-all duration-300 relative group overflow-hidden">
+<!-- Critical Glow Background -->
+<div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-critical-ruby/0 via-critical-ruby/50 to-critical-ruby/0"></div>
+<div class="flex justify-between items-start mb-6 relative z-10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container flex items-center justify-center border border-critical-ruby/30">
+<span class="material-symbols-outlined text-critical-ruby">database</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Customer DB Core</h3>
+<p class="font-body-md text-sm text-on-surface-variant">PostgreSQL Cluster</p>
+</div>
+</div>
+<span class="bg-critical-ruby/10 text-critical-ruby font-label-caps text-[10px] px-2 py-1 rounded border border-critical-ruby/30 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">warning</span> Rotation Due
+                    </span>
+</div>
+<div class="space-y-4 flex-grow relative z-10">
+<div class="bg-surface-container-lowest rounded-lg p-3 border border-outline-variant/30 flex justify-between items-center group/field reveal-on-hover cursor-pointer">
+<div class="flex flex-col">
+<span class="font-label-caps text-[10px] text-on-surface-variant mb-1">USERNAME</span>
+<span class="font-data-mono text-data-mono text-primary-fixed">
+<span class="masked credential-mask">••••••••</span>
+<span class="unmasked">db_admin_root</span>
+</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm opacity-0 group-hover/field:opacity-100 transition-opacity">content_copy</span>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-3 border border-outline-variant/30 flex justify-between items-center group/field reveal-on-hover cursor-pointer">
+<div class="flex flex-col">
+<span class="font-label-caps text-[10px] text-on-surface-variant mb-1">PASSWORD</span>
+<span class="font-data-mono text-data-mono text-primary-fixed">
+<span class="masked credential-mask">••••••••••••••••</span>
+<span class="unmasked">P@ssw0rd!Complex789#</span>
+</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm opacity-0 group-hover/field:opacity-100 transition-opacity">content_copy</span>
+</div>
+</div>
+<div class="mt-6 flex justify-between items-center pt-4 border-t border-outline-variant/20 relative z-10">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-critical-ruby"></span>
+<span class="font-label-caps text-[10px] text-critical-ruby">Expires in 2 hrs</span>
+</div>
+<button class="font-label-caps text-[11px] bg-critical-ruby/20 text-critical-ruby px-3 py-1 rounded hover:bg-critical-ruby/30 uppercase tracking-wider">Rotate Now</button>
+</div>
+</div>
+<!-- Jump Server Credential Card -->
+<div class="bg-surface-slate rounded-xl border border-admin-gold/30 p-6 flex flex-col card-glow transition-all duration-300 relative group overflow-hidden">
+<!-- Admin Glow Background -->
+<div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-admin-gold/0 via-admin-gold/50 to-admin-gold/0"></div>
+<div class="flex justify-between items-start mb-6 relative z-10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-admin-gold/10 flex items-center justify-center border border-admin-gold/30">
+<span class="material-symbols-outlined text-admin-gold">router</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-admin-gold">Jump Server 01</h3>
+<p class="font-body-md text-sm text-on-surface-variant">DMZ Access Node</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-admin-gold">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="space-y-4 flex-grow relative z-10">
+<div class="bg-surface-container-lowest rounded-lg p-3 border border-outline-variant/30 flex justify-between items-center group/field reveal-on-hover cursor-pointer">
+<div class="flex flex-col">
+<span class="font-label-caps text-[10px] text-on-surface-variant mb-1">HOST</span>
+<span class="font-data-mono text-data-mono text-primary-fixed">
+<span class="masked credential-mask">••••••••••••••</span>
+<span class="unmasked">bastion.prod.internal</span>
+</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm opacity-0 group-hover/field:opacity-100 transition-opacity">content_copy</span>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-3 border border-outline-variant/30 flex justify-between items-center group/field reveal-on-hover cursor-pointer">
+<div class="flex flex-col">
+<span class="font-label-caps text-[10px] text-on-surface-variant mb-1">SSH PRIVATE KEY</span>
+<span class="font-data-mono text-data-mono text-primary-fixed">
+<span class="masked credential-mask">••••••••••••••••••••••••</span>
+<span class="unmasked">-----BEGIN RSA PRIVATE KEY-----...</span>
+</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm opacity-0 group-hover/field:opacity-100 transition-opacity">content_copy</span>
+</div>
+</div>
+<div class="mt-6 flex justify-between items-center pt-4 border-t border-outline-variant/20 relative z-10">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-admin-gold"></span>
+<span class="font-label-caps text-[10px] text-admin-gold">Elevated Privileges</span>
+</div>
+<button class="font-label-caps text-[11px] text-admin-gold hover:brightness-110 uppercase tracking-wider">Connect (SSH)</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

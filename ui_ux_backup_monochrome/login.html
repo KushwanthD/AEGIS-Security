@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEGIS - Secure Portal Login</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJz48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9J2cnIHgxPScwJScgeTE9JzAlJyB4Mj0nMTAwJScgeTI9JzEwMCUnPjxzdG9wIG9mZnNldD0nMCUnIHN0b3AtY29sb3I9JyNmZmZmZmYnLz48c3RvcCBvZmZzZXQ9JzEwMCUnIHN0b3AtY29sb3I9JyNhMWExYWEnLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cGF0aCBkPSdNNTAsMTAgTDg1LDIyIEw4NSw1NSBDODUsNzUgNzAsODggNTAsOTMgQzMwLDg4IDE1LDc1IDE1LDU1IEwxNSwyMiBaJyBmaWxsPSd1cmwoI2cpJy8+PHBhdGggZD0nTTUwLDMwIEw2OCw2OCBMNTgsNjggTDUwLDUwIEw0Miw2OCBMMzIsNjggWicgZmlsbD0nIzBhMGEwYycvPjxwYXRoIGQ9J000Miw1NyBMNTgsNTcnIHN0cm9rZT0nIzBhMGEwYycgc3Ryb2tlLXdpZHRoPSczJy8+PC9zdmc+">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=1.4">
+    <style>
+        @keyframes stack-pulse {
+            0%, 100% { opacity: 0.35; transform: rotateX(60deg) translateZ(-20px) scale(0.95); }
+            50% { opacity: 1; transform: rotateX(60deg) translateZ(25px) scale(1.05); filter: drop-shadow(0 0 15px #a855f7); }
+        }
+    </style>
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            const preloader = document.getElementById('preloader');
+            if (preloader) {
+                setTimeout(() => {
+                    preloader.style.opacity = '0';
+                    preloader.style.visibility = 'hidden';
+                }, 600);
+            }
+        });
+        document.addEventListener('submit', function() {
+            const preloader = document.getElementById('preloader');
+            if (preloader) {
+                preloader.style.visibility = 'visible';
+                preloader.style.opacity = '1';
+            }
+        });
+    </script>
+</head>
+<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 0;">
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('aegis-theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+    <!-- Dynamic Theme Preloader -->
+    <div id="preloader" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--preloader-bg); z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s ease, visibility 0.3s ease;">
+        <!-- Light Theme Preloader (Smoke Rings) -->
+        <div class="preloader-light" style="text-align: center;">
+            <div class="smoke-ring-container" style="position: relative; width: 110px; height: 110px; margin: 0 auto 1.5rem;">
+                <div class="smoke-ring" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; box-shadow: inset 0 0 20px #ffffff, 0 0 25px rgba(255,255,255,0.7); border: 2px solid rgba(255,255,255,0.05); animation: rotate-smoke 3s infinite linear; filter: blur(1px);"></div>
+                <div class="smoke-ring-inner" style="position: absolute; top: 15px; left: 15px; width: 80px; height: 80px; border-radius: 50%; box-shadow: inset 0 0 15px #e4e4e7, 0 0 15px rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.03); animation: rotate-smoke-rev 2s infinite linear; filter: blur(1.5px);"></div>
+            </div>
+            <div style="color: #ffffff; font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;">
+                AEGIS <span style="color: #e4e4e7;">GATEWAY</span>
+            </div>
+            <div style="margin-top: 0.5rem; color: #d4d4d8; font-family: 'Courier New', monospace; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;">
+                Verifying Session Keys...
+            </div>
+        </div>
+        
+        <!-- Dark Theme Preloader (3D Concentric Stack) -->
+        <div class="preloader-dark" style="text-align: center;">
+            <div class="concentric-3d-stack" style="position: relative; width: 110px; height: 110px; margin: 0 auto 1.75rem; perspective: 600px;">
+                <div class="ring-3d r1" style="position: absolute; width: 100%; height: 100%; border: 2px solid rgba(139,92,246,0.3); border-radius: 50%; transform: rotateX(60deg) translateZ(-20px); animation: stack-pulse 2s infinite ease-in-out;"></div>
+                <div class="ring-3d r2" style="position: absolute; width: 100%; height: 100%; border: 2px solid rgba(168,85,247,0.5); border-radius: 50%; transform: rotateX(60deg) translateZ(0px); animation: stack-pulse 2s infinite ease-in-out 0.4s;"></div>
+                <div class="ring-3d r3" style="position: absolute; width: 100%; height: 100%; border: 2px solid rgba(236,72,153,0.7); border-radius: 50%; transform: rotateX(60deg) translateZ(20px); animation: stack-pulse 2s infinite ease-in-out 0.8s;"></div>
+                <div class="ring-3d r4" style="position: absolute; width: 100%; height: 100%; border: 2px solid rgba(255,255,255,0.9); border-radius: 50%; transform: rotateX(60deg) translateZ(40px); animation: stack-pulse 2s infinite ease-in-out 1.2s;"></div>
+            </div>
+            <div style="color: #ffffff; font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;">
+                AEGIS <span style="color: #a855f7;">GATEWAY</span>
+            </div>
+            <div style="margin-top: 0.5rem; color: #8b5cf6; font-family: 'Courier New', monospace; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;">
+                Verifying Session Keys...
+            </div>
+        </div>
+    </div>
+
+    <div class="card auth-container" style="max-width: 440px;">
+        <div class="auth-header">
+            <div class="logo-container" style="justify-content: center; margin-bottom: 0.5rem;">
+                <div class="logo-icon">A</div>
+                <span class="logo-text">AEG<span class="logo-accent">IS</span></span>
+            </div>
+            <p style="color: var(--text-secondary); margin-top: 5px;">Enterprise Security Assessment Portal</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, msg in messages %}
+                    <p style="color: var(--accent); text-align: center; margin-bottom: 1rem; font-weight: 500; font-size: 0.9rem;">{{ msg }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form id="login-form" method="POST" style="max-width: 100%;">
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label>Username</label>
+                <input type="text" name="username" placeholder="e.g. admin" required autocomplete="off">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label>Password</label>
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input id="login-password" type="password" name="password" placeholder="••••••••" required style="width: 100%; padding-right: 2.8rem;">
+                    <button type="button" id="toggle-login-pw" onclick="togglePassword('login-password','toggle-login-pw')" tabindex="-1"
+                        style="position: absolute; right: 0.75rem; background: none; border: none; cursor: pointer; color: var(--text-secondary); font-size: 1.1rem; padding: 0; line-height: 1; transition: color 0.2s;"
+                        title="Show / Hide password">👁</button>
+                </div>
+            </div>
+
+            <script>
+                function togglePassword(inputId, btnId) {
+                    const input = document.getElementById(inputId);
+                    const btn   = document.getElementById(btnId);
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        btn.textContent = '🙈';
+                        btn.style.color = 'var(--primary)';
+                    } else {
+                        input.type = 'password';
+                        btn.textContent = '👁';
+                        btn.style.color = 'var(--text-secondary)';
+                    }
+                }
+
+                document.getElementById('login-form').addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const form = this;
+                    const pwdInput = document.getElementById('login-password');
+                    const rawPassword = pwdInput.value;
+
+                    // Standard SHA-256 browser crypto hash
+                    const msgBuffer = new TextEncoder().encode(rawPassword);
+                    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+                    pwdInput.value = hashHex;
+                    form.submit(); // Calling form.submit() directly does not re-trigger the submit event
+                });
+            </script>
+
+            <button type="submit" class="btn" style="width: 100%; background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.25); color: white;">Sign In</button>
+        </form>
+
+        <div class="auth-footer" style="margin-top: 1.5rem; text-align: center; display: flex; flex-direction: column; gap: 0.5rem;">
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">
+                Don't have an account? <a href="/register" style="color: var(--primary); font-weight: bold; text-decoration: none;">Register here</a>
+            </p>
+            <small style="color: var(--text-secondary); font-size: 0.78rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 0.4rem 0.75rem; display: inline-block;">
+                🧪 <strong>Demo account</strong> — for demonstration purposes only: <b>admin / admin</b>
+            </small>
+
+        </div>
+    </div>
+
+</body>
+</html>

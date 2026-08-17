@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Credential Vault - AEGIS-Security</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-container": "#00723f",
+                      "outline-variant": "#3f4852",
+                      "security-green": "#00FF94",
+                      "primary-container": "#00a3ff",
+                      "on-surface": "#e5e2e1",
+                      "secondary-fixed-dim": "#00e383",
+                      "surface-dim": "#131313",
+                      "surface-container-high": "#2a2a2a",
+                      "on-primary-container": "#00375a",
+                      "surface-container-low": "#1c1b1b",
+                      "navy-surface": "#1E222D",
+                      "secondary-container": "#27ff97",
+                      "surface": "#131313",
+                      "on-secondary-fixed-variant": "#00522c",
+                      "surface-container-lowest": "#0e0e0e",
+                      "on-surface-variant": "#bec7d4",
+                      "on-tertiary": "#412d00",
+                      "primary-fixed-dim": "#98cbff",
+                      "tertiary": "#ffba20",
+                      "on-secondary-fixed": "#00210e",
+                      "inverse-on-surface": "#313030",
+                      "tertiary-container": "#cc9200",
+                      "on-secondary": "#00391d",
+                      "primary": "#98cbff",
+                      "on-tertiary-fixed-variant": "#5e4200",
+                      "cyber-blue": "#00A3FF",
+                      "on-tertiary-fixed": "#271900",
+                      "on-error-container": "#ffdad6",
+                      "surface-container": "#201f1f",
+                      "secondary": "#f5fff3",
+                      "inverse-surface": "#e5e2e1",
+                      "primary-fixed": "#cfe5ff",
+                      "on-tertiary-container": "#463000",
+                      "on-background": "#e5e2e1",
+                      "on-error": "#690005",
+                      "on-primary": "#003354",
+                      "secondary-fixed": "#5bffa1",
+                      "background": "#131313",
+                      "on-primary-fixed-variant": "#004a77",
+                      "tertiary-fixed": "#ffdea8",
+                      "on-primary-fixed": "#001d33",
+                      "critical-red": "#FF4B4B",
+                      "tertiary-fixed-dim": "#ffba20",
+                      "surface-container-highest": "#353534",
+                      "inverse-primary": "#00629d",
+                      "error": "#ffb4ab",
+                      "warning-amber": "#FFB800",
+                      "surface-bright": "#393939",
+                      "error-container": "#93000a",
+                      "deep-charcoal": "#1A1A1A",
+                      "outline": "#88919d",
+                      "surface-tint": "#98cbff",
+                      "surface-variant": "#353534"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "base": "8px",
+                      "sidebar-width": "280px",
+                      "xl": "64px",
+                      "md": "24px",
+                      "gutter": "24px",
+                      "xs": "4px",
+                      "sm": "12px",
+                      "lg": "40px"
+              },
+              "fontFamily": {
+                      "body-sm": ["Inter"],
+                      "code-sm": ["JetBrains Mono"],
+                      "headline-lg": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "code-md": ["JetBrains Mono"],
+                      "body-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "label-caps": ["Inter"]
+              },
+              "fontSize": {
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "code-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "headline-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "code-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-md": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body { background-color: transparent; }
+        .mask-transition { transition: opacity 0.3s ease, transform 0.3s ease; }
+        .cyber-glow-hover:hover { box-shadow: 0 0 12px rgba(0, 163, 255, 0.4); }
+        
+        /* Glint effect */
+        .glint-card {
+            position: relative;
+            overflow: hidden;
+        }
+        .glint-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.5s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .glint-card:hover::before {
+            left: 200%;
+        }
+
+        /* Interactive Cursor */
+        body { cursor: none; }
+        #custom-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(0, 163, 255, 0.5);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            box-shadow: 0 0 10px rgba(0, 163, 255, 0.8), 0 0 20px rgba(0, 163, 255, 0.4);
+            transition: width 0.2s, height 0.2s, background 0.2s;
+        }
+        #cursor-trail {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(0, 163, 255, 0.8);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 9998;
+            transition: all 0.1s ease;
+        }
+
+        /* Digital Glitch Hover */
+        .glitch-hover:hover {
+            animation: glitch-anim 0.3s infinite linear alternate-reverse;
+        }
+        @keyframes glitch-anim {
+            0% { transform: translate(0) skew(0deg); text-shadow: 2px 0 #00A3FF, -2px 0 #00FF94; }
+            20% { transform: translate(-2px, 1px) skew(2deg); text-shadow: -2px 0 #00A3FF, 2px 0 #00FF94; }
+            40% { transform: translate(2px, -1px) skew(-2deg); text-shadow: 2px 0 #00A3FF, -2px 0 #00FF94; }
+            60% { transform: translate(-1px, 2px) skew(1deg); text-shadow: -2px 0 #00A3FF, 2px 0 #00FF94; }
+            80% { transform: translate(1px, -2px) skew(-1deg); text-shadow: 2px 0 #00A3FF, -2px 0 #00FF94; }
+            100% { transform: translate(0) skew(0deg); text-shadow: 2px 0 #00A3FF, -2px 0 #00FF94; }
+        }
+
+        /* Shader Background */
+        #shader-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="text-on-background font-body-md antialiased min-h-screen flex">
+<!-- Shader Background Canvas -->
+<canvas id="shader-bg"></canvas>
+<!-- Custom Cursor -->
+<div id="custom-cursor"></div>
+<div id="cursor-trail"></div>
+<!-- SideNavBar (from JSON) -->
+<nav class="hidden md:flex bg-navy-surface/50 backdrop-blur-2xl border-r border-white/5 shadow-[4px_0_24px_rgba(0,163,255,0.1)] fixed h-full w-[280px] left-0 top-0 flex flex-col py-md px-sm z-50">
+<!-- Header -->
+<div class="mb-lg px-sm">
+<div class="flex items-center gap-sm mb-sm">
+<img alt="Security Analyst Profile" class="w-10 h-10 rounded-full border border-cyber-blue" data-alt="A sleek, highly detailed profile avatar of a cybersecurity analyst, rendered in a futuristic, neon-accented cyberpunk style. Dark background with subtle blue glowing circuitry motifs." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy2f36GEn2Lg9xXU7oc50BRZqwmN8LINfc7cWm1ttmtmshhSrj5haUjfDPZQaUCxMtwzcHA_uBEaQU9Gd63kORyS5rCMLh3EZyKCnThuC9CJLaqj9v-tykgzII6eRQE1vgPJPD79ZEGqVa5Qiejp2GH2S_XjOgk7hte5DKKrOLNJ2I9dawv13fFbYvlwn3OVv-R-cuy_CLJSZcmv8eTyXFLThrzUqDw7lY2KwxsHxN8X6qb98DUt5-xw"/>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-cyber-blue tracking-tight leading-tight">AEGIS-Security</h1>
+<p class="font-label-caps text-label-caps text-security-green">Vigilance Active</p>
+</div>
+</div>
+<button class="w-full bg-cyber-blue text-on-primary font-label-caps text-label-caps py-sm rounded cyber-glow-hover transition-all mt-sm flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined" data-icon="rocket_launch" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+                QUICK DEPLOY
+            </button>
+</div>
+<!-- Main Navigation -->
+<div class="flex-1 flex flex-col gap-xs">
+<!-- Command Center -->
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-caps text-label-caps">Command Center</span>
+</a>
+<!-- Threat Terminal -->
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+<span class="font-label-caps text-label-caps">Threat Terminal</span>
+</a>
+<!-- Credential Vault (ACTIVE) -->
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg text-cyber-blue font-bold border-l-4 border-cyber-blue bg-cyber-blue/10 transition-transform duration-150 scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="vpn_key" style="font-variation-settings: 'FILL' 1;">vpn_key</span>
+<span class="font-label-caps text-label-caps">Credential Vault</span>
+</a>
+<!-- Network Map -->
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="font-label-caps text-label-caps">Network Map</span>
+</a>
+<!-- System Audit -->
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-caps text-label-caps">System Audit</span>
+</a>
+</div>
+<!-- Footer Navigation -->
+<div class="mt-auto border-t border-white/5 pt-md flex flex-col gap-xs">
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-caps text-label-caps">Settings</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors duration-200 text-error" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-caps text-label-caps">Logout</span>
+</a>
+</div>
+</nav>
+<!-- Main Wrapper to accommodate sidebar -->
+<div class="flex-1 flex flex-col md:ml-[280px] min-h-screen">
+<!-- TopAppBar (from JSON) -->
+<header class="bg-surface/80 backdrop-blur-md border-b border-white/5 fixed top-0 right-0 w-full md:w-[calc(100%-280px)] z-40 flex justify-between items-center h-16 px-gutter">
+<!-- Left Side: Nav Links (None active for this destination) -->
+<div class="hidden lg:flex items-center gap-md">
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-3 py-2 rounded transition-all" href="#">Network Status</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-3 py-2 rounded transition-all" href="#">Logs</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-3 py-2 rounded transition-all" href="#">Active Threats</a>
+</div>
+<!-- Right Side: Search, Actions, Profile -->
+<div class="flex items-center gap-md ml-auto">
+<!-- Search Bar -->
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm" data-icon="search">search</span>
+<input class="bg-surface-container-high border-none rounded-full py-1.5 pl-10 pr-4 text-body-sm text-on-surface focus:ring-1 focus:ring-cyber-blue placeholder-outline w-64" placeholder="Search system..." type="text"/>
+</div>
+<!-- Icon Actions -->
+<div class="flex items-center gap-sm text-on-surface-variant">
+<button class="hover:text-cyber-blue transition-colors p-1 rounded-full hover:bg-surface-container-high"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
+<button class="hover:text-cyber-blue transition-colors p-1 rounded-full hover:bg-surface-container-high"><span class="material-symbols-outlined" data-icon="security">security</span></button>
+<button class="hover:text-cyber-blue transition-colors p-1 rounded-full hover:bg-surface-container-high"><span class="material-symbols-outlined" data-icon="help">help</span></button>
+</div>
+<!-- Trailing Primary Action -->
+<button class="hidden md:block bg-surface-container-highest border border-cyber-blue/50 text-cyber-blue font-label-caps text-label-caps px-4 py-1.5 rounded hover:bg-cyber-blue hover:text-on-primary transition-all">
+                    DEPLOY SHIELD
+                </button>
+</div>
+</header>
+<!-- Page Canvas -->
+<main class="flex-1 pt-24 pb-lg px-gutter max-w-7xl mx-auto w-full relative z-10">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-lg gap-4">
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 hidden md:block" id="threejs-container"></div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-1">Credential Vault</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Securely manage and access encrypted system credentials.</p>
+</div>
+</div>
+<button class="bg-cyber-blue text-on-primary font-label-caps text-label-caps px-6 py-2.5 rounded-lg flex items-center gap-2 cyber-glow-hover transition-all">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+                    NEW CREDENTIAL
+                </button>
+</div>
+<!-- Credentials Grid (Modular Card Layout) -->
+<div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-md">
+<!-- Card 1: AWS Keys -->
+<div class="glint-card bg-deep-charcoal/60 backdrop-blur-2xl border border-white/5 rounded-xl p-md flex flex-col h-full hover:border-cyber-blue/30 transition-colors group/card">
+<div class="flex justify-between items-start mb-md">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container-high/80 flex items-center justify-center border border-white/10 text-tertiary">
+<span class="material-symbols-outlined" data-icon="cloud">cloud</span>
+</div>
+<div>
+<h3 class="font-body-md text-body-md font-semibold text-on-surface leading-tight">AWS Production Keys</h3>
+<span class="font-label-caps text-label-caps text-outline">us-east-1 (Primary)</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider bg-security-green/10 text-security-green border border-security-green/20">Active</span>
+</div>
+<div class="space-y-4 flex-1">
+<div>
+<label class="font-label-caps text-label-caps text-outline block mb-1">Access Key ID</label>
+<div class="font-code-sm text-code-sm text-on-surface bg-surface-container/80 px-3 py-2 rounded border border-white/5">
+                                AKIAIOSFODNN7EXAMPLE
+                            </div>
+</div>
+<!-- Privacy-by-Design Masked Field -->
+<div>
+<label class="font-label-caps text-label-caps text-outline block mb-1">Secret Access Key</label>
+<div class="group relative flex items-center justify-between bg-surface-container/80 rounded px-3 py-2 border border-white/5 hover:border-cyber-blue/50 transition-colors cursor-pointer">
+<!-- Masked View -->
+<span class="font-code-md text-code-md text-on-surface-variant tracking-[0.2em] group-hover:opacity-0 absolute transition-opacity duration-200">••••••••••••••••••••••••</span>
+<!-- Revealed View -->
+<span class="font-code-sm text-code-sm text-security-green opacity-0 group-hover:opacity-100 transition-opacity duration-200 glitch-hover">wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY</span>
+<span class="material-symbols-outlined text-outline group-hover:text-cyber-blue transition-colors ml-auto text-[18px]" data-icon="visibility">visibility</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2: Database Password -->
+<div class="glint-card bg-deep-charcoal/60 backdrop-blur-2xl border border-white/5 rounded-xl p-md flex flex-col h-full hover:border-cyber-blue/30 transition-colors group/card">
+<div class="flex justify-between items-start mb-md">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container-high/80 flex items-center justify-center border border-white/10 text-cyber-blue">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+</div>
+<div>
+<h3 class="font-body-md text-body-md font-semibold text-on-surface leading-tight">PostgreSQL Cluster</h3>
+<span class="font-label-caps text-label-caps text-outline">db-prod-main</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider bg-security-green/10 text-security-green border border-security-green/20">Active</span>
+</div>
+<div class="space-y-4 flex-1">
+<div>
+<label class="font-label-caps text-label-caps text-outline block mb-1">Username</label>
+<div class="font-code-sm text-code-sm text-on-surface bg-surface-container/80 px-3 py-2 rounded border border-white/5">
+                                admin_sys_root
+                            </div>
+</div>
+<!-- Privacy-by-Design Masked Field -->
+<div>
+<label class="font-label-caps text-label-caps text-outline block mb-1">Password</label>
+<div class="group relative flex items-center justify-between bg-surface-container/80 rounded px-3 py-2 border border-white/5 hover:border-cyber-blue/50 transition-colors cursor-pointer">
+<!-- Masked View -->
+<span class="font-code-md text-code-md text-on-surface-variant tracking-[0.2em] group-hover:opacity-0 absolute transition-opacity duration-200">••••••••••••••••</span>
+<!-- Revealed View -->
+<span class="font-code-sm text-code-sm text-security-green opacity-0 group-hover:opacity-100 transition-opacity duration-200 glitch-hover">P@ssw0rd_V3ry_S3cur3!99</span>
+<span class="material-symbols-outlined text-outline group-hover:text-cyber-blue transition-colors ml-auto text-[18px]" data-icon="visibility">visibility</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3: SSH Key -->
+<div class="glint-card bg-deep-charcoal/60 backdrop-blur-2xl border border-white/5 rounded-xl p-md flex flex-col h-full hover:border-cyber-blue/30 transition-colors group/card">
+<div class="flex justify-between items-start mb-md">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container-high/80 flex items-center justify-center border border-white/10 text-outline">
+<span class="material-symbols-outlined" data-icon="key">key</span>
+</div>
+<div>
+<h3 class="font-body-md text-body-md font-semibold text-on-surface leading-tight">Jump Server RSA</h3>
+<span class="font-label-caps text-label-caps text-outline">10.0.4.55</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider bg-warning-amber/10 text-warning-amber border border-warning-amber/20">Rot. Due</span>
+</div>
+<div class="space-y-4 flex-1">
+<div>
+<label class="font-label-caps text-label-caps text-outline block mb-1">User</label>
+<div class="font-code-sm text-code-sm text-on-surface bg-surface-container/80 px-3 py-2 rounded border border-white/5">
+                                ec2-user
+                            </div>
+</div>
+<!-- Privacy-by-Design Masked Field -->
+<div>
+<label class="font-label-caps text-label-caps text-outline block mb-1">Private Key (PEM)</label>
+<div class="group relative flex items-center justify-between bg-surface-container/80 rounded px-3 py-2 border border-white/5 hover:border-cyber-blue/50 transition-colors cursor-pointer">
+<!-- Masked View -->
+<span class="font-code-md text-code-md text-on-surface-variant tracking-[0.2em] group-hover:opacity-0 absolute transition-opacity duration-200">••••••••••••••••</span>
+<!-- Revealed View -->
+<span class="font-code-sm text-code-sm text-security-green opacity-0 group-hover:opacity-100 transition-opacity duration-200 truncate pr-6 glitch-hover">-----BEGIN RSA PRIVATE KEY-----...</span>
+<span class="material-symbols-outlined text-outline group-hover:text-cyber-blue transition-colors ml-auto text-[18px]" data-icon="visibility">visibility</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Three.js Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+    // Cursor Logic
+    const cursor = document.getElementById('custom-cursor');
+    const trail = document.getElementById('cursor-trail');
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let trailX = mouseX;
+    let trailY = mouseY;
+
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        cursor.style.left = mouseX + 'px';
+        cursor.style.top = mouseY + 'px';
+    });
+
+    // Interactive elements scale cursor
+    const interactiveElements = document.querySelectorAll('button, a, .cursor-pointer');
+    interactiveElements.forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
+            cursor.style.background = 'rgba(0, 255, 148, 0.4)';
+            cursor.style.boxShadow = '0 0 10px rgba(0, 255, 148, 0.8), 0 0 20px rgba(0, 255, 148, 0.4)';
+        });
+        el.addEventListener('mouseleave', () => {
+            cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+            cursor.style.background = 'rgba(0, 163, 255, 0.5)';
+            cursor.style.boxShadow = '0 0 10px rgba(0, 163, 255, 0.8), 0 0 20px rgba(0, 163, 255, 0.4)';
+        });
+    });
+
+    function animateCursor() {
+        trailX += (mouseX - trailX) * 0.2;
+        trailY += (mouseY - trailY) * 0.2;
+        trail.style.left = trailX + 'px';
+        trail.style.top = trailY + 'px';
+        requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+
+    // 3D Vault Asset
+    (function() {
+      const container = document.getElementById('threejs-container');
+      if(!container) return;
+      const width = container.clientWidth || 64;
+      const height = container.clientHeight || 64;
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(width, height);
+      container.appendChild(renderer.domElement);
+
+      // Vault/Key Icon Geometry
+      const group = new THREE.Group();
+      const boxGeo = new THREE.BoxGeometry(1, 1.2, 0.4);
+      const boxMat = new THREE.MeshPhongMaterial({ color: 0x00A3FF, wireframe: true });
+      const box = new THREE.Mesh(boxGeo, boxMat);
+      group.add(box);
+
+      const ringGeo = new THREE.TorusGeometry(0.3, 0.05, 16, 100);
+      const ringMat = new THREE.MeshPhongMaterial({ color: 0x00A3FF });
+      const ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.position.y = 0.8;
+      group.add(ring);
+
+      scene.add(group);
+
+      const light = new THREE.PointLight(0x00A3FF, 2);
+      light.position.set(2, 2, 5);
+      scene.add(light);
+      scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+
+      camera.position.z = 3;
+
+      let mx = 0, my = 0;
+      window.addEventListener('mousemove', (e) => {
+        mx = (e.clientX / window.innerWidth) * 2 - 1;
+        my = -(e.clientY / window.innerHeight) * 2 + 1;
+      });
+
+      function animate() {
+        requestAnimationFrame(animate);
+        group.rotation.y += 0.01;
+        group.position.x += (mx * 0.3 - group.position.x) * 0.05;
+        group.position.y += (my * 0.3 - group.position.y) * 0.05;
+        renderer.render(scene, camera);
+      }
+
+      window.addEventListener('resize', () => {
+        const w = container.clientWidth || 64;
+        const h = container.clientHeight || 64;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+      });
+
+      animate();
+    })();
+
+    // Shader Background Implementation
+    const canvas = document.getElementById('shader-bg');
+    const gl = canvas.getContext('webgl');
+
+    if (gl) {
+        // Vertex Shader
+        const vsSource = `
+            attribute vec4 aVertexPosition;
+            varying vec2 v_texCoord;
+            void main() {
+                gl_Position = aVertexPosition;
+                v_texCoord = aVertexPosition.xy * 0.5 + 0.5;
+            }
+        `;
+
+        // Fragment Shader (Neural Pulse)
+        const fsSource = `
+            precision highp float;
+            uniform float u_time;
+            uniform vec2 u_resolution;
+            uniform vec2 u_mouse;
+            varying vec2 v_texCoord;
+
+            // Simplex noise-like function for organic flow
+            vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+            vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+            vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
+            vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+
+            float snoise(vec3 v) {
+              const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
+              const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
+              vec3 i  = floor(v + dot(v, C.yyy) );
+              vec3 x0 =   v - i + dot(i, C.xxx) ;
+              vec3 g = step(x0.yzx, x0.xyz);
+              vec3 l = 1.0 - g;
+              vec3 i1 = min( g.xyz, l.zxy );
+              vec3 i2 = max( g.xyz, l.zxy );
+              vec3 x1 = x0 - i1 + C.xxx;
+              vec3 x2 = x0 - i2 + C.yyy;
+              vec3 x3 = x0 - D.yyy;
+              i = mod289(i);
+              vec4 p = permute( permute( permute(
+                         i.z + vec4(0.0, i1.z, i2.z, 1.0 ))
+                       + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))
+                       + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
+              float n_ = 0.142857142857;
+              vec3  ns = n_ * D.wyz - D.xzx;
+              vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+              vec4 x_ = floor(j * ns.z);
+              vec4 y_ = floor(j - 7.0 * x_ );
+              vec4 x = x_ *ns.x + ns.yyyy;
+              vec4 y = y_ *ns.x + ns.yyyy;
+              vec4 h = 1.0 - abs(x) - abs(y);
+              vec4 b0 = vec4( x.xy, y.xy );
+              vec4 b1 = vec4( x.zw, y.zw );
+              vec4 s0 = floor(b0)*2.0 + 1.0;
+              vec4 s1 = floor(b1)*2.0 + 1.0;
+              vec4 sh = -step(h, vec4(0.0));
+              vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;
+              vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;
+              vec3 p0 = vec3(a0.xy,h.x);
+              vec3 p1 = vec3(a0.zw,h.y);
+              vec3 p2 = vec3(a1.xy,h.z);
+              vec3 p3 = vec3(a1.zw,h.w);
+              vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
+              p0 *= norm.x;
+              p1 *= norm.y;
+              p2 *= norm.z;
+              p3 *= norm.w;
+              vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+              m = m * m;
+              return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),
+                                            dot(p2,x2), dot(p3,x3) ) );
+            }
+
+            void main() {
+                vec2 uv = v_texCoord;
+                vec2 mouse = u_mouse / u_resolution;
+                
+                // Base deep space color
+                vec3 color = vec3(0.02, 0.03, 0.06); 
+                
+                // Fluid "Neural" Motion
+                float n1 = snoise(vec3(uv * 2.0, u_time * 0.15));
+                float n2 = snoise(vec3(uv * 4.0 - n1, u_time * 0.2));
+                
+                vec3 accent = vec3(0.0, 0.64, 1.0); // Cyber Blue
+                
+                // Glowing Nebula paths
+                float glow = smoothstep(0.1, 0.8, n2);
+                color += accent * glow * 0.15;
+                
+                // Interactive mouse distortion
+                float mDist = distance(uv, mouse);
+                float mGlow = smoothstep(0.4, 0.0, mDist);
+                color += accent * mGlow * 0.25;
+                
+                // Distant star particles
+                float stars = fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
+                if (stars > 0.995) {
+                    color += vec3(0.8, 0.9, 1.0) * (0.5 + 0.5 * sin(u_time + stars * 10.0));
+                }
+                
+                // Soft Vignette
+                color *= 1.0 - smoothstep(0.5, 1.5, length(uv - 0.5));
+                
+                gl_FragColor = vec4(color, 1.0);
+            }
+        `;
+
+        function createShader(gl, type, source) {
+            const shader = gl.createShader(type);
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                console.error('Shader compile error:', gl.getShaderInfoLog(shader));
+                gl.deleteShader(shader);
+                return null;
+            }
+            return shader;
+        }
+
+        const vertexShader = createShader(gl, gl.VERTEX_SHADER, vsSource);
+        const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fsSource);
+
+        const shaderProgram = gl.createProgram();
+        gl.attachShader(shaderProgram, vertexShader);
+        gl.attachShader(shaderProgram, fragmentShader);
+        gl.linkProgram(shaderProgram);
+
+        const programInfo = {
+            program: shaderProgram,
+            attribLocations: {
+                vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+            },
+            uniformLocations: {
+                time: gl.getUniformLocation(shaderProgram, 'u_time'),
+                resolution: gl.getUniformLocation(shaderProgram, 'u_resolution'),
+                mouse: gl.getUniformLocation(shaderProgram, 'u_mouse'),
+            },
+        };
+
+        const positions = [
+            -1.0,  1.0,
+             1.0,  1.0,
+            -1.0, -1.0,
+             1.0, -1.0,
+        ];
+
+        const positionBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+        function resizeCanvasToDisplaySize(canvas) {
+            const displayWidth  = canvas.clientWidth;
+            const displayHeight = canvas.clientHeight;
+            if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
+                canvas.width  = displayWidth;
+                canvas.height = displayHeight;
+            }
+        }
+
+        let startTime = Date.now();
+
+        function render() {
+            resizeCanvasToDisplaySize(canvas);
+            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+            gl.useProgram(programInfo.program);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+            gl.vertexAttribPointer(programInfo.attribLocations.vertexPosition, 2, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
+
+            gl.uniform1f(programInfo.uniformLocations.time, (Date.now() - startTime) * 0.001);
+            gl.uniform2f(programInfo.uniformLocations.resolution, gl.canvas.width, gl.canvas.height);
+            // Flip Y for WebGL coords
+            gl.uniform2f(programInfo.uniformLocations.mouse, mouseX, gl.canvas.height - mouseY);
+
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+            requestAnimationFrame(render);
+        }
+        
+        // Initial setup for Y inverted mouse for shader
+        document.addEventListener('mousemove', (e) => {
+            // Updated globally above, shader reads those globals
+        });
+
+        render();
+    }
+</script>
+</body></html>

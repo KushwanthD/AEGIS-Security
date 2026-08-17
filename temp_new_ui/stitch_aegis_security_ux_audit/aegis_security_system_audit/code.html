@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AEGIS - System Audit</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;900&amp;family=JetBrains+Mono:wght@500;700&amp;family=Hanken+Grotesk:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#b794f4",
+                        "tertiary-fixed": "#cbe6ff",
+                        "on-error": "#690005",
+                        "surface-container-highest": "#2d3449",
+                        "surface-container": "#171f33",
+                        "tertiary-fixed-dim": "#8ecdff",
+                        "on-tertiary": "#00344f",
+                        "critical-ruby": "#f56565",
+                        "on-secondary-container": "#ffcb94",
+                        "surface-dim": "#0b1326",
+                        "secondary-fixed": "#ffddbb",
+                        "tertiary": "#8ecdff",
+                        "surface-container-low": "#131b2e",
+                        "on-primary-fixed": "#270058",
+                        "primary-fixed": "#ebdcff",
+                        "primary": "#d4bbff",
+                        "admin-gold": "#ecc94b",
+                        "surface-tint": "#d4bbff",
+                        "on-secondary-fixed-variant": "#673d00",
+                        "on-tertiary-fixed": "#001e30",
+                        "on-error-container": "#ffdad6",
+                        "primary-fixed-dim": "#d4bbff",
+                        "amethyst-glow": "linear-gradient(135deg, #b794f4 0%, #63b3ed 100%)",
+                        "secondary": "#ffb867",
+                        "on-primary": "#3e1975",
+                        "surface-container-high": "#222a3e",
+                        "secondary-fixed-dim": "#ffb867",
+                        "on-secondary-fixed": "#2b1700",
+                        "on-tertiary-fixed-variant": "#004b71",
+                        "surface-bright": "#31394e",
+                        "secondary-container": "#845000",
+                        "surface": "#0b1326",
+                        "inverse-on-surface": "#283044",
+                        "on-tertiary-container": "#003f5f",
+                        "surface-slate": "#1e293b",
+                        "success-emerald": "#48bb78",
+                        "on-surface-variant": "#ccc3d2",
+                        "error-container": "#93000a",
+                        "outline-variant": "#4a4551",
+                        "on-primary-fixed-variant": "#55338d",
+                        "on-background": "#dbe2fd",
+                        "outline": "#958e9c",
+                        "surface-variant": "#2d3449",
+                        "on-surface": "#dbe2fd",
+                        "tertiary-container": "#6cacdc",
+                        "inverse-primary": "#6d4ca6",
+                        "inverse-surface": "#dbe2fd",
+                        "error": "#ffb4ab",
+                        "surface-container-lowest": "#060d20",
+                        "on-secondary": "#482900",
+                        "on-primary-container": "#492680",
+                        "background": "#0b1326"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "32px",
+                        "sidebar-expanded": "260px",
+                        "margin-mobile": "16px",
+                        "base": "8px",
+                        "sidebar-collapsed": "80px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Sora"],
+                        "headline-lg-mobile": ["Sora"],
+                        "headline-sm": ["Sora"],
+                        "label-caps": ["JetBrains Mono"],
+                        "body-md": ["Hanken Grotesk"],
+                        "data-mono": ["JetBrains Mono"],
+                        "headline-lg": ["Sora"],
+                        "body-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["32px", { "lineHeight": "38px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["32px", { "lineHeight": "38px", "fontWeight": "700" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "12px", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "data-mono": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "headline-lg": ["48px", { "lineHeight": "52px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+        
+        .glass-panel {
+            background-color: theme('colors.surface-slate');
+            border: 0.5px solid rgba(183,148,244,0.2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        
+        .admin-panel {
+            background-color: theme('colors.surface-slate');
+            border-top: 1px solid theme('colors.admin-gold');
+            border-left: 0.5px solid rgba(183,148,244,0.2);
+            border-right: 0.5px solid rgba(183,148,244,0.2);
+            border-bottom: 0.5px solid rgba(183,148,244,0.2);
+        }
+
+        .data-row {
+            border-bottom: 1px solid theme('colors.surface-container-high');
+            transition: all 0.2s ease;
+        }
+
+        .data-row:hover {
+            background: linear-gradient(90deg, rgba(183,148,244,0.05) 0%, transparent 100%);
+        }
+
+        .btn-premium {
+            background: theme('colors.amethyst-glow');
+            transition: all 0.3s ease;
+        }
+        
+        .btn-premium:hover {
+            box-shadow: 0 0 12px theme('colors.primary');
+            filter: brightness(1.1);
+        }
+
+        .shimmer-text {
+            background: linear-gradient(90deg, theme('colors.admin-gold') 0%, #fff 50%, theme('colors.admin-gold') 100%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            to {
+                background-position: 200% center;
+            }
+        }
+        
+        .glow-pulse {
+            animation: pulse-glow 2s infinite alternate;
+        }
+        
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 5px rgba(183,148,244,0.2); }
+            100% { box-shadow: 0 0 20px rgba(183,148,244,0.6); }
+        }
+        
+        /* Webkit Scrollbar Styling for Table */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: theme('colors.surface-container-low'); 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: theme('colors.surface-container-highest'); 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.primary-container'); 
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col md:flex-row overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 w-full md:w-[calc(100%-260px)] z-50 bg-surface-dim/90 backdrop-blur-md border-b-[0.5px] border-primary/20 flex justify-between items-center h-20 px-margin-mobile md:px-margin-desktop transition-all duration-300">
+<div class="flex items-center gap-4">
+<!-- Mobile Menu Toggle (Visible only on mobile) -->
+<button class="md:hidden text-primary hover:text-primary transition-all duration-300 p-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+<div class="font-headline-sm text-headline-sm font-black text-primary">AEGIS-Security</div>
+</div>
+<div class="flex items-center gap-6">
+<!-- Search -->
+<div class="hidden md:flex items-center bg-surface-container rounded-full px-4 py-2 border border-primary/20 focus-within:border-primary glow-pulse transition-all">
+<span class="material-symbols-outlined text-on-surface-variant mr-2 text-sm">search</span>
+<input class="bg-transparent border-none text-body-md font-body-md text-on-surface focus:outline-none focus:ring-0 placeholder-on-surface-variant w-48" placeholder="Search logs..." type="text"/>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-all duration-300 p-2 rounded-full hover:bg-surface-container-high">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-all duration-300 p-2 rounded-full hover:bg-surface-container-high">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-all duration-300 p-2 rounded-full hover:bg-surface-container-high hidden sm:block">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dns</span>
+</button>
+</div>
+<!-- CTA & Profile -->
+<div class="flex items-center gap-4 pl-4 border-l border-primary/20">
+<button class="hidden md:block btn-premium text-on-primary font-label-caps text-label-caps px-6 py-2 rounded-full uppercase tracking-wider">Deploy Shield</button>
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-primary/30 flex items-center justify-center overflow-hidden">
+<img alt="Security Admin" class="w-full h-full object-cover" data-alt="A stylized, low-poly 3D avatar of a security administrator wearing a futuristic headset. The avatar is lit with deep slate and vibrant amethyst rim lighting against a dark background, conveying a sense of elite cyber security expertise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxZLJ5AuE_O8nuIeJR1yL8eF5gCiv0Zr7uNn-yIIaZYWTL5PR9m93T7u6-Y_oaLwrXTRX7QeINJQ-jG-tGYGKc-OhSvqFy-5wt60MUS5mNU-tLFRK8n9tewKoBQExJvruZvVXGhUAD1ia9ZjwYApMScmOBb6F4Xd-zeXFxokqLgDWJDzNxO71mCsDA4hmRkPW4bioMayhIk0Me_kw7W1IosMOswKS5D8rOP8_F8vwD42SS7yacf6tBzw"/>
+</div>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="hidden md:flex fixed left-0 top-0 h-full w-[260px] bg-surface-container-low dark:bg-surface-container-low/80 backdrop-blur-xl border-r-[0.5px] border-primary/20 shadow-[0_0_20px_rgba(183,148,244,0.1)] flex-col gap-base p-margin-desktop z-40">
+<!-- Header -->
+<div class="mb-8 flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-slate border border-primary/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary tracking-tight leading-tight">AEGIS</h1>
+<p class="font-label-caps text-[10px] text-admin-gold tracking-widest uppercase mt-1 shimmer-text">Protocol Level 4</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-label-caps text-label-caps">Command Center</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" style="font-variation-settings: 'FILL' 0;">terminal</span>
+<span class="font-label-caps text-label-caps">Threat Terminal</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" style="font-variation-settings: 'FILL' 0;">vpn_key</span>
+<span class="font-label-caps text-label-caps">Credential Vault</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" style="font-variation-settings: 'FILL' 0;">hub</span>
+<span class="font-label-caps text-label-caps">Network Map</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary font-bold border-r-2 border-primary bg-primary-container/10 transition-transform scale-95" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="font-label-caps text-label-caps">System Audit</span>
+</a>
+</div>
+<!-- Footer Actions -->
+<div class="mt-auto border-t border-primary/10 pt-6 flex flex-col gap-2">
+<button class="md:hidden w-full btn-premium text-on-primary font-label-caps text-label-caps px-4 py-3 rounded-lg uppercase tracking-wider mb-4">Deploy Shield</button>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined text-sm group-hover:text-primary" style="font-variation-settings: 'FILL' 0;">help</span>
+<span class="font-label-caps text-label-caps opacity-80">Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined text-sm group-hover:text-critical-ruby" style="font-variation-settings: 'FILL' 0;">logout</span>
+<span class="font-label-caps text-label-caps opacity-80 group-hover:text-critical-ruby">Logout</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 mt-20 md:ml-[260px] p-margin-mobile md:p-margin-desktop min-h-[calc(100vh-80px)]">
+<!-- Page Header -->
+<div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+<div>
+<h2 class="font-headline-lg-mobile md:font-headline-md text-headline-lg-mobile md:text-headline-md text-on-surface mb-2">System Audit Log</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">Real-time telemetry and Mitigation Engine event history. Review active threats, auto-remediation actions, and system health status.</p>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 rounded-lg bg-surface-container-high border border-outline-variant text-on-surface font-label-caps text-label-caps flex items-center gap-2 hover:bg-surface-bright transition-colors">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 0;">filter_list</span>
+                    Filter
+                </button>
+<button class="px-4 py-2 rounded-lg bg-surface-container-high border border-outline-variant text-on-surface font-label-caps text-label-caps flex items-center gap-2 hover:bg-surface-bright transition-colors">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 0;">download</span>
+                    Export CSV
+                </button>
+</div>
+</div>
+<!-- Summary Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<!-- CVE Status Card (Admin Role Highlight) -->
+<div class="admin-panel rounded-xl p-6 relative overflow-hidden group">
+<!-- Background Glow -->
+<div class="absolute -right-10 -top-10 w-32 h-32 bg-admin-gold/10 rounded-full blur-2xl group-hover:bg-admin-gold/20 transition-all duration-500"></div>
+<div class="flex justify-between items-start mb-4 relative z-10">
+<div>
+<h3 class="font-label-caps text-label-caps text-admin-gold tracking-widest uppercase mb-1">CVE Database Sync</h3>
+<div class="flex items-center gap-2 mt-2">
+<span class="w-2 h-2 rounded-full bg-success-emerald animate-pulse"></span>
+<span class="font-body-md text-body-md text-success-emerald">Online &amp; Synced</span>
+</div>
+</div>
+<div class="w-10 h-10 rounded-lg bg-admin-gold/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-admin-gold" style="font-variation-settings: 'FILL' 1;">cloud_sync</span>
+</div>
+</div>
+<div class="mt-6 relative z-10">
+<div class="font-data-mono text-data-mono text-on-surface-variant text-xs mb-1">Last Sync: 12 seconds ago</div>
+<div class="font-headline-sm text-headline-sm text-on-surface">v.2023.11.04-beta</div>
+</div>
+</div>
+<!-- Auto-Mitigation Rate Card (Amethyst Highlight) -->
+<div class="glass-panel rounded-xl p-6 relative overflow-hidden group md:col-span-2">
+<!-- Background Glow -->
+<div class="absolute -right-20 -bottom-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-all duration-700"></div>
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 relative z-10">
+<div>
+<h3 class="font-label-caps text-label-caps text-primary tracking-widest uppercase mb-1">Auto-Mitigation Rate (24h)</h3>
+<div class="font-headline-lg-mobile md:font-headline-md text-headline-lg-mobile md:text-headline-md text-on-surface mt-1 flex items-baseline gap-2">
+                            94.2%
+                            <span class="font-body-md text-body-md text-success-emerald flex items-center">
+<span class="material-symbols-outlined text-sm mr-1">arrow_upward</span> 2.1%
+                            </span>
+</div>
+</div>
+<!-- Simple CSS Bar Chart -->
+<div class="mt-4 sm:mt-0 flex items-end gap-2 h-16 w-full sm:w-auto opacity-80">
+<div class="w-4 bg-surface-container-high rounded-t-sm h-[30%] hover:bg-primary transition-colors cursor-pointer relative group/bar">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-highest text-xs font-data-mono px-2 py-1 rounded hidden group-hover/bar:block whitespace-nowrap">Mon: 30%</div>
+</div>
+<div class="w-4 bg-surface-container-high rounded-t-sm h-[45%] hover:bg-primary transition-colors cursor-pointer relative group/bar"></div>
+<div class="w-4 bg-surface-container-high rounded-t-sm h-[60%] hover:bg-primary transition-colors cursor-pointer relative group/bar"></div>
+<div class="w-4 bg-surface-container-high rounded-t-sm h-[40%] hover:bg-primary transition-colors cursor-pointer relative group/bar"></div>
+<div class="w-4 bg-surface-container-high rounded-t-sm h-[80%] hover:bg-primary transition-colors cursor-pointer relative group/bar"></div>
+<div class="w-4 bg-surface-container-high rounded-t-sm h-[75%] hover:bg-primary transition-colors cursor-pointer relative group/bar"></div>
+<div class="w-4 bg-primary-container rounded-t-sm h-[94%] shadow-[0_0_10px_rgba(183,148,244,0.5)] cursor-pointer relative group/bar"></div>
+</div>
+</div>
+<div class="flex gap-4 relative z-10">
+<div class="px-3 py-1 rounded bg-primary/10 border border-primary/20 text-primary font-label-caps text-[10px] uppercase">Active Engine: heuristics_v3</div>
+<div class="px-3 py-1 rounded bg-surface-container-high border border-outline-variant text-on-surface-variant font-label-caps text-[10px] uppercase">Mode: Enforce</div>
+</div>
+</div>
+</div>
+<!-- Audit Log Table Section -->
+<div class="glass-panel rounded-xl overflow-hidden flex flex-col h-[500px]">
+<div class="p-4 border-b border-primary/20 bg-surface-container-lowest/50 flex justify-between items-center">
+<h3 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">list_alt</span>
+                    Event Stream
+                </h3>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-caps text-label-caps text-primary tracking-widest">Live Recording</span>
+</div>
+</div>
+<div class="overflow-x-auto flex-1">
+<table class="w-full text-left border-collapse">
+<thead class="sticky top-0 bg-surface-container-lowest z-10 shadow-sm">
+<tr>
+<th class="p-4 font-label-caps text-label-caps text-on-surface-variant tracking-wider uppercase border-b border-primary/20">Timestamp</th>
+<th class="p-4 font-label-caps text-label-caps text-on-surface-variant tracking-wider uppercase border-b border-primary/20">Event ID</th>
+<th class="p-4 font-label-caps text-label-caps text-on-surface-variant tracking-wider uppercase border-b border-primary/20">Source IP / Actor</th>
+<th class="p-4 font-label-caps text-label-caps text-on-surface-variant tracking-wider uppercase border-b border-primary/20">Type</th>
+<th class="p-4 font-label-caps text-label-caps text-on-surface-variant tracking-wider uppercase border-b border-primary/20">Mitigation Logic</th>
+<th class="p-4 font-label-caps text-label-caps text-on-surface-variant tracking-wider uppercase border-b border-primary/20 text-right">Status</th>
+</tr>
+</thead>
+<tbody class="font-data-mono text-data-mono text-sm text-on-surface">
+<!-- Row 1: Critical -->
+<tr class="data-row">
+<td class="p-4 text-on-surface-variant">2023-11-04 14:32:01.042</td>
+<td class="p-4 text-primary">AEG-9942-X</td>
+<td class="p-4">192.168.1.105</td>
+<td class="p-4">
+<span class="px-2 py-1 rounded bg-critical-ruby/10 text-critical-ruby text-xs border border-critical-ruby/20">SQLi Attempt</span>
+</td>
+<td class="p-4 text-on-surface-variant truncate max-w-[200px]" title="Rule [SQL_INJ_04]: Blocked malformed payload targeting /api/auth">Rule [SQL_INJ_04]: Blocked malformed payload...</td>
+<td class="p-4 text-right">
+<span class="material-symbols-outlined text-success-emerald" style="font-variation-settings: 'FILL' 1;" title="Mitigated">shield</span>
+</td>
+</tr>
+<!-- Row 2: Warning -->
+<tr class="data-row">
+<td class="p-4 text-on-surface-variant">2023-11-04 14:30:15.881</td>
+<td class="p-4 text-primary">AEG-9941-W</td>
+<td class="p-4 text-admin-gold">srv-backup-02</td>
+<td class="p-4">
+<span class="px-2 py-1 rounded bg-secondary/10 text-secondary text-xs border border-secondary/20">Rate Limit Exceeded</span>
+</td>
+<td class="p-4 text-on-surface-variant truncate max-w-[200px]" title="Throttled connection: 500req/s &gt; threshold (200req/s)">Throttled connection: 500req/s &gt; thresh...</td>
+<td class="p-4 text-right">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;" title="Throttled">speed</span>
+</td>
+</tr>
+<!-- Row 3: Info / Admin Action -->
+<tr class="data-row bg-admin-gold/5 border-l-2 border-l-admin-gold">
+<td class="p-4 text-on-surface-variant">2023-11-04 14:15:00.000</td>
+<td class="p-4 text-admin-gold">SYS-0012-A</td>
+<td class="p-4 text-admin-gold">admin.jdoe</td>
+<td class="p-4">
+<span class="px-2 py-1 rounded bg-admin-gold/10 text-admin-gold text-xs border border-admin-gold/30 flex items-center inline-flex gap-1">
+<span class="material-symbols-outlined text-[12px]">admin_panel_settings</span> Config Update
+                                </span>
+</td>
+<td class="p-4 text-on-surface-variant truncate max-w-[200px]" title="Heuristics engine updated to v3 ruleset">Heuristics engine updated to v3 ruleset</td>
+<td class="p-4 text-right">
+<span class="material-symbols-outlined text-admin-gold" style="font-variation-settings: 'FILL' 1;" title="Applied">check_circle</span>
+</td>
+</tr>
+<!-- Row 4: Normal -->
+<tr class="data-row">
+<td class="p-4 text-on-surface-variant">2023-11-04 14:10:22.115</td>
+<td class="p-4 text-primary">AEG-9940-I</td>
+<td class="p-4">45.33.22.10</td>
+<td class="p-4">
+<span class="px-2 py-1 rounded bg-surface-container-high text-on-surface text-xs border border-outline-variant">Geo-IP Block</span>
+</td>
+<td class="p-4 text-on-surface-variant truncate max-w-[200px]" title="Rule [GEO_DENY_LIST]: Connection from restricted region dropped">Rule [GEO_DENY_LIST]: Connection from r...</td>
+<td class="p-4 text-right">
+<span class="material-symbols-outlined text-success-emerald" style="font-variation-settings: 'FILL' 1;" title="Mitigated">shield</span>
+</td>
+</tr>
+<!-- Row 5: Normal -->
+<tr class="data-row">
+<td class="p-4 text-on-surface-variant">2023-11-04 14:05:01.902</td>
+<td class="p-4 text-primary">AEG-9939-I</td>
+<td class="p-4">Internal Scanner</td>
+<td class="p-4">
+<span class="px-2 py-1 rounded bg-surface-container-high text-on-surface text-xs border border-outline-variant">Port Scan Detected</span>
+</td>
+<td class="p-4 text-on-surface-variant truncate max-w-[200px]" title="Ignored: Source IP matches known internal security scanner">Ignored: Source IP matches known intern...</td>
+<td class="p-4 text-right">
+<span class="material-symbols-outlined text-outline-variant" style="font-variation-settings: 'FILL' 1;" title="Logged">visibility</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer/Pagination -->
+<div class="p-4 border-t border-primary/20 bg-surface-container-lowest/80 flex justify-between items-center text-sm text-on-surface-variant">
+<div>Showing 1-5 of 12,042 events</div>
+<div class="flex gap-2">
+<button class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center hover:bg-primary-container hover:text-on-primary-container transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center hover:bg-primary-container hover:text-on-primary-container transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AEGIS - Protocol Level Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;family=Hanken+Grotesk:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#b794f4",
+                        "tertiary-fixed": "#cbe6ff",
+                        "on-error": "#690005",
+                        "surface-container-highest": "#2d3449",
+                        "surface-container": "#171f33",
+                        "tertiary-fixed-dim": "#8ecdff",
+                        "on-tertiary": "#00344f",
+                        "critical-ruby": "#f56565",
+                        "on-secondary-container": "#ffcb94",
+                        "surface-dim": "#0b1326",
+                        "secondary-fixed": "#ffddbb",
+                        "tertiary": "#8ecdff",
+                        "surface-container-low": "#131b2e",
+                        "on-primary-fixed": "#270058",
+                        "primary-fixed": "#ebdcff",
+                        "primary": "#d4bbff",
+                        "admin-gold": "#ecc94b",
+                        "surface-tint": "#d4bbff",
+                        "on-secondary-fixed-variant": "#673d00",
+                        "on-tertiary-fixed": "#001e30",
+                        "on-error-container": "#ffdad6",
+                        "primary-fixed-dim": "#d4bbff",
+                        "amethyst-glow": "linear-gradient(135deg, #b794f4 0%, #63b3ed 100%)",
+                        "secondary": "#ffb867",
+                        "on-primary": "#3e1975",
+                        "surface-container-high": "#222a3e",
+                        "secondary-fixed-dim": "#ffb867",
+                        "on-secondary-fixed": "#2b1700",
+                        "on-tertiary-fixed-variant": "#004b71",
+                        "surface-bright": "#31394e",
+                        "secondary-container": "#845000",
+                        "surface": "#0b1326",
+                        "inverse-on-surface": "#283044",
+                        "on-tertiary-container": "#003f5f",
+                        "surface-slate": "#1e293b",
+                        "success-emerald": "#48bb78",
+                        "on-surface-variant": "#ccc3d2",
+                        "error-container": "#93000a",
+                        "outline-variant": "#4a4551",
+                        "on-primary-fixed-variant": "#55338d",
+                        "on-background": "#dbe2fd",
+                        "outline": "#958e9c",
+                        "surface-variant": "#2d3449",
+                        "on-surface": "#dbe2fd",
+                        "tertiary-container": "#6cacdc",
+                        "inverse-primary": "#6d4ca6",
+                        "inverse-surface": "#dbe2fd",
+                        "error": "#ffb4ab",
+                        "surface-container-lowest": "#060d20",
+                        "on-secondary": "#482900",
+                        "on-primary-container": "#492680",
+                        "background": "#0b1326"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "32px",
+                        "sidebar-expanded": "260px",
+                        "margin-mobile": "16px",
+                        "base": "8px",
+                        "sidebar-collapsed": "80px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Sora"],
+                        "headline-lg-mobile": ["Sora"],
+                        "headline-sm": ["Sora"],
+                        "label-caps": ["JetBrains Mono"],
+                        "body-md": ["Hanken Grotesk"],
+                        "data-mono": ["JetBrains Mono"],
+                        "headline-lg": ["Sora"],
+                        "body-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["32px", { "lineHeight": "38px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["32px", { "lineHeight": "38px", "fontWeight": "700" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "12px", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "data-mono": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "headline-lg": ["48px", { "lineHeight": "52px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(19, 27, 46, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(183, 148, 244, 0.2);
+            box-shadow: 0 0 40px rgba(183, 148, 244, 0.05);
+        }
+        
+        .amethyst-input {
+            background: #0b1326;
+            border: 1px solid rgba(183, 148, 244, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .amethyst-input:focus {
+            border-color: #b794f4;
+            box-shadow: 0 0 15px rgba(183, 148, 244, 0.2);
+            outline: none;
+        }
+        
+        .amethyst-button {
+            background: linear-gradient(135deg, #b794f4 0%, #63b3ed 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .amethyst-button:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 0 20px rgba(183, 148, 244, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .fluid-bg {
+            background: linear-gradient(to right, #060d20, #0b1326, #131b2e);
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .fluid-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(183, 148, 244, 0.05) 0%, transparent 50%);
+            animation: pulse-glow 15s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            0% { transform: scale(1) translate(0, 0); opacity: 0.5; }
+            100% { transform: scale(1.2) translate(5%, 5%); opacity: 0.8; }
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex items-center justify-center relative overflow-hidden">
+<!-- Fluid Neural Shader Background Placeholder -->
+<div class="fluid-bg"></div>
+<!-- Login Canvas -->
+<main class="w-full max-w-[480px] p-margin-mobile md:p-0 z-10">
+<div class="glass-panel rounded-xl p-8 md:p-12 flex flex-col items-center">
+<!-- Brand Element -->
+<div class="flex flex-col items-center mb-10">
+<div class="w-16 h-16 rounded-full bg-primary-container/10 border border-primary/30 flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(183,148,244,0.15)] relative overflow-hidden">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">security</span>
+<div class="absolute inset-0 bg-amethyst-glow opacity-20 animate-pulse"></div>
+</div>
+<h1 class="font-headline-md text-headline-md text-on-surface tracking-tight">AEGIS</h1>
+<p class="font-label-caps text-label-caps text-primary mt-2">Amethyst Guardian</p>
+</div>
+<!-- Login Form -->
+<form class="w-full space-y-6" onsubmit="event.preventDefault(); document.getElementById('login-btn').classList.add('animate-pulse');">
+<!-- Protocol Level Selection -->
+<div class="space-y-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">shield</span>
+                        Protocol Level
+                    </label>
+<div class="relative">
+<select class="w-full amethyst-input font-data-mono text-data-mono text-primary rounded-lg py-3 px-4 appearance-none">
+<option value="1">Protocol Level 1 - Standard</option>
+<option value="2">Protocol Level 2 - Elevated</option>
+<option value="3">Protocol Level 3 - Critical</option>
+<option selected="" value="4">Protocol Level 4 - Aegis Command</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-primary/50 pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Neural Key Input -->
+<div class="space-y-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">vpn_key</span>
+                        Neural Key
+                    </label>
+<div class="relative">
+<input class="w-full amethyst-input font-data-mono text-data-mono text-on-surface rounded-lg py-3 px-4 pl-10 placeholder-on-surface-variant/30" placeholder="Enter encrypted key phrase..." type="password"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary/50 pointer-events-none">fingerprint</span>
+</div>
+</div>
+<!-- Action Button -->
+<div class="pt-4">
+<button class="w-full amethyst-button rounded-lg py-4 px-6 flex items-center justify-center gap-3 font-headline-sm text-[16px] text-on-primary font-bold shadow-lg" id="login-btn" type="submit">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">power_settings_new</span>
+                        Initialize Session
+                    </button>
+</div>
+<!-- System Status -->
+<div class="flex items-center justify-center gap-2 mt-6">
+<div class="w-2 h-2 rounded-full bg-success-emerald animate-pulse"></div>
+<span class="font-label-caps text-label-caps text-success-emerald/80">System Secure &amp; Online</span>
+</div>
+</form>
+</div>
+</main>
+</body></html>

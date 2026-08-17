@@ -1,15 +1,147 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>AEGIS - Register Account</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJz48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9J2cnIHgxPScwJScgeTE9JzAlJyB4Mj0nMTAwJScgeTI9JzEwMCUnPjxzdG9wIG9mZnNldD0nMCUnIHN0b3AtY29sb3I9JyNmZmZmZmYnLz48c3RvcCBvZmZzZXQ9JzEwMCUnIHN0b3AtY29sb3I9JyNhMWExYWEnLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cGF0aCBkPSdNNTAsMTAgTDg1LDIyIEw4NSw1NSBDODUsNzUgNzAsODggNTAsOTMgQzMwLDg4IDE1LDc1IDE1LDU1IEwxNSwyMiBaJyBmaWxsPSd1cmwoI2cpJy8+PHBhdGggZD0nTTUwLDMwIEw2OCw2OCBMNTgsNjggTDUwLDUwIEw0Miw2OCBMMzIsNjggWicgZmlsbD0nIzBhMGEwYycvPjxwYXRoIGQ9J000Miw1NyBMNTgsNTcnIHN0cm9rZT0nIzBhMGEwYycgc3Ryb2tlLXdpZHRoPSczJy8+PC9zdmc+">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=1.4">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;family=Hanken+Grotesk:wght@400&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#b794f4",
+                        "tertiary-fixed": "#cbe6ff",
+                        "on-error": "#690005",
+                        "surface-container-highest": "#2d3449",
+                        "surface-container": "#171f33",
+                        "tertiary-fixed-dim": "#8ecdff",
+                        "on-tertiary": "#00344f",
+                        "critical-ruby": "#f56565",
+                        "on-secondary-container": "#ffcb94",
+                        "surface-dim": "#0b1326",
+                        "secondary-fixed": "#ffddbb",
+                        "tertiary": "#8ecdff",
+                        "surface-container-low": "#131b2e",
+                        "on-primary-fixed": "#270058",
+                        "primary-fixed": "#ebdcff",
+                        "primary": "#d4bbff",
+                        "admin-gold": "#ecc94b",
+                        "surface-tint": "#d4bbff",
+                        "on-secondary-fixed-variant": "#673d00",
+                        "on-tertiary-fixed": "#001e30",
+                        "on-error-container": "#ffdad6",
+                        "primary-fixed-dim": "#d4bbff",
+                        "amethyst-glow": "linear-gradient(135deg, #b794f4 0%, #63b3ed 100%)",
+                        "secondary": "#ffb867",
+                        "on-primary": "#3e1975",
+                        "surface-container-high": "#222a3e",
+                        "secondary-fixed-dim": "#ffb867",
+                        "on-secondary-fixed": "#2b1700",
+                        "on-tertiary-fixed-variant": "#004b71",
+                        "surface-bright": "#31394e",
+                        "secondary-container": "#845000",
+                        "surface": "#0b1326",
+                        "inverse-on-surface": "#283044",
+                        "on-tertiary-container": "#003f5f",
+                        "surface-slate": "#1e293b",
+                        "success-emerald": "#48bb78",
+                        "on-surface-variant": "#ccc3d2",
+                        "error-container": "#93000a",
+                        "outline-variant": "#4a4551",
+                        "on-primary-fixed-variant": "#55338d",
+                        "on-background": "#dbe2fd",
+                        "outline": "#958e9c",
+                        "surface-variant": "#2d3449",
+                        "on-surface": "#dbe2fd",
+                        "tertiary-container": "#6cacdc",
+                        "inverse-primary": "#6d4ca6",
+                        "inverse-surface": "#dbe2fd",
+                        "error": "#ffb4ab",
+                        "surface-container-lowest": "#060d20",
+                        "on-secondary": "#482900",
+                        "on-primary-container": "#492680",
+                        "background": "#0b1326"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Sora"],
+                        "headline-sm": ["Sora"],
+                        "label-caps": ["JetBrains Mono"],
+                        "body-md": ["Hanken Grotesk"],
+                        "data-mono": ["JetBrains Mono"],
+                        "headline-lg": ["Sora"]
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        @keyframes stack-pulse {
-            0%, 100% { opacity: 0.35; transform: rotateX(60deg) translateZ(-20px) scale(0.95); }
-            50% { opacity: 1; transform: rotateX(60deg) translateZ(25px) scale(1.05); filter: drop-shadow(0 0 15px #a855f7); }
+        .glass-panel {
+            background: rgba(19, 27, 46, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(183, 148, 244, 0.2);
+            box-shadow: 0 0 40px rgba(183, 148, 244, 0.05);
+        }
+        
+        .amethyst-input {
+            background: #0b1326;
+            border: 1px solid rgba(183, 148, 244, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .amethyst-input:focus {
+            border-color: #b794f4;
+            box-shadow: 0 0 15px rgba(183, 148, 244, 0.2);
+            outline: none;
+        }
+        
+        .amethyst-button {
+            background: linear-gradient(135deg, #b794f4 0%, #63b3ed 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .amethyst-button:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 0 20px rgba(183, 148, 244, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .fluid-bg {
+            background: linear-gradient(to right, #060d20, #0b1326, #131b2e);
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .fluid-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(183, 148, 244, 0.05) 0%, transparent 50%);
+            animation: pulse-glow 15s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            0% { transform: scale(1) translate(0, 0); opacity: 0.5; }
+            100% { transform: scale(1.2) translate(5%, 5%); opacity: 0.8; }
+        }
+
+        @keyframes rotate-smoke {
+            0% { transform: rotate(0deg) scale(1); filter: blur(1px) hue-rotate(0deg); }
+            50% { transform: rotate(180deg) scale(1.04); filter: blur(2px) hue-rotate(45deg); }
+            100% { transform: rotate(360deg) scale(1); filter: blur(1px) hue-rotate(0deg); }
+        }
+        @keyframes rotate-smoke-rev {
+            0% { transform: rotate(360deg); }
+            100% { transform: rotate(0deg); }
         }
     </style>
     <script>
@@ -31,134 +163,134 @@
         });
     </script>
 </head>
-<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 0;">
-    <script>
-        (function() {
-            const savedTheme = localStorage.getItem('aegis-theme') || 'light';
-            document.body.setAttribute('data-theme', savedTheme);
-        })();
-    </script>
-    <!-- Dynamic Theme Preloader -->
-    <div id="preloader" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--preloader-bg); z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s ease, visibility 0.3s ease;">
-        <!-- Light Theme Preloader (Smoke Rings) -->
-        <div class="preloader-light" style="text-align: center;">
+<body class="bg-surface text-on-surface min-h-screen flex items-center justify-center relative overflow-hidden">
+    <!-- Fluid Neural Shader Background -->
+    <div class="fluid-bg"></div>
+
+    <!-- Preloader -->
+    <div id="preloader" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #060d20; z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s ease, visibility 0.3s ease;">
+        <div style="text-align: center;">
             <div class="smoke-ring-container" style="position: relative; width: 110px; height: 110px; margin: 0 auto 1.5rem;">
-                <div class="smoke-ring" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; box-shadow: inset 0 0 20px #ffffff, 0 0 25px rgba(255,255,255,0.7); border: 2px solid rgba(255,255,255,0.05); animation: rotate-smoke 3s infinite linear; filter: blur(1px);"></div>
-                <div class="smoke-ring-inner" style="position: absolute; top: 15px; left: 15px; width: 80px; height: 80px; border-radius: 50%; box-shadow: inset 0 0 15px #e4e4e7, 0 0 15px rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.03); animation: rotate-smoke-rev 2s infinite linear; filter: blur(1.5px);"></div>
+                <div class="smoke-ring" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; box-shadow: inset 0 0 20px #b794f4, 0 0 25px rgba(183,148,244,0.7); border: 2px solid rgba(183,148,244,0.05); animation: rotate-smoke 3s infinite linear; filter: blur(1px);"></div>
+                <div class="smoke-ring-inner" style="position: absolute; top: 15px; left: 15px; width: 80px; height: 80px; border-radius: 50%; box-shadow: inset 0 0 15px #63b3ed, 0 0 15px rgba(99,179,237,0.3); border: 1px solid rgba(99,179,237,0.03); animation: rotate-smoke-rev 2s infinite linear; filter: blur(1.5px);"></div>
             </div>
             <div style="color: #ffffff; font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;">
-                AEGIS <span style="color: #e4e4e7;">GATEWAY</span>
+                AEGIS <span style="color: #b794f4;">GATEWAY</span>
             </div>
-            <div style="margin-top: 0.5rem; color: #d4d4d8; font-family: 'Courier New', monospace; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;">
-                Verifying Session Keys...
-            </div>
-        </div>
-        
-        <!-- Dark Theme Preloader (3D Concentric Stack) -->
-        <div class="preloader-dark" style="text-align: center;">
-            <div class="concentric-3d-stack" style="position: relative; width: 110px; height: 110px; margin: 0 auto 1.75rem; perspective: 600px;">
-                <div class="ring-3d r1" style="position: absolute; width: 100%; height: 100%; border: 2px solid rgba(139,92,246,0.3); border-radius: 50%; transform: rotateX(60deg) translateZ(-20px); animation: stack-pulse 2s infinite ease-in-out;"></div>
-                <div class="ring-3d r2" style="position: absolute; width: 100%; height: 100%; border: 2px solid rgba(168,85,247,0.5); border-radius: 50%; transform: rotateX(60deg) translateZ(0px); animation: stack-pulse 2s infinite ease-in-out 0.4s;"></div>
-                <div class="ring-3d r3" style="position: absolute; width: 100%; height: 100%; border: 2px solid rgba(236,72,153,0.7); border-radius: 50%; transform: rotateX(60deg) translateZ(20px); animation: stack-pulse 2s infinite ease-in-out 0.8s;"></div>
-                <div class="ring-3d r4" style="position: absolute; width: 100%; height: 100%; border: 2px solid rgba(255,255,255,0.9); border-radius: 50%; transform: rotateX(60deg) translateZ(40px); animation: stack-pulse 2s infinite ease-in-out 1.2s;"></div>
-            </div>
-            <div style="color: #ffffff; font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;">
-                AEGIS <span style="color: #a855f7;">GATEWAY</span>
-            </div>
-            <div style="margin-top: 0.5rem; color: #8b5cf6; font-family: 'Courier New', monospace; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;">
+            <div style="margin-top: 0.5rem; color: #ccc3d2; font-family: 'Courier New', monospace; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;">
                 Verifying Session Keys...
             </div>
         </div>
     </div>
 
-    <div class="card auth-container" style="max-width: 440px;">
-        <div class="auth-header">
-            <div class="logo-container" style="justify-content: center; margin-bottom: 0.5rem;">
-                <div class="logo-icon">A</div>
-                <span class="logo-text">AEG<span class="logo-accent">IS</span></span>
-            </div>
-            <p style="color: var(--text-secondary); margin-top: 5px;">Create your security assessment portal account</p>
-        </div>
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, msg in messages %}
-                    <p style="color: var(--accent); text-align: center; margin-bottom: 1rem; font-weight: 500; font-size: 0.9rem;">{{ msg }}</p>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <form id="register-form" method="POST" style="max-width: 100%;">
-            <div class="form-group" style="margin-bottom: 1rem;">
-                <label>Username</label>
-                <input type="text" name="username" placeholder="e.g. analyst123" required autocomplete="off">
-            </div>
-
-            <div class="form-group" style="margin-bottom: 1rem;">
-                <label>Email Address</label>
-                <input type="email" name="email" placeholder="e.g. name@company.com" required autocomplete="off">
-            </div>
-
-            <div class="form-group" style="margin-bottom: 1rem;">
-                <label>Password</label>
-                <div style="position: relative; display: flex; align-items: center;">
-                    <input id="reg-password" type="password" name="password" placeholder="••••••••" required style="width: 100%; padding-right: 2.8rem;">
-                    <button type="button" id="toggle-reg-pw" onclick="togglePassword('reg-password','toggle-reg-pw')" tabindex="-1"
-                        style="position: absolute; right: 0.75rem; background: none; border: none; cursor: pointer; color: var(--text-secondary); font-size: 1.1rem; padding: 0; line-height: 1; transition: color 0.2s;"
-                        title="Show / Hide password">👁</button>
+    <!-- Register Canvas -->
+    <main class="w-full max-w-[480px] p-6 z-10">
+        <div class="glass-panel rounded-xl p-8 md:p-12 flex flex-col items-center">
+            
+            <!-- Brand Element -->
+            <div class="flex flex-col items-center mb-8">
+                <div class="w-16 h-16 rounded-full bg-primary-container/10 border border-primary/30 flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(183,148,244,0.15)] relative overflow-hidden">
+                    <span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">security</span>
+                    <div class="absolute inset-0 bg-amethyst-glow opacity-20 animate-pulse"></div>
                 </div>
+                <h1 class="font-headline-md text-headline-md text-on-surface tracking-tight">AEGIS</h1>
+                <p class="font-label-caps text-label-caps text-primary mt-2">Operator Enrollment</p>
             </div>
 
-            <script>
-                function togglePassword(inputId, btnId) {
-                    const input = document.getElementById(inputId);
-                    const btn   = document.getElementById(btnId);
-                    if (input.type === 'password') {
-                        input.type = 'text';
-                        btn.textContent = '🙈';
-                        btn.style.color = 'var(--primary)';
-                    } else {
-                        input.type = 'password';
-                        btn.textContent = '👁';
-                        btn.style.color = 'var(--text-secondary)';
-                    }
-                }
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, msg in messages %}
+                        <div class="w-full bg-error-container/20 border border-error/30 rounded-lg p-3 mb-6 text-center">
+                            <p class="text-sm font-medium text-error">{{ msg }}</p>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
 
-                document.getElementById('register-form').addEventListener('submit', async function(e) {
-                    e.preventDefault();
-                    const form = this;
-                    const pwdInput = document.getElementById('reg-password');
-                    const rawPassword = pwdInput.value;
+            <!-- Register Form -->
+            <form id="register-form" method="POST" class="w-full space-y-5">
+                <!-- Username Input -->
+                <div class="space-y-2">
+                    <label class="font-label-caps text-label-caps text-on-surface-variant flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[14px]">account_circle</span>
+                        Operator Identifier
+                    </label>
+                    <div class="relative">
+                        <input class="w-full amethyst-input font-data-mono text-data-mono text-on-surface rounded-lg py-3 px-4 pl-10 placeholder-on-surface-variant/30" name="username" placeholder="Choose unique identifier..." type="text" required autocomplete="off"/>
+                    </div>
+                </div>
 
-                    // Standard SHA-256 browser crypto hash
-                    const msgBuffer = new TextEncoder().encode(rawPassword);
-                    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-                    const hashArray = Array.from(new Uint8Array(hashBuffer));
-                    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                <!-- Email Input -->
+                <div class="space-y-2">
+                    <label class="font-label-caps text-label-caps text-on-surface-variant flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[14px]">mail</span>
+                        Comms Address
+                    </label>
+                    <div class="relative">
+                        <input class="w-full amethyst-input font-data-mono text-data-mono text-on-surface rounded-lg py-3 px-4 pl-10 placeholder-on-surface-variant/30" name="email" placeholder="Choose communication mail..." type="email" required autocomplete="off"/>
+                    </div>
+                </div>
 
-                    pwdInput.value = hashHex;
-                    form.submit(); // Calling form.submit() directly does not re-trigger the submit event
-                });
-            </script>
+                <!-- Password Input -->
+                <div class="space-y-2">
+                    <label class="font-label-caps text-label-caps text-on-surface-variant flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[14px]">vpn_key</span>
+                        Neural Key
+                    </label>
+                    <div class="relative">
+                        <input id="reg-password" class="w-full amethyst-input font-data-mono text-data-mono text-on-surface rounded-lg py-3 px-4 pl-10 placeholder-on-surface-variant/30" name="password" placeholder="Choose strong key phrase..." type="password" required/>
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary/50 pointer-events-none">fingerprint</span>
+                    </div>
+                </div>
 
+                <!-- Role Input -->
+                <div class="space-y-2">
+                    <label class="font-label-caps text-label-caps text-on-surface-variant flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[14px]">shield</span>
+                        Enrollment Scope
+                    </label>
+                    <div class="relative">
+                        <select name="role" class="w-full amethyst-input font-data-mono text-data-mono text-primary rounded-lg py-3 px-4 appearance-none">
+                            <option value="Owner">Asset Owner (Registers & verifies targets)</option>
+                            <option value="Analyst">Security Analyst (Initiates security audits)</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-primary/50 pointer-events-none">expand_more</span>
+                    </div>
+                </div>
 
-            <div class="form-group" style="margin-bottom: 1.5rem;">
-                <label>System Role / Scope</label>
-                <select name="role" style="width: 100%; border: 1px solid var(--border-color); border-radius: 6px; padding: 0.75rem 1rem; background-color: var(--bg-main); color: var(--text-primary);">
-                    <option value="Owner">Asset Owner (registers & requests scans for owned assets)</option>
-                    <option value="Analyst">Security Analyst (runs scans, reviews correlation engines)</option>
-                </select>
+                <!-- Action Button -->
+                <div class="pt-2">
+                    <button class="w-full amethyst-button rounded-lg py-4 px-6 flex items-center justify-center gap-3 font-headline-sm text-[16px] text-on-primary font-bold shadow-lg cursor-pointer" type="submit">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">how_to_reg</span>
+                        Enroll Operator
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-sm text-on-surface-variant">
+                    Already enrolled? <a href="/login" class="text-primary hover:text-primary-hover font-semibold transition-colors duration-200">Initialize Session</a>
+                </p>
             </div>
-
-            <button type="submit" class="btn" style="width: 100%; background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.25); color: white;">Create Account</button>
-        </form>
-
-        <div class="auth-footer" style="margin-top: 1.5rem; text-align: center;">
-            <p style="color: var(--text-secondary); font-size: 0.9rem;">
-                Already have an account? <a href="/login" style="color: var(--primary); font-weight: bold; text-decoration: none;">Sign In here</a>
-            </p>
         </div>
-    </div>
+    </main>
 
+    <script>
+        document.getElementById('register-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const form = this;
+            const pwdInput = document.getElementById('reg-password');
+            const rawPassword = pwdInput.value;
+
+            // Standard SHA-256 browser crypto hash
+            const msgBuffer = new TextEncoder().encode(rawPassword);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+            pwdInput.value = hashHex;
+            form.submit();
+        });
+    </script>
 </body>
 </html>
