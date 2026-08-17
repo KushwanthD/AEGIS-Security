@@ -104,8 +104,7 @@ def seed_superadmin():
     try:
         import hashlib
         existing = db.query(User).filter(User.username == "Kushwanth").first()
-        client_hash = hashlib.sha256(b"Kushwanth@123").hexdigest()
-        correct_hash = generate_password_hash(client_hash, method="pbkdf2:sha256")
+        correct_hash = generate_password_hash("Kushwanth@123", method="pbkdf2:sha256")
         if not existing:
             print("Seeding Kushwanth superadmin account...")
             db.add(User(
