@@ -313,9 +313,13 @@
         }
 
         function initAllSolariElements() {
-            // Find all target headings, sidebar items, and statistics tags
-            const targets = document.querySelectorAll('.solari-text, .sidebar-links span, h2, h3, .metric-value, .badge');
+            // Target specific title headers, big metrics, and table headers
+            const targets = document.querySelectorAll('.solari-text, h2, h3, .metric-value, .solari-header');
             targets.forEach(el => {
+                // Safeguard: Skip any elements inside sidebar nav or top header
+                if (el.closest('nav') || el.closest('header') || el.closest('.sidebar-links')) {
+                    return;
+                }
                 if (el.children.length === 0 && el.textContent.trim().length > 0 && !el.hasAttribute('data-solari-processed')) {
                     const originalVal = el.textContent.trim();
                     el.setAttribute('data-text', originalVal);
