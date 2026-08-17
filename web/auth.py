@@ -136,7 +136,12 @@ def register():
             flash("Registration successful! Please log in.", "success")
             return redirect(url_for("auth.login"))
         except Exception as e:
-            flash(f"Error during registration: {str(e)}", "error")
+            db.rollback()
+            from sqlalchemy.exc import IntegrityError
+            if isinstance(e, IntegrityError):
+                flash("Error: Username or email already registered.", "error")
+            else:
+                flash(f"Error during registration: {str(e)}", "error")
             return redirect(url_for("auth.register"))
         finally:
             db.close()
