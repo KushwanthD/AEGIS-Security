@@ -1,30 +1,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&family=Orbitron:wght@700;900&display=swap');
 
-/* LIGHT THEME (Moon Mode - Amethyst Guardian) */
+/* LIGHT THEME (Moon Mode - Cyber Blue Security) */
 :root, body[data-theme="light"] {
-    --bg-main: #0b1326;
-    --bg-card: rgba(23, 31, 51, 0.6);
-    --bg-hover: rgba(183, 148, 244, 0.12);
-    --text-primary: #dbe2fd;
-    --text-secondary: #ccc3d2;
-    --primary: #b794f4;
-    --primary-hover: #d4bbff;
-    --accent: #63b3ed;
-    --accent-green: #48bb78;
-    --accent-yellow: #ecc94b;
-    --border-color: rgba(183, 148, 244, 0.2);
+    --bg-main: #131313;
+    --bg-card: rgba(26, 26, 26, 0.75);
+    --bg-hover: rgba(0, 163, 255, 0.12);
+    --text-primary: #e5e2e1;
+    --text-secondary: #bec7d4;
+    --primary: #00A3FF;
+    --primary-hover: #98cbff;
+    --accent: #00FF94;
+    --accent-green: #00FF94;
+    --accent-yellow: #FFB800;
+    --border-color: rgba(0, 163, 255, 0.2);
     
-    --bg-body: linear-gradient(135deg, #060d20 0%, #0b1326 50%, #131b2e 100%);
-    --preloader-bg: #060d20;
-    --logo-shadow: rgba(183, 148, 244, 0.35);
-    --logo-glow: rgba(183, 148, 244, 0.8);
+    --bg-body: linear-gradient(135deg, #0e0e0e 0%, #131313 50%, #1c1b1b 100%);
+    --preloader-bg: #0e0e0e;
+    --logo-shadow: rgba(0, 163, 255, 0.35);
+    --logo-glow: rgba(0, 163, 255, 0.8);
     
-    --glow-shadow-active: rgba(183, 148, 244, 0.45);
-    --glow-shadow-hover: rgba(183, 148, 244, 0.35);
+    --glow-shadow-active: rgba(0, 163, 255, 0.45);
+    --glow-shadow-hover: rgba(0, 163, 255, 0.35);
     
-    --tr-hover-glow: rgba(183, 148, 244, 0.45);
-    --tr-hover-glow-main: rgba(183, 148, 244, 0.95);
-    --tr-hover-text: #d4bbff;
+    --tr-hover-glow: rgba(0, 163, 255, 0.45);
+    --tr-hover-glow-main: rgba(0, 163, 255, 0.95);
+    --tr-hover-text: #98cbff;
 }
 
 /* DARK THEME (Sun Mode - Cyber Blue Security) */
