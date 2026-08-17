@@ -2070,8 +2070,8 @@ def verify_workflow():
         # 8. Compile PDF Report
         report = Report(
             assessment_id=assessment.id,
-            report_name=f"Vulnerability Audit Report - {val}",
-            status="GENERATED",
+            report_type="TECHNICAL",
+            file_name=f"Vulnerability Audit Report - {val}",
             pdf_data=b"VERIFIED_AEGIS_E2E_PDF_DATA",
             created_at=datetime.datetime.now()
         )
