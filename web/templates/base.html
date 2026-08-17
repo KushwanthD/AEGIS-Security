@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>AEGIS-Security Dashboard</title>
+    <title>AEGIS-Security Command Center</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
@@ -67,22 +67,6 @@
                         "tertiary-fixed-dim": "#ffba20",
                         "on-secondary-container": "#00723f"
                     },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "xs": "4px",
-                        "lg": "40px",
-                        "sm": "12px",
-                        "xl": "64px",
-                        "base": "8px",
-                        "sidebar-width": "280px",
-                        "md": "24px",
-                        "gutter": "24px"
-                    },
                     "fontFamily": {
                         "code-sm": ["JetBrains Mono"],
                         "label-caps": ["Inter"],
@@ -93,17 +77,6 @@
                         "body-md": ["Inter"],
                         "body-sm": ["Inter"],
                         "code-md": ["JetBrains Mono"]
-                    },
-                    "fontSize": {
-                        "code-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
-                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
-                        "headline-sm": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
-                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
-                        "headline-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
-                        "headline-md": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
-                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
-                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
-                        "code-md": ["14px", { "lineHeight": "20px", "fontWeight": "500" }]
                     }
                 }
             }
@@ -112,17 +85,52 @@
     <style>
         body {
             overflow-x: hidden;
+            background-color: #131313;
+        }
+
+        /* Custom Cursor styling */
+        .custom-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 8px;
+            height: 8px;
+            background-color: #00A3FF;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px #00A3FF, 0 0 20px #00A3FF;
+        }
+
+        .custom-cursor-trail {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 24px;
+            height: 24px;
+            border: 1.5px solid rgba(0, 163, 255, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99998;
+            transform: translate(-50%, -50%);
+            transition: transform 0.08s cubic-bezier(0.25, 1, 0.5, 1);
+            background: rgba(0, 163, 255, 0.03);
+            box-shadow: 0 0 8px rgba(0, 163, 255, 0.1);
         }
         
         .glass-card {
-            background: rgba(26, 26, 26, 0.6);
-            backdrop-filter: blur(12px);
+            background: rgba(26, 26, 26, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         .glow-hover:hover {
-            box-shadow: 0 0 15px rgba(0, 163, 255, 0.4);
-            border-color: rgba(0, 163, 255, 0.5);
+            box-shadow: 0 8px 24px rgba(0, 163, 255, 0.15), inset 0 0 10px rgba(0, 163, 255, 0.05);
+            border-color: rgba(0, 163, 255, 0.4);
+            transform: translateY(-2px);
         }
 
         .critical-glow {
@@ -136,17 +144,39 @@
         
         /* Grid Background Pattern */
         .grid-bg {
-            background-size: 40px 40px;
+            background-size: 50px 50px;
             background-image: 
-                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+                linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        /* Live Background Canvas */
+        #neural-bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             z-index: -1;
             pointer-events: none;
+            opacity: 0.45;
+        }
+
+        /* Smooth UI entrance animation */
+        @keyframes fade-slide-in {
+            0% { opacity: 0; transform: translateY(12px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-slide {
+            animation: fade-slide-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         /* Custom Scrollbar */
@@ -163,17 +193,6 @@
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(0, 163, 255, 0.5);
         }
-
-        /* Preloader Styles */
-        @keyframes rotate-smoke {
-            0% { transform: rotate(0deg) scale(1); filter: blur(1px) hue-rotate(0deg); }
-            50% { transform: rotate(180deg) scale(1.04); filter: blur(2px) hue-rotate(45deg); }
-            100% { transform: rotate(360deg) scale(1); filter: blur(1px) hue-rotate(0deg); }
-        }
-        @keyframes rotate-smoke-rev {
-            0% { transform: rotate(360deg); }
-            100% { transform: rotate(0deg); }
-        }
     </style>
     <script>
         window.addEventListener('DOMContentLoaded', function() {
@@ -182,7 +201,7 @@
                 setTimeout(() => {
                     preloader.style.opacity = '0';
                     preloader.style.visibility = 'hidden';
-                }, 600);
+                }, 1200);
             }
             
             // Highlight active sidebar links
@@ -193,7 +212,42 @@
                     link.classList.remove('text-on-surface-variant');
                 }
             });
+
+            // Custom cursor mouse movement binding
+            const cursor = document.getElementById('custom-cursor');
+            const trail = document.getElementById('custom-cursor-trail');
+            
+            if (cursor && trail) {
+                document.addEventListener('mousemove', function(e) {
+                    cursor.style.left = e.clientX + 'px';
+                    cursor.style.top = e.clientY + 'px';
+                    
+                    // Smooth delayed trail movement
+                    setTimeout(() => {
+                        trail.style.left = e.clientX + 'px';
+                        trail.style.top = e.clientY + 'px';
+                    }, 50);
+                });
+
+                // Scale up cursor on hoverable elements
+                const interactiveElements = document.querySelectorAll('a, button, select, input, textarea, tr, .hover-target');
+                interactiveElements.forEach(el => {
+                    el.addEventListener('mouseenter', () => {
+                        trail.style.width = '36px';
+                        trail.style.height = '36px';
+                        trail.style.borderColor = '#00FF94';
+                        cursor.style.backgroundColor = '#00FF94';
+                    });
+                    el.addEventListener('mouseleave', () => {
+                        trail.style.width = '24px';
+                        trail.style.height = '24px';
+                        trail.style.borderColor = 'rgba(0, 163, 255, 0.4)';
+                        cursor.style.backgroundColor = '#00A3FF';
+                    });
+                });
+            }
         });
+
         document.addEventListener('submit', function() {
             const preloader = document.getElementById('preloader');
             if (preloader) {
@@ -204,28 +258,41 @@
     </script>
 </head>
 <body class="bg-background text-on-surface min-h-screen flex selection:bg-cyber-blue selection:text-white">
+    <!-- Custom Glowing Cursor -->
+    <div id="custom-cursor" class="custom-cursor hidden md:block"></div>
+    <div id="custom-cursor-trail" class="custom-cursor-trail hidden md:block"></div>
+
+    <!-- Live Motion Background Canvas -->
+    <canvas id="neural-bg-canvas"></canvas>
+
     <!-- Background Grid -->
     <div class="grid-bg"></div>
 
-    <!-- Preloader -->
-    <div id="preloader" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0e0e0e; z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s ease, visibility 0.3s ease;">
-        <div style="text-align: center;">
-            <div class="smoke-ring-container" style="position: relative; width: 110px; height: 110px; margin: 0 auto 1.5rem;">
-                <div class="smoke-ring" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; box-shadow: inset 0 0 20px #00a3ff, 0 0 25px rgba(0,163,255,0.7); border: 2px solid rgba(0,163,255,0.05); animation: rotate-smoke 3s infinite linear; filter: blur(1px);"></div>
-                <div class="smoke-ring-inner" style="position: absolute; top: 15px; left: 15px; width: 80px; height: 80px; border-radius: 50%; box-shadow: inset 0 0 15px #00ff94, 0 0 15px rgba(0,255,148,0.3); border: 1px solid rgba(0,255,148,0.03); animation: rotate-smoke-rev 2s infinite linear; filter: blur(1.5px);"></div>
+    <!-- Dynamic Preloader Screen -->
+    <div id="preloader" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0b0e14; z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.4s ease, visibility 0.4s ease;">
+        <div style="text-align: center;" class="relative">
+            <!-- Hex ring animation -->
+            <div class="relative w-36 h-36 mx-auto mb-6 flex items-center justify-center">
+                <div class="absolute inset-0 rounded-full border-2 border-dashed border-cyber-blue/30 animate-[spin_20s_linear_infinite]"></div>
+                <div class="absolute inset-2 rounded-full border-2 border-cyber-blue border-t-transparent animate-[spin_3s_linear_infinite]"></div>
+                <div class="absolute inset-4 rounded-full border border-security-green/40 border-b-transparent animate-[spin_6s_linear_infinite_reverse]"></div>
+                <!-- Scanning HUD Value -->
+                <span id="loader-percentage" class="font-code-sm text-lg text-cyber-blue font-bold tracking-widest">00%</span>
             </div>
-            <div style="color: #ffffff; font-family: 'Inter', sans-serif; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;">
-                AEGIS <span style="color: #00a3ff;">GATEWAY</span>
+            
+            <div style="color: #ffffff; font-family: 'Inter', sans-serif; font-size: 1.25rem; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase;" class="glow-text">
+                AEGIS <span class="text-cyber-blue">GATEWAY</span>
             </div>
-            <div style="margin-top: 0.5rem; color: #bec7d4; font-family: 'Courier New', monospace; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;">
-                Verifying Session Keys...
+            <!-- Rapid decryption log output -->
+            <div id="decryption-log" class="mt-3 font-code-sm text-xs text-security-green/60 h-4 uppercase tracking-wider">
+                INITIALIZING_SYSTEM_AUDIT...
             </div>
         </div>
     </div>
 
     {% if current_user.is_authenticated %}
         <!-- SideNavBar -->
-        <nav class="fixed h-full w-[280px] left-0 top-0 bg-navy-surface/70 backdrop-blur-xl border-r border-white/5 shadow-[4px_0_24px_rgba(0,163,255,0.1)] flex flex-col py-6 px-4 z-50">
+        <nav class="fixed h-full w-[280px] left-0 top-0 bg-navy-surface/75 backdrop-blur-xl border-r border-white/5 shadow-[4px_0_24px_rgba(0,163,255,0.08)] flex flex-col py-6 px-4 z-50">
             <!-- Header -->
             <div class="flex items-center gap-3 mb-8 px-2">
                 <div class="w-10 h-10 rounded-lg bg-deep-charcoal border border-white/10 flex items-center justify-center overflow-hidden relative group">
@@ -261,7 +328,7 @@
                     <a class="flex items-center gap-3 px-3 py-2.5 rounded-md text-on-surface-variant hover:bg-white/5 hover:text-cyber-blue transition-all group duration-200 border-l-4 border-transparent" href="/requested-assessments">
                         <span class="material-symbols-outlined text-[20px] group-hover:text-cyber-blue transition-colors">inbox</span>
                         <span class="font-label-caps text-label-caps tracking-wider flex-1">Approval Inbox</span>
-                        <span class="badge" id="sidebar-pending-badge" style="background: var(--accent); color: #131313; padding: 0.15rem 0.4rem; font-size: 0.7rem; font-weight: bold; border-radius: 10px; margin-left: auto; {% if pending_count == 0 %}display:none;{% endif %}">{{ pending_count }}</span>
+                        <span class="badge" id="sidebar-pending-badge" style="background: #00A3FF; color: #131313; padding: 0.15rem 0.4rem; font-size: 0.7rem; font-weight: bold; border-radius: 10px; margin-left: auto; {% if pending_count == 0 %}display:none;{% endif %}">{{ pending_count }}</span>
                     </a>
                 {% endif %}
                 <a class="flex items-center gap-3 px-3 py-2.5 rounded-md text-on-surface-variant hover:bg-white/5 hover:text-cyber-blue transition-all group duration-200 border-l-4 border-transparent" href="/threat-intelligence">
@@ -303,7 +370,7 @@
                 <div class="h-px bg-white/5 my-2"></div>
                 <div class="px-3 py-2 text-xs text-on-surface-variant flex flex-col gap-1">
                     <span class="font-semibold text-white">{{ current_user.username }}</span>
-                    <span>Role: {{ current_user.role }}</span>
+                    <span>Scope: {{ current_user.role }}</span>
                 </div>
                 <a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-critical-red transition-colors text-sm" href="/logout">
                     <span class="material-symbols-outlined text-[18px]">logout</span>
@@ -356,7 +423,7 @@
         {% endif %}
 
         <!-- Dashboard Content Container -->
-        <main class="flex-grow {% if current_user.is_authenticated %}mt-16 p-6{% else %}p-0{% endif %}">
+        <main class="flex-grow {% if current_user.is_authenticated %}mt-16 p-6{% else %}p-0{% endif %} animate-fade-slide">
             <div class="max-w-7xl mx-auto">
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
@@ -373,6 +440,112 @@
             </div>
         </main>
     </div>
+
+    <!-- Dynamic background node particle script -->
+    <script>
+        (function() {
+            const canvas = document.getElementById('neural-bg-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            const particles = [];
+            const particleCount = 45;
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.vx = (Math.random() - 0.5) * 0.35;
+                    this.vy = (Math.random() - 0.5) * 0.35;
+                    this.radius = Math.random() * 2 + 1;
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    if (this.x < 0 || this.x > width) this.vx *= -1;
+                    if (this.y < 0 || this.y > height) this.vy *= -1;
+                }
+
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(0, 163, 255, 0.4)';
+                    ctx.fill();
+                }
+            }
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+
+                // Draw lines between close nodes
+                for (let i = 0; i < particles.length; i++) {
+                    const p1 = particles[i];
+                    p1.update();
+                    p1.draw();
+
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const p2 = particles[j];
+                        const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+
+                        if (dist < 150) {
+                            ctx.beginPath();
+                            ctx.moveTo(p1.x, p1.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.strokeStyle = `rgba(0, 163, 255, ${0.12 * (1 - dist / 150)})`;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(animate);
+            }
+            animate();
+        })();
+    </script>
+
+    <!-- Decryption & percentage HUD preloader script -->
+    <script>
+        (function() {
+            const pct = document.getElementById('loader-percentage');
+            const log = document.getElementById('decryption-log');
+            if (!pct || !log) return;
+            
+            let progress = 0;
+            const logPhrases = [
+                "ESTABLISHING_VPN_HANDSHAKE...",
+                "LOADING_CRYPTO_KERNELS...",
+                "DECRYPTING_SECURE_KEYS...",
+                "VERIFYING_IP_TRUST_SCORE...",
+                "SCANNING_MATRIX_SYSTEM_INDEX...",
+                "UPLINK_SUCCESSFUL_WELCOME_OPERATOR"
+            ];
+
+            const interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 8) + 4;
+                if (progress >= 100) {
+                    progress = 100;
+                    log.textContent = logPhrases[logPhrases.length - 1];
+                    clearInterval(interval);
+                } else {
+                    pct.textContent = String(progress).padStart(2, '0') + '%';
+                    const phraseIndex = Math.floor((progress / 100) * (logPhrases.length - 1));
+                    log.textContent = logPhrases[phraseIndex];
+                }
+            }, 60);
+        })();
+    </script>
 
     <!-- Notification Engine JS -->
     <script>
