@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AEGIS-Security - Command Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-container": "#00723f",
+                      "outline-variant": "#3f4852",
+                      "security-green": "#00FF94",
+                      "primary-container": "#00a3ff",
+                      "on-surface": "#e5e2e1",
+                      "secondary-fixed-dim": "#00e383",
+                      "surface-dim": "#131313",
+                      "surface-container-high": "#2a2a2a",
+                      "on-primary-container": "#00375a",
+                      "surface-container-low": "#1c1b1b",
+                      "navy-surface": "#1E222D",
+                      "secondary-container": "#27ff97",
+                      "surface": "#131313",
+                      "on-secondary-fixed-variant": "#00522c",
+                      "surface-container-lowest": "#0e0e0e",
+                      "on-surface-variant": "#bec7d4",
+                      "on-tertiary": "#412d00",
+                      "primary-fixed-dim": "#98cbff",
+                      "tertiary": "#ffba20",
+                      "on-secondary-fixed": "#00210e",
+                      "inverse-on-surface": "#313030",
+                      "tertiary-container": "#cc9200",
+                      "on-secondary": "#00391d",
+                      "primary": "#98cbff",
+                      "on-tertiary-fixed-variant": "#5e4200",
+                      "cyber-blue": "#00A3FF",
+                      "on-tertiary-fixed": "#271900",
+                      "on-error-container": "#ffdad6",
+                      "surface-container": "#201f1f",
+                      "secondary": "#f5fff3",
+                      "inverse-surface": "#e5e2e1",
+                      "primary-fixed": "#cfe5ff",
+                      "on-tertiary-container": "#463000",
+                      "on-background": "#e5e2e1",
+                      "on-error": "#690005",
+                      "on-primary": "#003354",
+                      "secondary-fixed": "#5bffa1",
+                      "background": "#131313",
+                      "on-primary-fixed-variant": "#004a77",
+                      "tertiary-fixed": "#ffdea8",
+                      "on-primary-fixed": "#001d33",
+                      "critical-red": "#FF4B4B",
+                      "tertiary-fixed-dim": "#ffba20",
+                      "surface-container-highest": "#353534",
+                      "inverse-primary": "#00629d",
+                      "error": "#ffb4ab",
+                      "warning-amber": "#FFB800",
+                      "surface-bright": "#393939",
+                      "error-container": "#93000a",
+                      "deep-charcoal": "#1A1A1A",
+                      "outline": "#88919d",
+                      "surface-tint": "#98cbff",
+                      "surface-variant": "#353534"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "base": "8px",
+                      "sidebar-width": "280px",
+                      "xl": "64px",
+                      "md": "24px",
+                      "gutter": "24px",
+                      "xs": "4px",
+                      "sm": "12px",
+                      "lg": "40px"
+              },
+              "fontFamily": {
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "code-sm": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "headline-sm": [
+                              "Inter"
+                      ],
+                      "code-md": [
+                              "JetBrains Mono"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "label-caps": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "code-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-sm": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "code-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+            }
+          }
+        }
+      </script>
+<style>
+          .glass-panel {
+              background: rgba(26, 26, 26, 0.6);
+              backdrop-filter: blur(12px);
+              border: 1px solid rgba(255, 255, 255, 0.05);
+          }
+          .glow-ring {
+              box-shadow: 0 0 20px 5px rgba(0, 255, 148, 0.2);
+          }
+          .terminal-bg {
+              background: #000000;
+          }
+      </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen font-body-md overflow-x-hidden">
+<!-- SideNavBar Component -->
+<nav class="fixed h-full w-[280px] left-0 top-0 bg-navy-surface/70 backdrop-blur-xl border-r border-white/5 shadow-[4px_0_24px_rgba(0,163,255,0.1)] flex flex-col py-md px-sm z-50">
+<div class="mb-lg">
+<h1 class="font-headline-md text-headline-md font-bold text-cyber-blue tracking-tight">AEGIS-Security</h1>
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase mt-xs">Vigilance Active</p>
+</div>
+<ul class="flex-1 space-y-2">
+<li>
+<a class="flex items-center gap-sm p-sm rounded text-cyber-blue font-bold border-l-4 border-cyber-blue bg-cyber-blue/10 scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-caps text-label-caps uppercase">Command Center</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm p-sm rounded border-l-4 border-transparent text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:text-cyber-blue transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+<span class="font-label-caps text-label-caps uppercase">Threat Terminal</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm p-sm rounded border-l-4 border-transparent text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:text-cyber-blue transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="vpn_key">vpn_key</span>
+<span class="font-label-caps text-label-caps uppercase">Credential Vault</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm p-sm rounded border-l-4 border-transparent text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:text-cyber-blue transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="font-label-caps text-label-caps uppercase">Network Map</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm p-sm rounded border-l-4 border-transparent text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:text-cyber-blue transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-caps text-label-caps uppercase">System Audit</span>
+</a>
+</li>
+</ul>
+<div class="mt-auto pt-md border-t border-white/5">
+<button class="w-full bg-cyber-blue text-on-primary font-label-caps text-label-caps uppercase py-sm rounded hover:shadow-[0_0_8px_rgba(0,163,255,0.8)] transition-all mb-md">
+                QUICK DEPLOY
+            </button>
+<ul class="space-y-2">
+<li>
+<a class="flex items-center gap-sm p-sm rounded text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-caps text-label-caps uppercase">Settings</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm p-sm rounded text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-caps text-label-caps uppercase">Logout</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-[280px] p-xl min-h-screen">
+<header class="mb-xl flex justify-between items-end border-b border-white/5 pb-md">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Command Dashboard</h2>
+<p class="font-code-md text-code-md text-security-green mt-xs">System operational. Monitoring active.</p>
+</div>
+<div class="flex items-center gap-md">
+<div class="flex items-center gap-sm text-warning-amber">
+<span class="material-symbols-outlined" data-weight="fill">warning</span>
+<span class="font-code-sm text-code-sm">2 Minor Alerts</span>
+</div>
+</div>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Central Security Score (Focus) -->
+<div class="col-span-12 md:col-span-6 lg:col-span-4 glass-panel rounded-xl p-lg flex flex-col items-center justify-center relative overflow-hidden group">
+<div class="absolute inset-0 bg-cyber-blue/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface-variant mb-xl relative z-10">Overall Security Score</h3>
+<div class="relative w-48 h-48 flex items-center justify-center rounded-full glow-ring mb-lg z-10">
+<svg class="w-full h-full absolute transform -rotate-90" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="45" stroke="#1A1A1A" stroke-width="8"></circle>
+<circle class="transition-all duration-1000" cx="50" cy="50" fill="none" r="45" stroke="#00FF94" stroke-dasharray="282.7" stroke-dashoffset="33.9" stroke-width="8"></circle>
+</svg>
+<div class="text-center">
+<span class="font-headline-lg text-headline-lg text-security-green block">88</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">/ 100</span>
+</div>
+</div>
+<p class="font-code-sm text-code-sm text-cyber-blue relative z-10">System Integrity Optimal</p>
+</div>
+<!-- Active Threats -->
+<div class="col-span-12 md:col-span-6 lg:col-span-8 glass-panel rounded-xl p-md flex flex-col">
+<div class="flex justify-between items-center mb-md pb-xs border-b border-white/5">
+<h3 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-warning-amber">gpp_bad</span>
+                        Active Threats
+                    </h3>
+<button class="font-label-caps text-label-caps text-cyber-blue hover:text-primary-fixed transition-colors">VIEW LOGS</button>
+</div>
+<div class="flex-1 space-y-sm overflow-y-auto pr-xs">
+<!-- Threat Item 1 -->
+<div class="bg-surface-container p-sm rounded border border-warning-amber/30 flex justify-between items-center hover:bg-surface-container-high transition-colors cursor-pointer">
+<div class="flex items-center gap-sm">
+<div class="w-2 h-2 rounded-full bg-warning-amber animate-pulse"></div>
+<div>
+<h4 class="font-code-md text-code-md text-on-surface">Unauthorized Access Attempt</h4>
+<p class="font-code-sm text-code-sm text-on-surface-variant">Node: Gateway-Alpha | IP: Masked</p>
+</div>
+</div>
+<span class="font-code-sm text-code-sm text-warning-amber bg-warning-amber/10 px-2 py-1 rounded border border-warning-amber/20">ELEVATED</span>
+</div>
+<!-- Threat Item 2 -->
+<div class="bg-surface-container p-sm rounded border border-white/5 flex justify-between items-center hover:bg-surface-container-high transition-colors cursor-pointer">
+<div class="flex items-center gap-sm">
+<div class="w-2 h-2 rounded-full bg-security-green"></div>
+<div>
+<h4 class="font-code-md text-code-md text-on-surface">Port Scan Detected (Blocked)</h4>
+<p class="font-code-sm text-code-sm text-on-surface-variant">Node: Firewall-DMZ</p>
+</div>
+</div>
+<span class="font-code-sm text-code-sm text-security-green bg-security-green/10 px-2 py-1 rounded border border-security-green/20">RESOLVED</span>
+</div>
+<!-- Threat Item 3 -->
+<div class="bg-surface-container p-sm rounded border border-white/5 flex justify-between items-center hover:bg-surface-container-high transition-colors cursor-pointer">
+<div class="flex items-center gap-sm">
+<div class="w-2 h-2 rounded-full bg-security-green"></div>
+<div>
+<h4 class="font-code-md text-code-md text-on-surface">Routine Malware Sweep</h4>
+<p class="font-code-sm text-code-sm text-on-surface-variant">Node: Core-Server-02</p>
+</div>
+</div>
+<span class="font-code-sm text-code-sm text-security-green bg-security-green/10 px-2 py-1 rounded border border-security-green/20">CLEAR</span>
+</div>
+</div>
+</div>
+<!-- Network Traffic -->
+<div class="col-span-12 lg:col-span-8 glass-panel rounded-xl p-md">
+<div class="flex justify-between items-center mb-md">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Network Traffic</h3>
+<div class="flex gap-2">
+<span class="w-3 h-3 rounded-full bg-cyber-blue inline-block mt-1"></span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">Inbound</span>
+</div>
+</div>
+<!-- Placeholder for Graph -->
+<div class="h-48 w-full border border-white/5 rounded relative flex items-end px-2 pb-2 gap-1 overflow-hidden bg-surface-container-lowest">
+<!-- Faux Graph Bars -->
+<div class="w-full bg-cyber-blue/20 h-[30%] rounded-t hover:bg-cyber-blue/40 transition-colors"></div>
+<div class="w-full bg-cyber-blue/40 h-[50%] rounded-t hover:bg-cyber-blue/60 transition-colors"></div>
+<div class="w-full bg-cyber-blue/30 h-[45%] rounded-t hover:bg-cyber-blue/50 transition-colors"></div>
+<div class="w-full bg-cyber-blue/60 h-[70%] rounded-t hover:bg-cyber-blue/80 transition-colors relative">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 font-code-sm text-code-sm text-cyber-blue bg-navy-surface px-1 rounded opacity-0 hover:opacity-100">Peak</div>
+</div>
+<div class="w-full bg-cyber-blue/50 h-[60%] rounded-t hover:bg-cyber-blue/70 transition-colors"></div>
+<div class="w-full bg-cyber-blue/20 h-[40%] rounded-t hover:bg-cyber-blue/40 transition-colors"></div>
+<div class="w-full bg-cyber-blue/30 h-[55%] rounded-t hover:bg-cyber-blue/50 transition-colors"></div>
+<!-- Line overlay simulation -->
+<svg class="absolute inset-0 w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<path class="opacity-50" d="M0,70 L15,50 L30,55 L45,30 L60,40 L75,60 L90,45 L100,70" fill="none" stroke="#00A3FF" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- System Health -->
+<div class="col-span-12 lg:col-span-4 glass-panel rounded-xl p-md flex flex-col justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-md">System Health</h3>
+<div class="space-y-md">
+<!-- CPU -->
+<div>
+<div class="flex justify-between font-code-sm text-code-sm mb-xs">
+<span class="text-on-surface-variant">CPU Core Load</span>
+<span class="text-security-green">24%</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5">
+<div class="bg-security-green h-1.5 rounded-full" style="width: 24%"></div>
+</div>
+</div>
+<!-- Memory -->
+<div>
+<div class="flex justify-between font-code-sm text-code-sm mb-xs">
+<span class="text-on-surface-variant">Memory Usage</span>
+<span class="text-warning-amber">76%</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5">
+<div class="bg-warning-amber h-1.5 rounded-full" style="width: 76%"></div>
+</div>
+</div>
+<!-- Storage -->
+<div>
+<div class="flex justify-between font-code-sm text-code-sm mb-xs">
+<span class="text-on-surface-variant">Encrypted Storage</span>
+<span class="text-cyber-blue">45%</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5">
+<div class="bg-cyber-blue h-1.5 rounded-full" style="width: 45%"></div>
+</div>
+</div>
+</div>
+<div class="mt-md terminal-bg p-sm rounded border border-white/10 relative">
+<div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-security-green animate-pulse"></div>
+<p class="font-code-sm text-code-sm text-security-green">sys.diag_check() ... OK</p>
+<p class="font-code-sm text-code-sm text-on-surface-variant mt-1">&gt; Awaiting commands</p>
+</div>
+</div>
+</div>
+</main>
+</body></html>

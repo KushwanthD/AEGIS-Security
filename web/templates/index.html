@@ -1,113 +1,194 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<h2>Security Dashboard</h2>
-
-{% if current_user.role == 'Analyst' %}
-    <!-- Analyst Metrics Grid (Hiding Assets Registered) -->
-    <div class="grid-metrics" style="margin-bottom: 2rem;">
-        <a href="/requested-assessments" class="metric-card warning" style="text-decoration: none; color: inherit; display: flex; flex-direction: column;">
-            <span class="metric-title">Assessments Requested</span>
-            <span class="metric-value">{{ assessment_count }}</span>
-        </a>
-        <div class="metric-card success">
-            <span class="metric-title">Approved Runs</span>
-            <span class="metric-value">{{ approved_count }}</span>
+<div class="space-y-6">
+    <!-- Welcome Banner -->
+    <div class="glass-card rounded-xl p-6 relative overflow-hidden flex items-center justify-between border-l-4 border-l-cyber-blue shadow-[0_4px_20px_rgba(0,163,255,0.08)]">
+        <div class="absolute inset-0 bg-gradient-to-r from-cyber-blue/10 to-transparent pointer-events-none"></div>
+        <div class="relative z-10">
+            <h2 class="font-headline-sm text-headline-sm text-white mb-1">Welcome back, {{ current_user.username }}.</h2>
+            <p class="font-body-md text-body-md text-on-surface-variant">System integrity is nominal. Role: <span class="text-cyber-blue font-semibold">{{ current_user.role }}</span></p>
         </div>
-        <a href="/high-risks-assessments" class="metric-card critical" style="text-decoration: none; color: inherit; display: flex; flex-direction: column;">
-            <span class="metric-title">Critical &amp; High Risks</span>
-            <span class="metric-value">{{ high_risk_count }}</span>
-        </a>
-    </div>
-
-    <!-- Analyst Search Console (Outside Auditor Mode) -->
-    <div class="card" style="max-width: 600px; margin: 0 auto; padding: 2.5rem; border-top: 4px solid var(--primary); background: var(--bg-card); border-radius: 8px;">
-        <h2 style="font-family: 'Outfit', sans-serif; margin-bottom: 1rem; background: linear-gradient(to right, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem;">Target Audit Console</h2>
-        <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.6;">
-            Enter the registered target asset value below to verify its status and proceed to the scan execution lifecycle. 
-            <br><span style="color: var(--accent-yellow);">⚠️ Attempts to lookup unregistered or unverified targets are logged and reported.</span>
-        </p>
-        
-        <form action="/analyst/assess-target" method="POST" style="display: flex; flex-direction: column; gap: 1.25rem;">
-            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                <label style="font-weight: 500; font-size: 0.9rem; color: var(--text-secondary);">Target Identifier (Domain, IP, or Email):</label>
-                <input type="text" name="target" placeholder="e.g. example.com" required style="padding: 0.8rem; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white; outline: none; font-size: 1rem;">
+        <div class="relative z-10 hidden md:block">
+            <div class="font-code-sm text-code-sm text-cyber-blue opacity-70 text-right">
+                LAST_ACTIVITY: {{ current_time or '04:22:18 UTC' }}<br/>
+                UPLINK_STATUS: SECURE
             </div>
-            <button type="submit" class="btn" style="padding: 0.8rem; font-weight: bold; background: var(--primary); color: white; border: none; cursor: pointer; border-radius: 6px; transition: background 0.2s;">
-                Verify &amp; Initiate Assessment
-            </button>
-        </form>
+        </div>
     </div>
 
-{% else %}
-    <!-- Admin & Owner Console (Internal Asset Management) -->
-    <div class="grid-metrics">
-        <div class="metric-card">
-            <span class="metric-title">Assets Registered</span>
-            <span class="metric-value">{{ asset_count }}</span>
+    <!-- Status Cards Grid -->
+    {% if current_user.role == 'Analyst' %}
+        <!-- Analyst Metrics Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <a href="/requested-assessments" class="glass-card rounded-xl p-6 glow-hover transition-all duration-300 flex flex-col hover:no-underline text-inherit group">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-cyber-blue/10 border border-cyber-blue/20 flex items-center justify-center text-cyber-blue group-hover:shadow-[0_0_12px_rgba(0,163,255,0.4)] transition-all">
+                        <span class="material-symbols-outlined">assignment_turned_in</span>
+                    </div>
+                    <span class="font-code-sm text-code-sm text-on-surface-variant">REQ_Q</span>
+                </div>
+                <h3 class="font-body-sm text-body-sm text-on-surface-variant uppercase tracking-wider mb-1">Assessments Requested</h3>
+                <div class="font-headline-lg text-headline-lg text-white font-bold">{{ assessment_count }}</div>
+            </a>
+            <div class="glass-card rounded-xl p-6 glow-hover transition-all duration-300 flex flex-col">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-security-green/10 border border-security-green/20 flex items-center justify-center text-security-green">
+                        <span class="material-symbols-outlined">verified_user</span>
+                    </div>
+                    <span class="font-code-sm text-code-sm text-on-surface-variant">EXEC_W</span>
+                </div>
+                <h3 class="font-body-sm text-body-sm text-on-surface-variant uppercase tracking-wider mb-1">Approved Runs</h3>
+                <div class="font-headline-lg text-headline-lg text-security-green font-bold">{{ approved_count }}</div>
+            </div>
+            <a href="/high-risks-assessments" class="glass-card rounded-xl p-6 critical-glow transition-all duration-300 flex flex-col hover:no-underline text-inherit group">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-critical-red/20 border border-critical-red/40 flex items-center justify-center text-critical-red group-hover:shadow-[0_0_12px_rgba(255,75,75,0.4)] transition-all">
+                        <span class="material-symbols-outlined">warning</span>
+                    </div>
+                    <span class="font-code-sm text-code-sm text-critical-red">URGENT</span>
+                </div>
+                <h3 class="font-body-sm text-body-sm text-on-surface-variant uppercase tracking-wider mb-1">Critical & High Risks</h3>
+                <div class="font-headline-lg text-headline-lg text-critical-red font-bold">{{ high_risk_count }}</div>
+            </a>
         </div>
-        <a href="/requested-assessments" class="metric-card warning" style="text-decoration: none; color: inherit; display: flex; flex-direction: column;">
-            <span class="metric-title">Assessments Requested</span>
-            <span class="metric-value">{{ assessment_count }}</span>
-        </a>
-        <div class="metric-card success">
-            <span class="metric-title">Approved Runs</span>
-            <span class="metric-value">{{ approved_count }}</span>
+
+        <!-- Target Audit Console -->
+        <div class="glass-card rounded-xl p-8 max-w-2xl mx-auto border border-white/5 relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyber-blue/50 to-transparent opacity-50"></div>
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-lg bg-cyber-blue/10 border border-cyber-blue/30 flex items-center justify-center text-cyber-blue shadow-[0_0_15px_rgba(0,163,255,0.15)]">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">terminal</span>
+                </div>
+                <h2 class="font-headline-md text-headline-md text-on-surface font-semibold text-[22px]">Target Audit Console</h2>
+            </div>
+            <p class="font-body-md text-on-surface-variant mb-6 leading-relaxed">
+                Enter the registered target asset identifier below to verify its status and proceed to the scan execution lifecycle.
+                <br><span class="text-warning-amber font-medium">⚠️ Access attempts to lookup targets are strictly logged for auditing.</span>
+            </p>
+            <form action="/analyst/assess-target" method="POST" class="space-y-4">
+                <div class="flex flex-col gap-2">
+                    <label class="font-label-caps text-label-caps text-on-surface-variant">Target Identifier (Domain, IP, or Email):</label>
+                    <input class="w-full bg-[#131313] border border-white/10 rounded-md py-3 px-4 font-code-sm text-code-sm text-cyber-blue focus:border-cyber-blue focus:ring-0 outline-none" type="text" name="target" placeholder="e.g. secure-node.company.com" required autocomplete="off"/>
+                </div>
+                <button type="submit" class="w-full py-3 bg-cyber-blue text-white font-bold rounded-md hover:shadow-[0_0_15px_rgba(0,163,255,0.4)] transition-all cursor-pointer">
+                    Verify & Initiate Assessment
+                </button>
+            </form>
         </div>
-        <a href="/high-risks-assessments" class="metric-card critical" style="text-decoration: none; color: inherit; display: flex; flex-direction: column;">
-            <span class="metric-title">Critical & High Risks</span>
-            <span class="metric-value">{{ high_risk_count }}</span>
-        </a>
-    </div>
 
-    <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-            <h3>Managed Targets / Assets</h3>
-            <a href="/register-asset" class="btn">Register New Asset</a>
+    {% else %}
+        <!-- Admin & Owner Console -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="glass-card rounded-xl p-6 glow-hover transition-all duration-300 flex flex-col">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-cyber-blue/10 border border-cyber-blue/20 flex items-center justify-center text-cyber-blue">
+                        <span class="material-symbols-outlined">dns</span>
+                    </div>
+                    <span class="font-code-sm text-code-sm text-on-surface-variant">SYS_01</span>
+                </div>
+                <h3 class="font-body-sm text-body-sm text-on-surface-variant uppercase tracking-wider mb-1">Assets Registered</h3>
+                <div class="font-headline-lg text-headline-lg text-white font-bold">{{ asset_count }}</div>
+            </div>
+            <a href="/requested-assessments" class="glass-card rounded-xl p-6 glow-hover transition-all duration-300 flex flex-col hover:no-underline text-inherit group">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-cyber-blue/10 border border-cyber-blue/20 flex items-center justify-center text-cyber-blue group-hover:shadow-[0_0_12px_rgba(0,163,255,0.4)] transition-all">
+                        <span class="material-symbols-outlined">assignment_turned_in</span>
+                    </div>
+                    <span class="font-code-sm text-code-sm text-on-surface-variant">REQ_Q</span>
+                </div>
+                <h3 class="font-body-sm text-body-sm text-on-surface-variant uppercase tracking-wider mb-1">Assessments Requested</h3>
+                <div class="font-headline-lg text-headline-lg text-white font-bold">{{ assessment_count }}</div>
+            </a>
+            <div class="glass-card rounded-xl p-6 glow-hover transition-all duration-300 flex flex-col">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-security-green/10 border border-security-green/20 flex items-center justify-center text-security-green">
+                        <span class="material-symbols-outlined">verified_user</span>
+                    </div>
+                    <span class="font-code-sm text-code-sm text-on-surface-variant">EXEC_W</span>
+                </div>
+                <h3 class="font-body-sm text-body-sm text-on-surface-variant uppercase tracking-wider mb-1">Approved Runs</h3>
+                <div class="font-headline-lg text-headline-lg text-security-green font-bold">{{ approved_count }}</div>
+            </div>
+            <a href="/high-risks-assessments" class="glass-card rounded-xl p-6 critical-glow transition-all duration-300 flex flex-col hover:no-underline text-inherit group">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-critical-red/20 border border-critical-red/40 flex items-center justify-center text-critical-red group-hover:shadow-[0_0_12px_rgba(255,75,75,0.4)] transition-all">
+                        <span class="material-symbols-outlined">warning</span>
+                    </div>
+                    <span class="font-code-sm text-code-sm text-critical-red">URGENT</span>
+                </div>
+                <h3 class="font-body-sm text-body-sm text-on-surface-variant uppercase tracking-wider mb-1">Critical & High Risks</h3>
+                <div class="font-headline-lg text-headline-lg text-critical-red font-bold">{{ high_risk_count }}</div>
+            </a>
         </div>
 
-        {% if not assets %}
-            <p style="color: var(--text-secondary);">No assets registered. Click "Register New Asset" to begin.</p>
-        {% else %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Asset Target</th>
-                        <th>Type</th>
-                        <th>Ownership Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for asset in assets %}
-                        <tr>
-                            <td>{{ asset.id }}</td>
-                            <td><b>{{ asset.asset_value }}</b></td>
-                            <td>{{ asset.asset_type.capitalize() }}</td>
-                            <td>
-                                {% if asset.verification_status == 'VERIFIED' %}
-                                    <span class="badge badge-success">Verified</span>
-                                {% elif asset.verification_status == 'TOKEN_GENERATED' %}
-                                    <span class="badge badge-warning">Pending Token</span>
-                                {% else %}
-                                    <span class="badge badge-danger">Unverified</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if asset.verification_status != 'VERIFIED' %}
-                                    <a href="/verify-asset/{{ asset.id }}" class="btn btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.85rem;">Verify Ownership</a>
-                                {% else %}
-                                    <a href="/request-assessment/{{ asset.id }}" class="btn" style="padding: 0.3rem 0.8rem; font-size: 0.85rem; background-color: var(--accent-green);">Run Assessment</a>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
-    </div>
-{% endif %}
+        <div class="glass-card rounded-xl p-8 border border-white/5 relative">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-headline-sm text-headline-sm text-white font-semibold">Managed Targets / Assets</h3>
+                <a href="/register-asset" class="px-4 py-2 bg-cyber-blue text-white font-label-caps text-label-caps rounded hover:shadow-[0_0_12px_rgba(0,163,255,0.6)] transition-all no-underline">
+                    Register New Asset
+                </a>
+            </div>
 
+            {% if not assets %}
+                <p class="text-on-surface-variant">No assets registered. Click "Register New Asset" to begin.</p>
+            {% else %}
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-white/5 text-on-surface-variant font-label-caps text-label-caps">
+                                <th class="pb-3">ID</th>
+                                <th class="pb-3">Asset Target</th>
+                                <th class="pb-3">Type</th>
+                                <th class="pb-3">Ownership Status</th>
+                                <th class="pb-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            {% for asset in assets %}
+                                <tr class="table-row-hover transition-colors">
+                                    <td class="py-4 font-code-sm text-code-sm text-on-surface-variant">{{ asset.id }}</td>
+                                    <td class="py-4 font-semibold text-white">{{ asset.asset_value }}</td>
+                                    <td class="py-4 text-on-surface-variant">{{ asset.asset_type.capitalize() }}</td>
+                                    <td class="py-4">
+                                        {% if asset.verification_status == 'VERIFIED' %}
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-security-green/10 text-security-green border border-security-green/20">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-security-green"></span>
+                                                Verified
+                                            </span>
+                                        {% elif asset.verification_status == 'TOKEN_GENERATED' %}
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-warning-amber/10 text-warning-amber border border-warning-amber/20">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-warning-amber"></span>
+                                                Pending Token
+                                            </span>
+                                        {% else %}
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-critical-red/10 text-critical-red border border-critical-red/20">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-critical-red"></span>
+                                                Unverified
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-4">
+                                        {% if asset.verification_status != 'VERIFIED' %}
+                                            <a href="/verify-asset/{{ asset.id }}" class="inline-flex items-center px-3 py-1.5 bg-white/5 border border-white/10 rounded font-label-caps text-[10px] text-cyber-blue hover:bg-cyber-blue/10 hover:border-cyber-blue/30 transition-all no-underline">
+                                                Verify Ownership
+                                            </a>
+                                        {% else %}
+                                            <a href="/analyst/assess-target" onclick="event.preventDefault(); document.getElementById('assess-form-{{ asset.id }}').submit();" class="inline-flex items-center px-3 py-1.5 bg-cyber-blue/10 border border-cyber-blue/30 rounded font-label-caps text-[10px] text-cyber-blue hover:bg-cyber-blue hover:text-white transition-all no-underline">
+                                                Initiate Scan
+                                            </a>
+                                            <form id="assess-form-{{ asset.id }}" action="/analyst/assess-target" method="POST" style="display:none;">
+                                                <input type="hidden" name="target" value="{{ asset.asset_value }}">
+                                            </form>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AEGIS-Security Command Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&amp;family=Hanken+Grotesk:wght@400;500&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#131b2e",
+                        "secondary-fixed": "#ffddba",
+                        "primary-fixed": "#ebdcff",
+                        "on-surface": "#dae2fd",
+                        "on-tertiary-fixed-variant": "#004b71",
+                        "admin-gold": "#ecc94b",
+                        "on-primary-container": "#492680",
+                        "on-tertiary-fixed": "#001e30",
+                        "surface-dim": "#0b1326",
+                        "on-secondary-container": "#ffe3c9",
+                        "on-error-container": "#ffdad6",
+                        "on-surface-variant": "#ccc3d2",
+                        "inverse-on-surface": "#283044",
+                        "amethyst-glow": "linear-gradient(135deg, #b794f4 0%, #63b3ed 100%)",
+                        "on-primary-fixed-variant": "#55338d",
+                        "on-secondary": "#482900",
+                        "success-emerald": "#48bb78",
+                        "on-error": "#690005",
+                        "surface-container-lowest": "#060e20",
+                        "secondary-fixed-dim": "#ffb866",
+                        "primary": "#d4bbff",
+                        "secondary-container": "#955b01",
+                        "secondary": "#ffb866",
+                        "tertiary": "#8ecdff",
+                        "on-background": "#dae2fd",
+                        "surface-container-highest": "#2d3449",
+                        "surface": "#0b1326",
+                        "surface-variant": "#2d3449",
+                        "tertiary-container": "#5cade7",
+                        "surface-slate": "#1e293b",
+                        "error-container": "#93000a",
+                        "background": "#0b1326",
+                        "outline-variant": "#4a4551",
+                        "outline": "#958e9c",
+                        "primary-fixed-dim": "#d4bbff",
+                        "surface-container-high": "#222a3d",
+                        "primary-container": "#b794f4",
+                        "on-secondary-fixed": "#2b1700",
+                        "on-secondary-fixed-variant": "#673d00",
+                        "critical-ruby": "#f56565",
+                        "inverse-surface": "#dae2fd",
+                        "surface-container": "#171f33",
+                        "surface-bright": "#31394d",
+                        "on-tertiary": "#00344f",
+                        "error": "#ffb4ab",
+                        "on-tertiary-container": "#003f60",
+                        "tertiary-fixed": "#cbe6ff",
+                        "inverse-primary": "#6d4ca6",
+                        "tertiary-fixed-dim": "#8ecdff",
+                        "on-primary-fixed": "#270058",
+                        "on-primary": "#3e1975",
+                        "surface-tint": "#d4bbff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sidebar-collapsed": "80px",
+                        "container-margin": "32px",
+                        "sidebar-expanded": "260px",
+                        "base": "8px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "data-mono": ["JetBrains Mono"],
+                        "headline-lg-mobile": ["Sora"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-lg": ["Sora"],
+                        "headline-sm": ["Sora"],
+                        "headline-md": ["Sora"],
+                        "body-md": ["Hanken Grotesk"],
+                        "label-caps": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "data-mono": ["14px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-sm": ["20px", { "lineHeight": "1.4", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "headline-md": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #0b1326; color: #dae2fd; }
+        .glass-panel { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(16px); border: 1px solid rgba(183, 148, 244, 0.2); }
+        .admin-panel { border-top: 1px solid #ecc94b; }
+        .glow-shadow { box-shadow: 0 0 20px rgba(183, 148, 244, 0.15); }
+        .ring-pulse { animation: pulse-ring 4s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; }
+        @keyframes pulse-ring { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(183, 148, 244, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 20px rgba(183, 148, 244, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(183, 148, 244, 0); } }
+        .scan-line { width: 100%; height: 2px; background: linear-gradient(90deg, transparent, rgba(183, 148, 244, 0.8), transparent); animation: scan 3s linear infinite; position: absolute; left: 0; top: 0; }
+        @keyframes scan { 0% { top: 0; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden min-h-screen">
+<!-- Role Monitor Bar -->
+<div class="fixed top-16 right-0 left-[260px] h-8 bg-surface-container-high z-40 hidden md:flex items-center justify-center w-full bg-gradient-to-r from-primary/20 via-admin-gold/20 to-primary/20" style="left: 260px; width: calc(100% - 260px);">
+<span class="font-label-caps text-label-caps text-admin-gold font-bold">ROLE MONITOR</span>
+</div>
+<!-- Top App Bar -->
+<div class="fixed top-0 right-0 left-0 md:left-[260px] h-16 bg-surface-dim/90 backdrop-blur-md border-b border-outline-variant/30 shadow-sm flex justify-between items-center px-gutter z-50 transition-all duration-300">
+<div class="flex items-center gap-4">
+<span class="md:hidden material-symbols-outlined text-primary cursor-pointer">menu</span>
+<span class="font-headline-sm text-headline-sm font-bold bg-gradient-to-r from-primary to-tertiary bg-clip-text text-transparent">AEGIS-Security</span>
+</div>
+<div class="hidden lg:flex items-center gap-6">
+<span class="font-data-mono text-data-mono text-on-surface-variant hover:text-primary transition-all duration-300 cursor-pointer">Status: Optimal</span>
+<span class="font-data-mono text-data-mono text-on-surface-variant hover:text-primary transition-all duration-300 cursor-pointer">Uptime: 99.9%</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden sm:block font-label-caps text-label-caps bg-[linear-gradient(135deg,#b794f4_0%,#63b3ed_100%)] text-surface-container-lowest px-4 py-2 rounded font-bold hover:brightness-110 shadow-[0_0_12px_rgba(183,148,244,0.5)] transition-all cursor-pointer active:opacity-80">UPGRADE TO ELITE</button>
+<span class="material-symbols-outlined text-primary cursor-pointer hover:text-primary transition-all duration-300" style="font-variation-settings: 'FILL' 0;">notifications</span>
+<img alt="User Profile" class="w-8 h-8 rounded-full border border-primary/50 object-cover" data-alt="A highly detailed close-up of a futuristic user profile avatar. A sleek, metallic humanoid face with subtle glowing amethyst purple circuitry lines embedded in its dark slate armor plating. Soft, diffused lighting creates a premium, high-fidelity aesthetic against a deep black background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbZ1ep3YDxfElm8Q1imqi_SwoROoV1B7eD2ZN0hGU8dn-q4PemC1VYR1UaJF5reKvq0ntqkTyg8AwD-TlQEq5Z3Xq3uZ67KRgAvNuA3vyqdHP5knStc32kHIq7ZNHk1dxlfF35VBCQPdno_9GXwFuHMOFW4CCYLKooPEi7K16f6SSa7yZSK0cGzpYcblHbb0Y2AuVPwurYnEudhr7SiGcIxQ1z0xYeZXK3J3Rcm8Z_vCXHGHkTFLs4yQ"/>
+</div>
+</div>
+<!-- Side Navigation -->
+<nav class="fixed left-0 top-0 h-screen w-[260px] bg-surface-container/80 backdrop-blur-xl border-r border-primary/20 shadow-[0_0_20px_rgba(183,148,244,0.15)] z-50 flex flex-col h-full py-base hidden md:flex">
+<div class="px-6 py-4 flex flex-col items-start gap-2 mb-8">
+<span class="font-headline-md text-headline-md font-bold text-primary">AEGIS-Security</span>
+<div class="flex items-center gap-2 mt-2">
+<span class="font-label-caps text-label-caps text-admin-gold bg-admin-gold/10 px-2 py-1 rounded">Role: Warden</span>
+</div>
+<button class="mt-4 font-label-caps text-label-caps text-primary border border-primary/50 px-3 py-1.5 rounded hover:bg-surface-bright/50 transition-colors duration-200 active:scale-95">Switch Role</button>
+</div>
+<div class="flex-1 overflow-y-auto">
+<a class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary border-r-2 border-primary active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-headline-sm text-headline-sm">Command Center</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-bright/50 transition-colors duration-200 active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">terminal</span>
+<span class="font-headline-sm text-headline-sm">Threat Terminal</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-bright/50 transition-colors duration-200 active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">vpn_key</span>
+<span class="font-headline-sm text-headline-sm">Credential Vault</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-bright/50 transition-colors duration-200 active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">hub</span>
+<span class="font-headline-sm text-headline-sm">Network Map</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-bright/50 transition-colors duration-200 active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-headline-sm text-headline-sm">System Audit</span>
+</a>
+</div>
+<div class="mt-auto border-t border-primary/20 pt-4 pb-4">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-bright/50 transition-colors duration-200 active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-caps text-label-caps">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-bright/50 transition-colors duration-200 active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-caps text-label-caps">Support</span>
+</a>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="pt-[104px] pb-8 px-4 md:px-container-margin md:ml-[260px] min-h-screen">
+<!-- Dashboard Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Central Warden Integrity Ring -->
+<div class="lg:col-span-12 xl:col-span-8 glass-panel admin-panel rounded-xl p-6 relative overflow-hidden flex flex-col items-center justify-center min-h-[400px]">
+<div class="absolute inset-0 bg-gradient-to-b from-transparent to-surface-dim/80 z-0"></div>
+<div class="scan-line z-10"></div>
+<h2 class="font-headline-sm text-headline-sm text-admin-gold mb-8 z-20 self-start w-full border-b border-outline-variant/30 pb-2">SYSTEM INTEGRITY OVERVIEW</h2>
+<div class="relative w-64 h-64 flex items-center justify-center z-20 mb-8">
+<div class="absolute inset-0 rounded-full border-[8px] border-surface-container-highest"></div>
+<div class="absolute inset-0 rounded-full border-[8px] border-primary ring-pulse" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 50%);"></div>
+<div class="flex flex-col items-center">
+<span class="font-headline-lg text-headline-lg text-primary">98.4%</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant mt-2">OPTIMAL</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-8 w-full max-w-2xl z-20">
+<div class="text-center">
+<span class="font-data-mono text-data-mono text-primary block mb-1">NODES SECURED</span>
+<span class="font-headline-md text-headline-md">1,428</span>
+</div>
+<div class="text-center">
+<span class="font-data-mono text-data-mono text-admin-gold block mb-1">ACTIVE SCANS</span>
+<span class="font-headline-md text-headline-md">24</span>
+</div>
+<div class="text-center">
+<span class="font-data-mono text-data-mono text-tertiary block mb-1">THREATS BLOCKED</span>
+<span class="font-headline-md text-headline-md">8,912</span>
+</div>
+</div>
+</div>
+<!-- Lockdown Panel -->
+<div class="lg:col-span-12 xl:col-span-4 flex flex-col gap-6">
+<div class="glass-panel rounded-xl p-6 flex flex-col justify-between h-full relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-critical-ruby/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-critical-ruby flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined">warning</span>
+                            EMERGENCY PROTOCOL
+                        </h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">Initiate total system lockdown. This action requires Warden level authorization and will severe all external connections.</p>
+</div>
+<button class="w-full py-4 rounded bg-surface-container-highest border border-critical-ruby/50 text-critical-ruby font-label-caps text-label-caps hover:bg-critical-ruby/20 transition-colors flex items-center justify-center gap-2 group">
+<span class="material-symbols-outlined group-hover:animate-pulse">lock</span>
+                        INITIATE SYSTEM LOCKDOWN
+                    </button>
+</div>
+<!-- Network Traffic Chart Placeholder -->
+<div class="glass-panel rounded-xl p-6 h-full flex flex-col">
+<h3 class="font-label-caps text-label-caps text-on-surface mb-4">NETWORK TRAFFIC (24H)</h3>
+<div class="flex-1 flex items-end gap-2 h-32 border-b border-l border-outline-variant/30 pb-2 pl-2 relative">
+<!-- Bars simulating chart -->
+<div class="w-1/6 bg-primary/40 h-[40%] rounded-t hover:bg-primary/80 transition-colors cursor-pointer"></div>
+<div class="w-1/6 bg-primary/60 h-[60%] rounded-t hover:bg-primary/80 transition-colors cursor-pointer"></div>
+<div class="w-1/6 bg-admin-gold/50 h-[85%] rounded-t hover:bg-admin-gold/80 transition-colors cursor-pointer relative"><div class="absolute -top-6 left-1/2 -translate-x-1/2 font-data-mono text-data-mono text-[10px] text-admin-gold hidden md:block">PEAK</div></div>
+<div class="w-1/6 bg-primary/40 h-[30%] rounded-t hover:bg-primary/80 transition-colors cursor-pointer"></div>
+<div class="w-1/6 bg-primary/50 h-[50%] rounded-t hover:bg-primary/80 transition-colors cursor-pointer"></div>
+<div class="w-1/6 bg-primary/70 h-[75%] rounded-t hover:bg-primary/80 transition-colors cursor-pointer"></div>
+</div>
+<div class="flex justify-between mt-2 font-data-mono text-data-mono text-[10px] text-on-surface-variant">
+<span>00:00</span>
+<span>12:00</span>
+<span>24:00</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

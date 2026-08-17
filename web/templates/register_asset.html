@@ -1,36 +1,102 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="w-full max-w-[900px] mx-auto space-y-6">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+        <div>
+            <h2 class="font-headline-lg text-headline-lg font-bold text-white tracking-tight text-[28px] mb-1">Target Asset Registry</h2>
+            <p class="font-body-md text-body-md text-on-surface-variant">Register domain nodes, comms channels, or systems to start security mapping.</p>
+        </div>
+        <div class="flex items-center gap-4">
+            <button class="font-label-caps text-label-caps text-on-surface-variant hover:text-white transition-colors cursor-pointer bg-transparent border-none outline-none" onclick="window.history.back()">
+                CANCEL ABORT
+            </button>
+        </div>
+    </div>
 
-<div class="card" style="max-width: 600px; margin: 0 auto;">
-    <h2>Register New Target Asset</h2>
-    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
-        Register your target domain, website, or network IP address. The system will automatically detect the asset type, choose the optimal verification mechanism, and provide instructions to authenticate ownership.
-    </p>
+    <!-- Bento Grid Form Layout -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 relative">
+        <!-- Left Column: Progress Tracker -->
+        <div class="md:col-span-4 bg-navy-surface/50 backdrop-blur-xl border border-white/5 rounded-xl p-6 shadow-[0_8px_32px_rgba(0,0,0,0.4)] h-fit">
+            <h2 class="font-label-caps text-label-caps text-cyber-blue mb-8 tracking-widest border-b border-white/10 pb-4">DEPLOYMENT SEQUENCE</h2>
+            <div class="relative space-y-8">
+                <!-- Step 1: Identity -->
+                <div class="step-item active relative flex gap-4">
+                    <div class="w-8 h-8 rounded-full border border-cyber-blue bg-cyber-blue/15 text-cyber-blue flex items-center justify-center font-code-sm text-xs font-bold shadow-[0_0_10px_rgba(0,163,255,0.3)] shrink-0">1</div>
+                    <div class="pt-1">
+                        <h3 class="font-headline-sm text-[16px] font-semibold text-white">Nomenclature</h3>
+                        <p class="font-body-sm text-xs text-on-surface-variant mt-1">Target Name & Classification</p>
+                    </div>
+                </div>
+                <!-- Step 2: Verification -->
+                <div class="step-item relative flex gap-4 opacity-50">
+                    <div class="w-8 h-8 rounded-full border border-white/10 bg-white/5 text-white/50 flex items-center justify-center font-code-sm text-xs font-bold shrink-0">2</div>
+                    <div class="pt-1">
+                        <h3 class="font-headline-sm text-[16px] font-semibold text-white">Verification</h3>
+                        <p class="font-body-sm text-xs text-on-surface-variant mt-1">Ownership Validation Challenge</p>
+                    </div>
+                </div>
+                <!-- Step 3: Security Keys -->
+                <div class="step-item relative flex gap-4 opacity-50">
+                    <div class="w-8 h-8 rounded-full border border-white/10 bg-white/5 text-white/50 flex items-center justify-center font-code-sm text-xs font-bold shrink-0">3</div>
+                    <div class="pt-1">
+                        <h3 class="font-headline-sm text-[16px] font-semibold text-white">Auditing Keys</h3>
+                        <p class="font-body-sm text-xs text-on-surface-variant mt-1">Credential Integration</p>
+                    </div>
+                </div>
+            </div>
 
-    <form method="POST">
-        <div class="form-group" style="margin-bottom: 1.5rem;">
-            <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Asset Target Address / URL</label>
-            <input type="text" name="asset_value" placeholder="e.g. example.com, user@example.com, 192.168.1.50, or https://example.com" required autocomplete="off" style="width: 100%;">
-            <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem; font-size: 0.8rem;">
-                Enter a domain (e.g. <code>example.com</code>), an email address (e.g. <code>user@example.com</code>), a web address (e.g. <code>https://example.com</code>), or an IP address.
-            </small>
+            <!-- Terminal Mini Status -->
+            <div class="mt-8 bg-black rounded-lg p-4 border border-white/5 relative overflow-hidden">
+                <div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-security-green animate-pulse"></div>
+                <p class="font-code-sm text-[10px] text-security-green opacity-70 mb-1">&gt; SYSTEM.AWAITING_INPUT</p>
+                <p class="font-code-sm text-[10px] text-white/50">&gt; ALLOCATING_VIRTUAL_SPACE...</p>
+            </div>
         </div>
 
-        <div class="form-group" style="margin-bottom: 1.5rem;">
-            <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">SSH Host Auditing Credentials (Optional JSON)</label>
-            <textarea name="ssh_credentials" placeholder='e.g. {"username": "ubuntu", "password": "password123", "port": 22}' style="width: 100%; height: 80px; background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: 6px; color: white; padding: 0.75rem; font-family: monospace; font-size: 0.85rem; outline: none;"></textarea>
-            <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem; font-size: 0.8rem;">
-                Optional. Supply JSON configurations (username, password, private_key, or port) to run authenticated OS patch auditing checks.
-            </small>
-        </div>
+        <!-- Right Column: Active Form Step -->
+        <div class="md:col-span-8 bg-[#1A1A1A]/80 backdrop-blur-md border border-white/5 rounded-xl p-8 shadow-[0_8px_32px_rgba(0,0,0,0.4)] relative overflow-hidden">
+            <!-- Top Glow Indicator -->
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyber-blue/50 to-transparent opacity-50"></div>
+            
+            <div class="flex items-center gap-3 mb-8">
+                <div class="w-10 h-10 rounded-lg bg-cyber-blue/10 border border-cyber-blue/30 flex items-center justify-center text-cyber-blue shadow-[0_0_15px_rgba(0,163,255,0.15)]">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">badge</span>
+                </div>
+                <h2 class="font-headline-md text-headline-md text-on-surface font-semibold text-[22px]">Asset Identity & Scope</h2>
+            </div>
 
+            <form method="POST" class="space-y-6">
+                <!-- Hostname / Target Address -->
+                <div>
+                    <label class="block font-label-caps text-label-caps text-on-surface-variant mb-2" for="asset_value">Primary Target Address <span class="text-critical-red">*</span></label>
+                    <div class="relative">
+                        <input class="w-full bg-[#131313] border border-white/10 rounded-md py-3 px-4 font-code-sm text-code-sm text-cyber-blue placeholder-white/20 focus:border-cyber-blue focus:ring-0 outline-none" id="asset_value" name="asset_value" placeholder="e.g. secure-node.company.com or 192.168.1.50" required type="text" autocomplete="off"/>
+                    </div>
+                    <p class="font-code-sm text-[11px] text-white/40 mt-2">Enter a domain, email address, web URL, or IP address node.</p>
+                </div>
 
-        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-            <button type="submit" style="background-color: var(--accent); color: white;">Register & Authenticate Asset</button>
-            <a href="/" class="btn btn-secondary">Cancel</a>
+                <!-- Optional SSH Credentials -->
+                <div>
+                    <label class="block font-label-caps text-label-caps text-on-surface-variant mb-2" for="ssh_credentials">SSH Host Auditing Credentials (Optional JSON)</label>
+                    <div class="relative">
+                        <textarea class="w-full bg-[#131313] border border-white/10 rounded-md p-4 font-code-sm text-code-sm text-on-surface placeholder-white/20 focus:border-cyber-blue focus:ring-0 outline-none h-24" id="ssh_credentials" name="ssh_credentials" placeholder='e.g. {"username": "ubuntu", "password": "password123", "port": 22}' autocomplete="off"></textarea>
+                    </div>
+                    <p class="font-code-sm text-[11px] text-white/40 mt-2">Supply JSON configurations (username, password, private_key) to run authenticated system patch analysis checks.</p>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-4 border-t border-white/5 flex gap-4">
+                    <button type="submit" class="flex-1 py-4 bg-cyber-blue text-white font-bold rounded hover:shadow-[0_0_15px_rgba(0,163,255,0.4)] transition-all cursor-pointer">
+                        Register & Authenticate Target
+                    </button>
+                    <a href="/" class="px-6 py-4 bg-white/5 border border-white/10 text-on-surface hover:bg-white/10 rounded transition-all no-underline text-center flex items-center justify-center">
+                        Cancel
+                    </a>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </div>
-
 {% endblock %}
