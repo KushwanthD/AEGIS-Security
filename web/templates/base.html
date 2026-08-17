@@ -14,55 +14,55 @@
                 extend: {
                     "colors": {
                         "secondary": "#ffe0cc",
-                        "surface-container-low": "#121212",
+                        "surface-container-low": "#0d0d0d",
                         "tertiary-fixed": "#ffdea8",
                         "secondary-container": "#ff6b00",
-                        "inverse-on-surface": "#121212",
-                        "surface-dim": "#080808",
+                        "inverse-on-surface": "#0d0d0d",
+                        "surface-dim": "#060606",
                         "surface-tint": "#ff6b00",
-                        "on-secondary": "#121212",
-                        "surface-container-high": "rgba(26, 26, 26, 0.65)",
-                        "surface-container": "rgba(18, 18, 18, 0.65)",
+                        "on-secondary": "#0d0d0d",
+                        "surface-container-high": "rgba(20, 20, 20, 0.9)",
+                        "surface-container": "rgba(10, 10, 10, 0.9)",
                         "secondary-fixed": "#ff8a00",
                         "on-secondary-fixed-variant": "#ff6b00",
-                        "on-tertiary": "#121212",
-                        "outline-variant": "rgba(255, 107, 0, 0.2)",
+                        "on-tertiary": "#0d0d0d",
+                        "outline-variant": "rgba(255, 107, 0, 0.25)",
                         "on-tertiary-fixed-variant": "#ff6b00",
-                        "on-tertiary-fixed": "#121212",
-                        "navy-surface": "rgba(15, 15, 15, 0.7)",
-                        "outline": "rgba(255, 107, 0, 0.25)",
+                        "on-tertiary-fixed": "#0d0d0d",
+                        "navy-surface": "rgba(10, 10, 10, 0.95)",
+                        "outline": "rgba(255, 107, 0, 0.35)",
                         "primary": "#ff6b00",
                         "secondary-fixed-dim": "#ff8a00",
-                        "surface-container-highest": "rgba(34, 34, 34, 0.75)",
+                        "surface-container-highest": "rgba(30, 30, 30, 0.95)",
                         "primary-fixed": "#ffdec6",
-                        "background": "#080808",
+                        "background": "#060606",
                         "primary-fixed-dim": "#ff6b00",
-                        "on-background": "#f5f5f5",
-                        "error": "#ff5555",
-                        "on-surface-variant": "#aaaaaa",
-                        "on-secondary-fixed": "#121212",
-                        "on-error": "#121212",
+                        "on-background": "#ffffff",
+                        "error": "#ff3333",
+                        "on-surface-variant": "#999999",
+                        "on-secondary-fixed": "#0d0d0d",
+                        "on-error": "#0d0d0d",
                         "security-green": "#00FF94",
-                        "inverse-surface": "#f5f5f5",
+                        "inverse-surface": "#ffffff",
                         "inverse-primary": "#ff6b00",
                         "on-surface": "#ffffff",
-                        "surface-container-lowest": "#050505",
+                        "surface-container-lowest": "#030303",
                         "error-container": "#93000a",
                         "tertiary-container": "#ff6b00",
                         "tertiary": "#ff8a00",
-                        "deep-charcoal": "#121212",
+                        "deep-charcoal": "#0d0d0d",
                         "on-primary-container": "#ffffff",
-                        "surface-variant": "rgba(34, 34, 34, 0.65)",
-                        "surface": "#080808",
+                        "surface-variant": "rgba(30, 30, 30, 0.9)",
+                        "surface": "#060606",
                         "cyber-blue": "#ff6b00",
                         "on-tertiary-container": "#ffffff",
                         "primary-container": "#ff6b00",
-                        "on-primary": "#121212",
-                        "surface-bright": "rgba(42, 42, 42, 0.65)",
+                        "on-primary": "#0d0d0d",
+                        "surface-bright": "rgba(40, 40, 40, 0.9)",
                         "warning-amber": "#FFB800",
                         "critical-red": "#ff3333",
                         "on-primary-fixed-variant": "#ff6b00",
-                        "on-primary-fixed": "#121212",
+                        "on-primary-fixed": "#0d0d0d",
                         "on-error-container": "#ffdad6",
                         "tertiary-fixed-dim": "#ff8a00",
                         "on-secondary-container": "#ffffff"
@@ -83,19 +83,24 @@
         }
     </script>
     <style>
-        /* Hide system pointer cursor globally */
+        /* Force normal cursor to disappear completely */
         * {
             cursor: none !important;
         }
 
+        /* Strict Sharp Squares - Reset rounded corners everywhere */
+        *, *::before, *::after, .rounded-xl, .rounded-lg, .rounded-md, .rounded, .btn, .card, select, input, textarea {
+            border-radius: 0px !important;
+        }
+
         body {
             overflow-x: hidden;
-            background-color: #080808;
+            background-color: #060606;
             font-family: 'JetBrains Mono', monospace;
             letter-spacing: -0.02em;
         }
 
-        /* High-fidelity digital dotted LED grid text effect */
+        /* High-fidelity digital dotted typography */
         .dotted-text {
             font-family: 'JetBrains Mono', monospace;
             letter-spacing: 0.15em;
@@ -116,7 +121,7 @@
             width: 6px;
             height: 6px;
             background-color: #ff6b00;
-            border-radius: 50%;
+            border-radius: 50% !important; /* Force cursor to remain round */
             pointer-events: none;
             z-index: 99999;
             transform: translate(-50%, -50%);
@@ -130,7 +135,7 @@
             width: 22px;
             height: 22px;
             border: 1.5px solid rgba(255, 107, 0, 0.6);
-            border-radius: 50%;
+            border-radius: 50% !important; /* Force trail to remain round */
             pointer-events: none;
             z-index: 99998;
             transform: translate(-50%, -50%);
@@ -139,20 +144,25 @@
             box-shadow: 0 0 8px rgba(255, 107, 0, 0.2);
         }
         
-        /* True Glassmorphism applied to cards and containers */
+        /* KPI Dashboard Glass Card - Sharp Double Outlines & Orange Corner Glows */
         .glass-card {
-            background: rgba(18, 18, 18, 0.65) !important;
-            backdrop-filter: blur(16px) saturate(180%) !important;
-            -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-            border: 1px solid rgba(255, 107, 0, 0.15) !important;
+            background: rgba(18, 18, 18, 0.9) !important;
+            border: 1px solid rgba(255, 107, 0, 0.3) !important;
+            box-shadow: 
+                0 0 0 3px rgba(10, 10, 10, 0.9),
+                0 0 0 4px rgba(255, 107, 0, 0.1),
+                inset 0 0 20px rgba(255, 107, 0, 0.05) !important;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .glow-hover:hover {
-            box-shadow: 0 8px 32px rgba(255, 107, 0, 0.18) !important;
-            border-color: rgba(255, 107, 0, 0.45) !important;
-            background: rgba(26, 26, 26, 0.75) !important;
-            transform: translateY(-2px);
+            box-shadow: 
+                0 0 0 3px rgba(10, 10, 10, 0.9),
+                0 0 0 4px rgba(255, 107, 0, 0.3),
+                0 8px 32px rgba(255, 107, 0, 0.15),
+                inset 0 0 25px rgba(255, 107, 0, 0.1) !important;
+            border-color: rgba(255, 107, 0, 0.7) !important;
+            background: rgba(24, 24, 24, 0.95) !important;
         }
 
         /* Matte translucent orange selection tags and highlights */
@@ -215,11 +225,10 @@
             width: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: rgba(18, 18, 18, 0.9);
+            background: rgba(10, 10, 10, 0.9);
         }
         ::-webkit-scrollbar-thumb {
             background: rgba(255, 107, 0, 0.3);
-            border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 107, 0, 0.6);
@@ -251,9 +260,6 @@
             if (cursor && trail) {
                 // Ensure browser pointer is hidden and bind movements
                 document.addEventListener('mousemove', function(e) {
-                    cursor.style.display = 'block';
-                    trail.style.display = 'block';
-                    
                     cursor.style.left = e.clientX + 'px';
                     cursor.style.top = e.clientY + 'px';
                     
@@ -327,73 +333,73 @@
 
     {% if current_user.is_authenticated %}
         <!-- SideNavBar -->
-        <nav class="fixed h-full w-[280px] left-0 top-0 bg-[#0c0c0c]/80 backdrop-blur-xl border-r border-primary/20 shadow-[4px_0_24px_rgba(255,107,0,0.05)] flex flex-col py-6 px-4 z-50 overflow-y-auto">
+        <nav class="fixed h-full w-[280px] left-0 top-0 bg-[#090909] border-r border-primary/20 shadow-[4px_0_24px_rgba(255,107,0,0.05)] flex flex-col py-6 px-4 z-50 overflow-y-auto">
             <!-- Header -->
             <div class="flex items-center gap-3 mb-8 px-2">
-                <div class="w-10 h-10 rounded-lg bg-deep-charcoal border border-white/10 flex items-center justify-center overflow-hidden relative group">
+                <div class="w-10 h-10 bg-deep-charcoal border border-primary/20 flex items-center justify-center overflow-hidden relative group">
                     <img alt="Security Analyst Profile" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAN8AkiWuxriYXQG0XAlzwBtzqJt3B9mg1wl345HebiIp_zLZloyKmJ6O2BKUb6vwiXB1K_YBffZWpFILGeUymgn2tf3EN42fhv9aJBQwb3DyttyNsgUUPogjDsXbuPab0UFTMY3bi-u-AsqoY5WFyr_pXR4aGuS1GWN7KwqhcgoPOavrAhdUMYHNTtA4ovL4X1MXpwO3iEt-CPUeU0gpS4tL6VvFFy7FQJTJZI9lHDGo0nL2zyKlQFFQ"/>
                     <div class="absolute inset-0 bg-primary/10 mix-blend-overlay"></div>
                 </div>
                 <div>
                     <h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight leading-none text-[16px] dotted-text">AEGIS</h1>
                     <p class="font-code-sm text-xs text-primary flex items-center gap-1 mt-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                        <span class="w-1.5 h-1.5 bg-primary animate-pulse" style="border-radius: 50% !important;"></span>
                         VIGILANCE ACTIVE
                     </p>
                 </div>
             </div>
 
             <!-- Navigation Links -->
-            <div class="sidebar-links flex-1 flex flex-col gap-1.5">
-                <a class="flex items-center gap-3 px-3 py-2.5 rounded-md text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/">
+            <div class="sidebar-links flex-1 flex flex-col gap-1">
+                <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/">
                     <span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">dashboard</span>
                     <span class="font-label-caps text-label-caps tracking-wider text-xs">Command Center</span>
                 </a>
                 {% if current_user.role in ['Admin', 'Owner', 'Superadmin'] %}
-                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-md text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/register-asset">
+                    <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/register-asset">
                         <span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">add_box</span>
                         <span class="font-label-caps text-label-caps tracking-wider text-xs">Register Asset</span>
                     </a>
                 {% endif %}
-                <a class="flex items-center gap-3 px-3 py-2.5 rounded-md text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/assessments">
+                <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/assessments">
                     <span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">assignment</span>
                     <span class="font-label-caps text-label-caps tracking-wider text-xs">Assessments</span>
                 </a>
                 {% if current_user.role in ['Admin', 'Analyst', 'Superadmin'] %}
-                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-md text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/requested-assessments">
+                    <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/requested-assessments">
                         <span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">inbox</span>
                         <span class="font-label-caps text-label-caps tracking-wider text-xs flex-1">Approval Inbox</span>
-                        <span class="badge" id="sidebar-pending-badge" style="background: #ff6b00; color: #121212; padding: 0.15rem 0.4rem; font-size: 0.7rem; font-weight: bold; border-radius: 10px; margin-left: auto; {% if pending_count == 0 %}display:none;{% endif %}">{{ pending_count }}</span>
+                        <span class="badge" id="sidebar-pending-badge" style="background: #ff6b00; color: #121212; padding: 0.15rem 0.4rem; font-size: 0.7rem; font-weight: bold; margin-left: auto; {% if pending_count == 0 %}display:none;{% endif %}">{{ pending_count }}</span>
                     </a>
                 {% endif %}
-                <a class="flex items-center gap-3 px-3 py-2.5 rounded-md text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/threat-intelligence">
+                <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/threat-intelligence">
                     <span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">security</span>
                     <span class="font-label-caps text-label-caps tracking-wider text-xs">Threat Intel</span>
                 </a>
-                <a class="flex items-center gap-3 px-3 py-2.5 rounded-md text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/report-history">
+                <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/report-history">
                     <span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">folder</span>
                     <span class="font-label-caps text-label-caps tracking-wider text-xs">Reports</span>
                 </a>
                 {% if current_user.role in ['Admin', 'Analyst', 'Superadmin'] %}
-                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-md text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/recon-history">
+                    <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/recon-history">
                         <span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">search</span>
                         <span class="font-label-caps text-label-caps tracking-wider text-xs">Recon Logs</span>
                     </a>
-                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-md text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/scan-history">
+                    <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/scan-history">
                         <span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">terminal</span>
                         <span class="font-label-caps text-label-caps tracking-wider text-xs">Scan Logs</span>
                     </a>
-                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-md text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/correlation-history">
+                    <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/correlation-history">
                         <span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">settings_input_component</span>
                         <span class="font-label-caps text-label-caps tracking-wider text-xs">Correlation Logs</span>
                     </a>
-                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-md text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/audit-logs">
+                    <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/audit-logs">
                         <span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">lock</span>
                         <span class="font-label-caps text-label-caps tracking-wider text-xs">Audit Logs</span>
                     </a>
                 {% endif %}
                 {% if current_user.role == 'Superadmin' %}
-                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-md text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/user-management">
+                    <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/user-management">
                         <span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">supervisor_account</span>
                         <span class="font-label-caps text-label-caps tracking-wider text-xs">User Management</span>
                     </a>
@@ -416,10 +422,10 @@
     {% endif %}
 
     <!-- Main Content Area -->
-    <div class="flex-1 {% if current_user.is_authenticated %}ml-[280px]{% endif %} flex flex-col min-h-screen relative">
+    <div class="flex-grow {% if current_user.is_authenticated %}ml-[280px]{% endif %} flex flex-col min-h-screen relative">
         {% if current_user.is_authenticated %}
             <!-- TopAppBar -->
-            <header class="fixed top-0 right-0 w-[calc(100%-280px)] z-40 bg-background/80 backdrop-blur-md border-b border-primary/20 flex justify-between items-center h-16 px-6">
+            <header class="fixed top-0 right-0 w-[calc(100%-280px)] z-40 bg-background/90 backdrop-blur-md border-b border-primary/20 flex justify-between items-center h-16 px-6">
                 <div class="flex items-center gap-6">
                     <span class="font-label-caps text-label-caps text-primary text-xs dotted-text animate-pulse">SYS_UPLINK: ONLINE</span>
                 </div>
@@ -428,13 +434,13 @@
                 <div class="flex items-center gap-6 ml-auto">
                     <!-- Notifications Dropdown -->
                     <div class="relative">
-                        <button id="bellButton" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors relative outline-none cursor-pointer">
+                        <button id="bellButton" class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors relative outline-none cursor-pointer">
                             <span class="material-symbols-outlined text-[20px]">notifications</span>
                             <span id="bellBadge" class="absolute -top-1 -right-1 bg-primary text-black text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center {% if unread_notifications_count == 0 %}hidden{% endif %}">
                                 {{ unread_notifications_count }}
                             </span>
                         </button>
-                        <div id="bellDropdown" class="hidden absolute right-0 top-10 w-80 bg-[#121212]/95 border border-primary/20 rounded-lg shadow-2xl p-4 z-50">
+                        <div id="bellDropdown" class="hidden absolute right-0 top-10 w-80 bg-[#121212] border border-primary/20 shadow-2xl p-4 z-50">
                             <div class="flex justify-between items-center border-b border-white/5 pb-2 mb-2">
                                 <h4 class="font-semibold text-xs text-white">Alert Logs</h4>
                                 <a href="/notifications" class="text-xs text-primary hover:underline no-underline">View All</a>
@@ -444,7 +450,7 @@
                                     <p class="text-xs text-on-surface-variant text-center py-4">No warnings.</p>
                                 {% else %}
                                     {% for n in recent_notifications %}
-                                        <a href="{% if n.link %}{{ n.link }}{% else %}/notifications{% endif %}" class="block p-2 rounded hover:bg-white/5 no-underline border-l-2 {% if not n.read %}border-primary bg-primary/5{% else %}border-transparent{% endif %} transition-all" onclick="markRead({{ n.id }})">
+                                        <a href="{% if n.link %}{{ n.link }}{% else %}/notifications{% endif %}" class="block p-2 hover:bg-white/5 no-underline border-l-2 {% if not n.read %}border-primary bg-primary/5{% else %}border-transparent{% endif %} transition-all" onclick="markRead({{ n.id }})">
                                             <div class="text-xs font-semibold text-white">{{ n.title }}</div>
                                             <div class="text-[10px] text-on-surface-variant truncate mt-0.5">{{ n.message }}</div>
                                         </a>
@@ -463,7 +469,7 @@
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         {% for category, msg in messages %}
-                            <div class="glass-card rounded-lg p-4 mb-6 border-l-4 {% if category=='error' %}border-l-critical-red bg-critical-red/5{% else %}border-l-primary bg-primary/5{% endif %} flex justify-between items-center">
+                            <div class="glass-card p-4 mb-6 border-l-4 {% if category=='error' %}border-l-critical-red bg-critical-red/5{% else %}border-l-primary bg-primary/5{% endif %} flex justify-between items-center">
                                 <p class="text-xs font-semibold {% if category=='error' %}text-critical-red{% else %}text-primary{% endif %}">{{ msg }}</p>
                             </div>
                         {% endfor %}
