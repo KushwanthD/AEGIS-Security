@@ -1,0 +1,472 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>AEGIS-Security | Solari Board Interface</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-container": "#27ff97",
+                        "inverse-primary": "#00629d",
+                        "surface-bright": "#393939",
+                        "on-primary-fixed": "#001d33",
+                        "on-error-container": "#ffdad6",
+                        "on-surface": "#e5e2e1",
+                        "on-secondary": "#00391d",
+                        "surface-container": "#201f1f",
+                        "on-background": "#e5e2e1",
+                        "on-tertiary-fixed": "#271900",
+                        "outline": "#88919d",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed": "#00210e",
+                        "primary": "#98cbff",
+                        "surface-container-low": "#1c1b1b",
+                        "surface-dim": "#131313",
+                        "secondary-fixed": "#5bffa1",
+                        "tertiary-fixed-dim": "#ffba20",
+                        "background": "#131313",
+                        "inverse-surface": "#e5e2e1",
+                        "primary-container": "#00a3ff",
+                        "on-secondary-container": "#00723f",
+                        "error": "#ffb4ab",
+                        "on-primary-container": "#00375a",
+                        "navy-surface": "#1E222D",
+                        "deep-charcoal": "#1A1A1A",
+                        "on-surface-variant": "#bec7d4",
+                        "on-secondary-fixed-variant": "#00522c",
+                        "inverse-on-surface": "#313030",
+                        "surface-container-highest": "#353534",
+                        "critical-red": "#FF4B4B",
+                        "surface-tint": "#98cbff",
+                        "tertiary-container": "#cc9200",
+                        "on-tertiary-container": "#463000",
+                        "primary-fixed-dim": "#98cbff",
+                        "on-error": "#690005",
+                        "surface": "#131313",
+                        "outline-variant": "#3f4852",
+                        "surface-container-high": "#2a2a2a",
+                        "tertiary": "#ffba20",
+                        "surface-variant": "#353534",
+                        "primary-fixed": "#cfe5ff",
+                        "tertiary-fixed": "#ffdea8",
+                        "security-green": "#00FF94",
+                        "cyber-blue": "#00A3FF",
+                        "on-tertiary": "#412d00",
+                        "on-primary": "#003354",
+                        "on-primary-fixed-variant": "#004a77",
+                        "secondary-fixed-dim": "#00e383",
+                        "warning-amber": "#FFB800",
+                        "on-tertiary-fixed-variant": "#5e4200",
+                        "surface-container-lowest": "#0e0e0e",
+                        "secondary": "#f5fff3"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                    spacing: {
+                        xs: "4px",
+                        sm: "12px",
+                        "sidebar-width": "280px",
+                        lg: "40px",
+                        md: "24px",
+                        gutter: "24px",
+                        base: "8px",
+                        xl: "64px"
+                    },
+                    fontFamily: {
+                        "label-caps": ["Inter"],
+                        "code-md": ["JetBrains Mono"],
+                        "body-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "code-sm": ["JetBrains Mono"],
+                        "body-sm": ["Inter"]
+                    },
+                    fontSize: {
+                        "label-caps": ["12px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "700" }],
+                        "code-md": ["14px", { lineHeight: "20px", fontWeight: "500" }],
+                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+                        "headline-sm": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+                        "headline-lg": ["48px", { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+                        "headline-md": ["32px", { lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "600" }],
+                        "code-sm": ["12px", { lineHeight: "16px", fontWeight: "500" }],
+                        "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }]
+                    }
+                }
+            }
+        };
+    </script>
+<style>
+        body {
+            background-color: #000;
+            color: #e5e2e1;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .solari-char {
+            display: inline-block;
+            position: relative;
+            width: 1.2em;
+            height: 1.5em;
+            background-color: #111;
+            border: 1px solid #333;
+            border-radius: 2px;
+            text-align: center;
+            line-height: 1.5em;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.8);
+            margin: 0 1px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: bold;
+            color: #d1d5db; /* Default text color */
+            perspective: 400px;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        
+        .solari-char::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(0,0,0,0.8);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            z-index: 10;
+        }
+
+        .solari-char.highlight {
+            color: #00a3ff;
+            text-shadow: 0 0 8px rgba(0, 163, 255, 0.5);
+            border-color: rgba(0, 163, 255, 0.3);
+        }
+
+        .solari-char.alert {
+            color: #FF4B4B;
+            text-shadow: 0 0 8px rgba(255, 75, 75, 0.5);
+            border-color: rgba(255, 75, 75, 0.3);
+        }
+
+        .flip-anim {
+            animation: flipDown 0.1s linear infinite;
+        }
+
+        .hover-flip {
+            animation: mechanicalFlip 0.3s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+        }
+        
+        .wobble-hover:hover .solari-char {
+            animation: tinyWobble 0.2s ease-in-out;
+        }
+
+        @keyframes flipDown {
+            0% { transform: scaleY(1); opacity: 1; }
+            50% { transform: scaleY(0); opacity: 0.5; }
+            100% { transform: scaleY(1); opacity: 1; }
+        }
+
+        @keyframes mechanicalFlip {
+            0% { transform: rotateX(0deg); color: #fff; text-shadow: 0 0 10px #fff; }
+            25% { transform: rotateX(-90deg); color: #0ff; text-shadow: 0 0 15px #0ff; }
+            50% { transform: rotateX(0deg); color: #fff; text-shadow: 0 0 10px #fff; }
+            75% { transform: rotateX(-90deg); color: #0ff; text-shadow: 0 0 15px #0ff; }
+            100% { transform: rotateX(0deg); } /* Returns to default color handled by JS */
+        }
+        
+        @keyframes tinyWobble {
+            0% { transform: rotateX(0deg); }
+            25% { transform: rotateX(-15deg); }
+            75% { transform: rotateX(10deg); }
+            100% { transform: rotateX(0deg); }
+        }
+
+        /* Mouse Trail */
+        .cursor-trail {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,163,255,0.4) 0%, rgba(0,163,255,0) 70%);
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s;
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface min-h-screen flex overflow-hidden">
+<!-- Cursor Trail Container -->
+<div id="trail-container"><div class="cursor-trail" style="left: 480px; top: 1018px; transform: translate(-50%, -50%) scale(1); opacity: 0.5;"></div><div class="cursor-trail" style="left: 480px; top: 1018px; transform: translate(-50%, -50%) scale(0.8); opacity: 0.4;"></div><div class="cursor-trail" style="left: 480px; top: 1018px; transform: translate(-50%, -50%) scale(0.6); opacity: 0.3;"></div><div class="cursor-trail" style="left: 480px; top: 1018px; transform: translate(-50%, -50%) scale(0.4); opacity: 0.2;"></div><div class="cursor-trail" style="left: 480px; top: 1018px; transform: translate(-50%, -50%) scale(0.2); opacity: 0.1;"></div></div>
+<!-- SideNavBar (Shared Component 22 mapped) -->
+<nav class="fixed h-full w-[280px] left-0 top-0 bg-navy-surface/90 backdrop-blur-xl border-r border-white/5 flex flex-col py-md px-sm shadow-[4px_0_24px_rgba(0,163,255,0.1)] z-50">
+<!-- Brand -->
+<div class="mb-xl px-sm">
+<h1 class="font-headline-md text-headline-md font-bold text-cyber-blue tracking-tight solari-text" data-highlight="true" data-text="AEGIS-Security"><span class="solari-char highlight">A</span><span class="solari-char highlight">E</span><span class="solari-char highlight">G</span><span class="solari-char highlight">I</span><span class="solari-char highlight">S</span><span class="solari-char highlight">-</span><span class="solari-char highlight">S</span><span class="solari-char highlight">e</span><span class="solari-char highlight">c</span><span class="solari-char highlight">u</span><span class="solari-char highlight">r</span><span class="solari-char highlight">i</span><span class="solari-char highlight">t</span><span class="solari-char highlight">y</span></h1>
+<p class="font-code-sm text-code-sm text-security-green solari-text mt-2" data-highlight="false" data-text="Vigilance Active"><span class="solari-char">V</span><span class="solari-char">i</span><span class="solari-char">g</span><span class="solari-char">i</span><span class="solari-char">l</span><span class="solari-char">a</span><span class="solari-char">n</span><span class="solari-char">c</span><span class="solari-char">e</span><span class="solari-char" style="background-color: transparent; border-color: transparent; box-shadow: none;"> </span><span class="solari-char">A</span><span class="solari-char">c</span><span class="solari-char">t</span><span class="solari-char">i</span><span class="solari-char">v</span><span class="solari-char">e</span></p>
+</div>
+<!-- Navigation Tabs -->
+<div class="flex-1 space-y-2">
+<!-- Active Tab -->
+<a class="flex items-center space-x-3 px-sm py-3 text-cyber-blue font-bold border-l-4 border-cyber-blue bg-cyber-blue/10 rounded-r wobble-hover" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-caps text-label-caps solari-text tracking-widest" data-highlight="true" data-text="Command Center"><span class="solari-char highlight">C</span><span class="solari-char highlight">o</span><span class="solari-char highlight">m</span><span class="solari-char highlight">m</span><span class="solari-char highlight">a</span><span class="solari-char highlight">n</span><span class="solari-char highlight">d</span><span class="solari-char highlight" style="background-color: transparent; border-color: transparent; box-shadow: none;"> </span><span class="solari-char highlight">C</span><span class="solari-char highlight">e</span><span class="solari-char highlight">n</span><span class="solari-char highlight">t</span><span class="solari-char highlight">e</span><span class="solari-char highlight">r</span></span>
+</a>
+<!-- Inactive Tabs -->
+<a class="flex items-center space-x-3 px-sm py-3 text-on-surface-variant hover:text-cyber-blue hover:bg-white/5 transition-all duration-300 rounded wobble-hover" href="#">
+<span class="material-symbols-outlined">terminal</span>
+<span class="font-label-caps text-label-caps solari-text tracking-widest" data-text="Threat Terminal"><span class="solari-char">T</span><span class="solari-char">h</span><span class="solari-char">r</span><span class="solari-char">e</span><span class="solari-char">a</span><span class="solari-char">t</span><span class="solari-char" style="background-color: transparent; border-color: transparent; box-shadow: none;"> </span><span class="solari-char">T</span><span class="solari-char">e</span><span class="solari-char">r</span><span class="solari-char">m</span><span class="solari-char">i</span><span class="solari-char">n</span><span class="solari-char">a</span><span class="solari-char">l</span></span>
+</a>
+<a class="flex items-center space-x-3 px-sm py-3 text-on-surface-variant hover:text-cyber-blue hover:bg-white/5 transition-all duration-300 rounded wobble-hover" href="#">
+<span class="material-symbols-outlined">vpn_key</span>
+<span class="font-label-caps text-label-caps solari-text tracking-widest" data-text="Credential Vault"><span class="solari-char">C</span><span class="solari-char">r</span><span class="solari-char">e</span><span class="solari-char">d</span><span class="solari-char">e</span><span class="solari-char">n</span><span class="solari-char">t</span><span class="solari-char">i</span><span class="solari-char">a</span><span class="solari-char">l</span><span class="solari-char" style="background-color: transparent; border-color: transparent; box-shadow: none;"> </span><span class="solari-char">V</span><span class="solari-char">a</span><span class="solari-char">u</span><span class="solari-char">l</span><span class="solari-char">t</span></span>
+</a>
+<a class="flex items-center space-x-3 px-sm py-3 text-on-surface-variant hover:text-cyber-blue hover:bg-white/5 transition-all duration-300 rounded wobble-hover" href="#">
+<span class="material-symbols-outlined">map</span>
+<span class="font-label-caps text-label-caps solari-text tracking-widest" data-text="Network Map"><span class="solari-char">N</span><span class="solari-char">e</span><span class="solari-char">t</span><span class="solari-char">w</span><span class="solari-char">o</span><span class="solari-char">r</span><span class="solari-char">k</span><span class="solari-char" style="background-color: transparent; border-color: transparent; box-shadow: none;"> </span><span class="solari-char">M</span><span class="solari-char">a</span><span class="solari-char">p</span></span>
+</a>
+<a class="flex items-center space-x-3 px-sm py-3 text-on-surface-variant hover:text-cyber-blue hover:bg-white/5 transition-all duration-300 rounded wobble-hover" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-caps text-label-caps solari-text tracking-widest" data-text="System Audit"><span class="solari-char">S</span><span class="solari-char">y</span><span class="solari-char">s</span><span class="solari-char">t</span><span class="solari-char">e</span><span class="solari-char">m</span><span class="solari-char" style="background-color: transparent; border-color: transparent; box-shadow: none;"> </span><span class="solari-char">A</span><span class="solari-char">u</span><span class="solari-char">d</span><span class="solari-char">i</span><span class="solari-char">t</span></span>
+</a>
+</div>
+<!-- CTA & Footer -->
+<div class="mt-auto space-y-4">
+<button class="w-full py-3 bg-cyber-blue/10 border border-cyber-blue/50 text-cyber-blue font-label-caps text-label-caps hover:bg-cyber-blue hover:text-white transition-all duration-300 rounded shadow-[0_0_15px_rgba(0,163,255,0.3)] wobble-hover">
+<span class="solari-text" data-text="QUICK DEPLOY"><span class="solari-char">Q</span><span class="solari-char">U</span><span class="solari-char">I</span><span class="solari-char">C</span><span class="solari-char">K</span><span class="solari-char" style="background-color: transparent; border-color: transparent; box-shadow: none;"> </span><span class="solari-char">D</span><span class="solari-char">E</span><span class="solari-char">P</span><span class="solari-char">L</span><span class="solari-char">O</span><span class="solari-char">Y</span></span>
+</button>
+<div class="pt-4 border-t border-white/5 space-y-2">
+<a class="flex items-center space-x-3 px-sm py-2 text-on-surface-variant hover:text-on-surface transition-colors duration-200 wobble-hover" href="#">
+<span class="material-symbols-outlined text-sm">settings</span>
+<span class="font-label-caps text-label-caps solari-text" data-text="Settings"><span class="solari-char">S</span><span class="solari-char">e</span><span class="solari-char">t</span><span class="solari-char">t</span><span class="solari-char">i</span><span class="solari-char">n</span><span class="solari-char">g</span><span class="solari-char">s</span></span>
+</a>
+<a class="flex items-center space-x-3 px-sm py-2 text-on-surface-variant hover:text-on-surface transition-colors duration-200 wobble-hover" href="#">
+<span class="material-symbols-outlined text-sm">logout</span>
+<span class="font-label-caps text-label-caps solari-text" data-text="Logout"><span class="solari-char">L</span><span class="solari-char">o</span><span class="solari-char">g</span><span class="solari-char">o</span><span class="solari-char">u</span><span class="solari-char">t</span></span>
+</a>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-[280px] flex-1 p-lg h-screen overflow-y-auto hide-scrollbar relative">
+<!-- Header -->
+<header class="mb-lg border-b border-white/10 pb-md">
+<div class="flex justify-between items-end wobble-hover">
+<div>
+<h2 class="font-code-md text-code-md text-cyber-blue mb-2 solari-text" data-text="// SECURE_UPLINK_ESTABLISHED"><span class="solari-char">/</span><span class="solari-char">/</span><span class="solari-char" style="background-color: transparent; border-color: transparent; box-shadow: none;"> </span><span class="solari-char">S</span><span class="solari-char">E</span><span class="solari-char">C</span><span class="solari-char">U</span><span class="solari-char">R</span><span class="solari-char">E</span><span class="solari-char">_</span><span class="solari-char">U</span><span class="solari-char">P</span><span class="solari-char">L</span><span class="solari-char">I</span><span class="solari-char">N</span><span class="solari-char">K</span><span class="solari-char">_</span><span class="solari-char">E</span><span class="solari-char">S</span><span class="solari-char">T</span><span class="solari-char">A</span><span class="solari-char">B</span><span class="solari-char">L</span><span class="solari-char">I</span><span class="solari-char">S</span><span class="solari-char">H</span><span class="solari-char">E</span><span class="solari-char">D</span></h2>
+<h1 class="text-4xl tracking-[0.2em] solari-text" data-highlight="true" data-text="SOLARI BOARD INTERFACE"><span class="solari-char highlight">A</span><span class="solari-char highlight">E</span><span class="solari-char highlight">G</span><span class="solari-char highlight">I</span><span class="solari-char highlight">S</span><span class="solari-char highlight">-</span><span class="solari-char highlight">S</span><span class="solari-char highlight">E</span><span class="solari-char highlight">C</span><span class="solari-char highlight">U</span><span class="solari-char highlight">R</span><span class="solari-char highlight">I</span><span class="solari-char highlight">T</span><span class="solari-char highlight">Y</span></h1>
+</div>
+<div class="text-right">
+<p class="font-code-sm text-code-sm text-on-surface-variant mb-1 solari-text" data-text="SYSTEM_STATUS:"><span class="solari-char">S</span><span class="solari-char">Y</span><span class="solari-char">S</span><span class="solari-char">T</span><span class="solari-char">E</span><span class="solari-char">M</span><span class="solari-char">_</span><span class="solari-char">S</span><span class="solari-char">T</span><span class="solari-char">A</span><span class="solari-char">T</span><span class="solari-char">U</span><span class="solari-char">S</span><span class="solari-char">:</span></p>
+<p class="font-code-md text-code-md text-security-green solari-text" data-highlight="false" data-text="OPERATIONAL"><span class="solari-char">O</span><span class="solari-char">P</span><span class="solari-char">E</span><span class="solari-char">R</span><span class="solari-char">A</span><span class="solari-char">T</span><span class="solari-char">I</span><span class="solari-char">O</span><span class="solari-char">N</span><span class="solari-char">A</span><span class="solari-char">L</span></p>
+</div>
+</div>
+</header>
+<!-- Stats Grid (Bento style) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md mb-lg">
+<!-- Stat Card 1 -->
+<div class="bg-deep-charcoal/80 border border-white/5 rounded-lg p-md relative overflow-hidden group wobble-hover">
+<div class="absolute inset-0 bg-gradient-to-br from-critical-red/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="font-code-sm text-code-sm text-on-surface-variant mb-4 solari-text" data-text="ACTIVE_THREATS"><span class="solari-char">A</span><span class="solari-char">C</span><span class="solari-char">T</span><span class="solari-char">I</span><span class="solari-char">V</span><span class="solari-char">E</span><span class="solari-char">_</span><span class="solari-char">T</span><span class="solari-char">H</span><span class="solari-char">R</span><span class="solari-char">E</span><span class="solari-char">A</span><span class="solari-char">T</span><span class="solari-char">S</span></div>
+<div class="text-5xl text-critical-red solari-text" data-alert="true" data-text="00"><span class="solari-char alert">0</span><span class="solari-char alert">0</span></div>
+</div>
+<!-- Stat Card 2 -->
+<div class="bg-deep-charcoal/80 border border-white/5 rounded-lg p-md relative overflow-hidden group wobble-hover">
+<div class="absolute inset-0 bg-gradient-to-br from-cyber-blue/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="font-code-sm text-code-sm text-on-surface-variant mb-4 solari-text" data-text="PROTECTED_NODES"><span class="solari-char">P</span><span class="solari-char">R</span><span class="solari-char">O</span><span class="solari-char">T</span><span class="solari-char">E</span><span class="solari-char">C</span><span class="solari-char">T</span><span class="solari-char">E</span><span class="solari-char">D</span><span class="solari-char">_</span><span class="solari-char">N</span><span class="solari-char">O</span><span class="solari-char">D</span><span class="solari-char">E</span><span class="solari-char">S</span></div>
+<div class="text-5xl text-cyber-blue solari-text" data-highlight="true" data-text="142"><span class="solari-char highlight">1</span><span class="solari-char highlight">4</span><span class="solari-char highlight">2</span></div>
+</div>
+<!-- Stat Card 3 -->
+<div class="bg-deep-charcoal/80 border border-white/5 rounded-lg p-md relative overflow-hidden group wobble-hover">
+<div class="absolute inset-0 bg-gradient-to-br from-security-green/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="font-code-sm text-code-sm text-on-surface-variant mb-4 solari-text" data-text="PROTOCOL_LEVEL"><span class="solari-char">P</span><span class="solari-char">R</span><span class="solari-char">O</span><span class="solari-char">T</span><span class="solari-char">O</span><span class="solari-char">C</span><span class="solari-char">O</span><span class="solari-char">L</span><span class="solari-char">_</span><span class="solari-char">L</span><span class="solari-char">E</span><span class="solari-char">V</span><span class="solari-char">E</span><span class="solari-char">L</span></div>
+<div class="text-5xl text-security-green solari-text" data-text="04"><span class="solari-char">0</span><span class="solari-char">4</span></div>
+</div>
+</div>
+<!-- Live Feed Table (Solari Board representation) -->
+<div class="bg-deep-charcoal/90 border border-white/10 rounded-lg overflow-hidden shadow-lg">
+<div class="bg-black/50 px-md py-3 border-b border-white/10 flex items-center justify-between">
+<h3 class="font-code-sm text-code-sm text-cyber-blue solari-text" data-highlight="true" data-text="&gt;&gt; LIVE_TELEMETRY_FEED"><span class="solari-char highlight">&gt;</span><span class="solari-char highlight">&gt;</span><span class="solari-char highlight" style="background-color: transparent; border-color: transparent; box-shadow: none;"> </span><span class="solari-char highlight">L</span><span class="solari-char highlight">I</span><span class="solari-char highlight">V</span><span class="solari-char highlight">E</span><span class="solari-char highlight">_</span><span class="solari-char highlight">T</span><span class="solari-char highlight">E</span><span class="solari-char highlight">L</span><span class="solari-char highlight">E</span><span class="solari-char highlight">M</span><span class="solari-char highlight">E</span><span class="solari-char highlight">T</span><span class="solari-char highlight">R</span><span class="solari-char highlight">Y</span><span class="solari-char highlight">_</span><span class="solari-char highlight">F</span><span class="solari-char highlight">E</span><span class="solari-char highlight">E</span><span class="solari-char highlight">D</span></h3>
+<span class="w-2 h-2 rounded-full bg-critical-red animate-pulse shadow-[0_0_8px_#FF4B4B]"></span>
+</div>
+<div class="p-md space-y-4">
+<!-- Table Header -->
+<div class="grid grid-cols-12 gap-4 pb-2 border-b border-white/5 text-on-surface-variant font-code-sm text-code-sm">
+<div class="col-span-3 solari-text" data-text="TIMESTAMP"><span class="solari-char">T</span><span class="solari-char">I</span><span class="solari-char">M</span><span class="solari-char">E</span><span class="solari-char">S</span><span class="solari-char">T</span><span class="solari-char">A</span><span class="solari-char">M</span><span class="solari-char">P</span></div>
+<div class="col-span-6 solari-text" data-text="EVENT_LOG"><span class="solari-char">E</span><span class="solari-char">V</span><span class="solari-char">E</span><span class="solari-char">N</span><span class="solari-char">T</span><span class="solari-char">_</span><span class="solari-char">L</span><span class="solari-char">O</span><span class="solari-char">G</span></div>
+<div class="col-span-3 text-right solari-text" data-text="STATUS"><span class="solari-char">S</span><span class="solari-char">T</span><span class="solari-char">A</span><span class="solari-char">T</span><span class="solari-char">U</span><span class="solari-char">S</span></div>
+</div>
+<!-- Rows -->
+<div class="grid grid-cols-12 gap-4 items-center group wobble-hover py-1">
+<div class="col-span-3 font-code-sm text-code-sm text-on-surface-variant solari-text" data-text="14:22:05.992"><span class="solari-char">1</span><span class="solari-char">4</span><span class="solari-char">:</span><span class="solari-char">2</span><span class="solari-char">2</span><span class="solari-char">:</span><span class="solari-char">0</span><span class="solari-char">5</span><span class="solari-char">.</span><span class="solari-char">9</span><span class="solari-char">9</span><span class="solari-char">2</span></div>
+<div class="col-span-6 font-code-md text-code-md solari-text" data-text="NODE_ALPHA_SYNC"><span class="solari-char">N</span><span class="solari-char">O</span><span class="solari-char">D</span><span class="solari-char">E</span><span class="solari-char">_</span><span class="solari-char">A</span><span class="solari-char">L</span><span class="solari-char">P</span><span class="solari-char">H</span><span class="solari-char">A</span><span class="solari-char">_</span><span class="solari-char">S</span><span class="solari-char">Y</span><span class="solari-char">N</span><span class="solari-char">C</span></div>
+<div class="col-span-3 text-right font-code-sm text-code-sm text-security-green solari-text" data-text="SUCCESS"><span class="solari-char">S</span><span class="solari-char">U</span><span class="solari-char">C</span><span class="solari-char">C</span><span class="solari-char">E</span><span class="solari-char">S</span><span class="solari-char">S</span></div>
+</div>
+<div class="grid grid-cols-12 gap-4 items-center group wobble-hover py-1">
+<div class="col-span-3 font-code-sm text-code-sm text-on-surface-variant solari-text" data-text="14:22:04.110"><span class="solari-char">1</span><span class="solari-char">4</span><span class="solari-char">:</span><span class="solari-char">2</span><span class="solari-char">2</span><span class="solari-char">:</span><span class="solari-char">0</span><span class="solari-char">4</span><span class="solari-char">.</span><span class="solari-char">1</span><span class="solari-char">1</span><span class="solari-char">0</span></div>
+<div class="col-span-6 font-code-md text-code-md solari-text" data-text="ENCRYPTION_ROTATION"><span class="solari-char">E</span><span class="solari-char">N</span><span class="solari-char">C</span><span class="solari-char">R</span><span class="solari-char">Y</span><span class="solari-char">P</span><span class="solari-char">T</span><span class="solari-char">I</span><span class="solari-char">O</span><span class="solari-char">N</span><span class="solari-char">_</span><span class="solari-char">R</span><span class="solari-char">O</span><span class="solari-char">T</span><span class="solari-char">A</span><span class="solari-char">T</span><span class="solari-char">I</span><span class="solari-char">O</span><span class="solari-char">N</span></div>
+<div class="col-span-3 text-right font-code-sm text-code-sm text-cyber-blue solari-text" data-highlight="true" data-text="COMPLETE"><span class="solari-char highlight">C</span><span class="solari-char highlight">O</span><span class="solari-char highlight">M</span><span class="solari-char highlight">P</span><span class="solari-char highlight">L</span><span class="solari-char highlight">E</span><span class="solari-char highlight">T</span><span class="solari-char highlight">E</span></div>
+</div>
+<div class="grid grid-cols-12 gap-4 items-center group wobble-hover py-1">
+<div class="col-span-3 font-code-sm text-code-sm text-on-surface-variant solari-text" data-text="14:21:59.004"><span class="solari-char">1</span><span class="solari-char">4</span><span class="solari-char">:</span><span class="solari-char">2</span><span class="solari-char">1</span><span class="solari-char">:</span><span class="solari-char">5</span><span class="solari-char">9</span><span class="solari-char">.</span><span class="solari-char">0</span><span class="solari-char">0</span><span class="solari-char">4</span></div>
+<div class="col-span-6 font-code-md text-code-md solari-text" data-text="FIREWALL_RULE_UPDATE"><span class="solari-char">F</span><span class="solari-char">I</span><span class="solari-char">R</span><span class="solari-char">E</span><span class="solari-char">W</span><span class="solari-char">A</span><span class="solari-char">L</span><span class="solari-char">L</span><span class="solari-char">_</span><span class="solari-char">R</span><span class="solari-char">U</span><span class="solari-char">L</span><span class="solari-char">E</span><span class="solari-char">_</span><span class="solari-char">U</span><span class="solari-char">P</span><span class="solari-char">D</span><span class="solari-char">A</span><span class="solari-char">T</span><span class="solari-char">E</span></div>
+<div class="col-span-3 text-right font-code-sm text-code-sm text-security-green solari-text" data-text="APPLIED"><span class="solari-char">A</span><span class="solari-char">P</span><span class="solari-char">P</span><span class="solari-char">L</span><span class="solari-char">I</span><span class="solari-char">E</span><span class="solari-char">D</span></div>
+</div>
+<div class="grid grid-cols-12 gap-4 items-center group wobble-hover py-1">
+<div class="col-span-3 font-code-sm text-code-sm text-critical-red solari-text" data-alert="true" data-text="14:21:45.333"><span class="solari-char alert">1</span><span class="solari-char alert">4</span><span class="solari-char alert">:</span><span class="solari-char alert">2</span><span class="solari-char alert">1</span><span class="solari-char alert">:</span><span class="solari-char alert">4</span><span class="solari-char alert">5</span><span class="solari-char alert">.</span><span class="solari-char alert">3</span><span class="solari-char alert">3</span><span class="solari-char alert">3</span></div>
+<div class="col-span-6 font-code-md text-code-md text-critical-red solari-text" data-alert="true" data-text="UNAUTHORIZED_ACCESS_ATTEMPT"><span class="solari-char alert">U</span><span class="solari-char alert">N</span><span class="solari-char alert">A</span><span class="solari-char alert">U</span><span class="solari-char alert">T</span><span class="solari-char alert">H</span><span class="solari-char alert">O</span><span class="solari-char alert">R</span><span class="solari-char alert">I</span><span class="solari-char alert">Z</span><span class="solari-char alert">E</span><span class="solari-char alert">D</span><span class="solari-char alert">_</span><span class="solari-char alert">A</span><span class="solari-char alert">C</span><span class="solari-char alert">C</span><span class="solari-char alert">E</span><span class="solari-char alert">S</span><span class="solari-char alert">S</span><span class="solari-char alert">_</span><span class="solari-char alert">A</span><span class="solari-char alert">T</span><span class="solari-char alert">T</span><span class="solari-char alert">E</span><span class="solari-char alert">M</span><span class="solari-char alert">P</span><span class="solari-char alert">T</span></div>
+<div class="col-span-3 text-right font-code-sm text-code-sm text-critical-red solari-text" data-alert="true" data-text="BLOCKED"><span class="solari-char alert">B</span><span class="solari-char alert">L</span><span class="solari-char alert">O</span><span class="solari-char alert">C</span><span class="solari-char alert">K</span><span class="solari-char alert">E</span><span class="solari-char alert">D</span></div>
+</div>
+<div class="grid grid-cols-12 gap-4 items-center group wobble-hover py-1">
+<div class="col-span-3 font-code-sm text-code-sm text-on-surface-variant solari-text" data-text="14:21:10.881"><span class="solari-char">1</span><span class="solari-char">4</span><span class="solari-char">:</span><span class="solari-char">2</span><span class="solari-char">1</span><span class="solari-char">:</span><span class="solari-char">1</span><span class="solari-char">0</span><span class="solari-char">.</span><span class="solari-char">8</span><span class="solari-char">8</span><span class="solari-char">1</span></div>
+<div class="col-span-6 font-code-md text-code-md solari-text" data-text="SYSTEM_DIAGNOSTIC"><span class="solari-char">S</span><span class="solari-char">Y</span><span class="solari-char">S</span><span class="solari-char">T</span><span class="solari-char">E</span><span class="solari-char">M</span><span class="solari-char">_</span><span class="solari-char">D</span><span class="solari-char">I</span><span class="solari-char">A</span><span class="solari-char">G</span><span class="solari-char">N</span><span class="solari-char">O</span><span class="solari-char">S</span><span class="solari-char">T</span><span class="solari-char">I</span><span class="solari-char">C</span></div>
+<div class="col-span-3 text-right font-code-sm text-code-sm text-security-green solari-text" data-text="NOMINAL"><span class="solari-char">N</span><span class="solari-char">O</span><span class="solari-char">M</span><span class="solari-char">I</span><span class="solari-char">N</span><span class="solari-char">A</span><span class="solari-char">L</span></div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const solariElements = document.querySelectorAll('.solari-text');
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>/? ';
+
+            solariElements.forEach(el => {
+                const targetText = el.getAttribute('data-text');
+                const isHighlight = el.getAttribute('data-highlight') === 'true';
+                const isAlert = el.getAttribute('data-alert') === 'true';
+                el.innerHTML = ''; // Clear existing
+                
+                // Create placeholders
+                for (let i = 0; i < targetText.length; i++) {
+                    const charSpan = document.createElement('span');
+                    charSpan.className = 'solari-char';
+                    if (isHighlight) charSpan.classList.add('highlight');
+                    if (isAlert) charSpan.classList.add('alert');
+                    if (targetText[i] === ' ') {
+                         charSpan.style.backgroundColor = 'transparent';
+                         charSpan.style.borderColor = 'transparent';
+                         charSpan.style.boxShadow = 'none';
+                    }
+                    charSpan.textContent = ' ';
+                    
+                    // Add hover interactivity
+                    if (targetText[i] !== ' ') {
+                        charSpan.addEventListener('mouseenter', () => {
+                            if (!charSpan.classList.contains('hover-flip')) {
+                                charSpan.classList.add('hover-flip');
+                                
+                                // Cycle through random characters during flip
+                                let cycles = 0;
+                                const originalChar = targetText[i];
+                                const cycleInterval = setInterval(() => {
+                                    charSpan.textContent = characters[Math.floor(Math.random() * characters.length)];
+                                    cycles++;
+                                    if(cycles > 4) {
+                                        clearInterval(cycleInterval);
+                                        charSpan.textContent = originalChar;
+                                    }
+                                }, 50);
+
+                                setTimeout(() => {
+                                    charSpan.classList.remove('hover-flip');
+                                }, 300); // match animation duration
+                            }
+                        });
+                    }
+
+                    el.appendChild(charSpan);
+                }
+
+                // Animate to target
+                const spans = el.querySelectorAll('.solari-char');
+                spans.forEach((span, index) => {
+                    const targetChar = targetText[index];
+                    if (targetChar === ' ') return; // Skip spaces
+
+                    let currentFlip = 0;
+                    const maxFlips = 10 + Math.random() * 15; // Randomize flip duration
+                    
+                    span.classList.add('flip-anim');
+
+                    const flipInterval = setInterval(() => {
+                        const randomChar = characters[Math.floor(Math.random() * characters.length)];
+                        span.textContent = randomChar;
+                        currentFlip++;
+
+                        if (currentFlip >= maxFlips) {
+                            clearInterval(flipInterval);
+                            span.textContent = targetChar;
+                            span.classList.remove('flip-anim');
+                        }
+                    }, 50); // Speed of flip
+                });
+            });
+
+            // Mouse Trail Logic
+            const trailContainer = document.getElementById('trail-container');
+            const numTrails = 5;
+            const trails = [];
+
+            for (let i = 0; i < numTrails; i++) {
+                const trail = document.createElement('div');
+                trail.className = 'cursor-trail';
+                trailContainer.appendChild(trail);
+                trails.push({ el: trail, x: 0, y: 0, targetX: 0, targetY: 0 });
+            }
+
+            document.addEventListener('mousemove', (e) => {
+                trails[0].targetX = e.clientX;
+                trails[0].targetY = e.clientY;
+            });
+
+            function animateTrail() {
+                for (let i = 0; i < numTrails; i++) {
+                    const trail = trails[i];
+                    
+                    if (i > 0) {
+                        trail.targetX = trails[i - 1].x;
+                        trail.targetY = trails[i - 1].y;
+                    }
+
+                    // Easing
+                    trail.x += (trail.targetX - trail.x) * 0.3;
+                    trail.y += (trail.targetY - trail.y) * 0.3;
+
+                    trail.el.style.left = trail.x + 'px';
+                    trail.el.style.top = trail.y + 'px';
+                    
+                    // Fade out older trails
+                    const scale = 1 - (i / numTrails);
+                    trail.el.style.transform = `translate(-50%, -50%) scale(${scale})`;
+                    trail.el.style.opacity = scale * 0.5;
+                }
+                requestAnimationFrame(animateTrail);
+            }
+            animateTrail();
+        });
+    </script>
+
+
+</body></html>

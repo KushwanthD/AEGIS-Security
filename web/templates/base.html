@@ -88,7 +88,7 @@
             cursor: none !important;
         }
 
-        /* Strict Sharp Squares - Reset rounded corners everywhere */
+        /* Strict Sharp Squares */
         *, *::before, *::after, .rounded-xl, .rounded-lg, .rounded-md, .rounded, .btn, .card, select, input, textarea {
             border-radius: 0px !important;
         }
@@ -100,17 +100,50 @@
             letter-spacing: -0.02em;
         }
 
-        /* High-fidelity digital dotted typography */
-        .dotted-text {
+        /* Solari Character Split-Flap Style */
+        .solari-char {
+            display: inline-block;
+            position: relative;
+            width: 1.1em;
+            height: 1.4em;
+            background-color: #0c0c0c;
+            border: 1px solid rgba(255, 107, 0, 0.3);
+            text-align: center;
+            line-height: 1.4em;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.8), 0 1px 2px rgba(0,0,0,0.9);
+            margin: 0 1px;
             font-family: 'JetBrains Mono', monospace;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
+            font-weight: bold;
             color: #ff6b00;
-            background-image: radial-gradient(circle, #ff8a00 35%, transparent 40%);
-            background-size: 3px 3px;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 2px rgba(255, 107, 0, 0.8));
+            text-shadow: 0 0 4px rgba(255, 107, 0, 0.6);
+        }
+
+        /* Horizontal Split line in Solari card */
+        .solari-char::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(0,0,0,0.95);
+            border-bottom: 1px solid rgba(255,107,0,0.15);
+            z-index: 10;
+        }
+
+        /* Hover shake/wobble for active Solari containers */
+        .solari-char.hover-flip {
+            animation: flipDown 0.12s linear;
+            border-color: rgba(255, 107, 0, 0.7);
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(255, 107, 0, 0.9);
+        }
+
+        @keyframes flipDown {
+            0% { transform: scaleY(1); }
+            50% { transform: scaleY(0); }
+            100% { transform: scaleY(1); }
         }
 
         /* Custom tactical orange cursor */
@@ -121,7 +154,7 @@
             width: 6px;
             height: 6px;
             background-color: #ff6b00;
-            border-radius: 50% !important; /* Force cursor to remain round */
+            border-radius: 50% !important;
             pointer-events: none;
             z-index: 99999;
             transform: translate(-50%, -50%);
@@ -135,7 +168,7 @@
             width: 22px;
             height: 22px;
             border: 1.5px solid rgba(255, 107, 0, 0.6);
-            border-radius: 50% !important; /* Force trail to remain round */
+            border-radius: 50% !important;
             pointer-events: none;
             z-index: 99998;
             transform: translate(-50%, -50%);
@@ -144,7 +177,7 @@
             box-shadow: 0 0 8px rgba(255, 107, 0, 0.2);
         }
         
-        /* KPI Dashboard Glass Card - Sharp Double Outlines & Orange Corner Glows */
+        /* KPI Dashboard Glass Card - Sharp Double Outlines */
         .glass-card {
             background: rgba(18, 18, 18, 0.9) !important;
             border: 1px solid rgba(255, 107, 0, 0.3) !important;
@@ -235,6 +268,62 @@
         }
     </style>
     <script>
+        // Global Solari Split-Flap character translation logic
+        const CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>/? ';
+        
+        function parseSolariText(el, textVal) {
+            el.innerHTML = '';
+            el.setAttribute('data-solari-processed', 'true');
+            
+            for (let i = 0; i < textVal.length; i++) {
+                const charSpan = document.createElement('span');
+                charSpan.className = 'solari-char';
+                
+                if (textVal[i] === ' ') {
+                    charSpan.style.backgroundColor = 'transparent';
+                    charSpan.style.borderColor = 'transparent';
+                    charSpan.style.boxShadow = 'none';
+                }
+                charSpan.textContent = textVal[i];
+                
+                // Mouseenter cursor cycle animation trigger
+                if (textVal[i] !== ' ') {
+                    const originalChar = textVal[i];
+                    charSpan.addEventListener('mouseenter', () => {
+                        if (!charSpan.classList.contains('hover-flip')) {
+                            charSpan.classList.add('hover-flip');
+                            let cycles = 0;
+                            const interval = setInterval(() => {
+                                charSpan.textContent = CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)];
+                                cycles++;
+                                if (cycles > 4) {
+                                    clearInterval(interval);
+                                    charSpan.textContent = originalChar;
+                                }
+                            }, 45);
+
+                            setTimeout(() => {
+                                charSpan.classList.remove('hover-flip');
+                            }, 300);
+                        }
+                    });
+                }
+                el.appendChild(charSpan);
+            }
+        }
+
+        function initAllSolariElements() {
+            // Find all target headings, sidebar items, and statistics tags
+            const targets = document.querySelectorAll('.solari-text, .sidebar-links span, h2, h3, .metric-value, .badge');
+            targets.forEach(el => {
+                if (el.children.length === 0 && el.textContent.trim().length > 0 && !el.hasAttribute('data-solari-processed')) {
+                    const originalVal = el.textContent.trim();
+                    el.setAttribute('data-text', originalVal);
+                    parseSolariText(el, originalVal);
+                }
+            });
+        }
+
         window.addEventListener('DOMContentLoaded', function() {
             const preloader = document.getElementById('preloader');
             if (preloader) {
@@ -243,6 +332,9 @@
                     preloader.style.visibility = 'hidden';
                 }, 1400);
             }
+            
+            // Convert page texts into interactive Solari split-flap tiles
+            initAllSolariElements();
             
             // Highlight active sidebar links in matte translucent orange
             const currentPath = window.location.pathname;
@@ -258,7 +350,6 @@
             const trail = document.getElementById('custom-cursor-trail');
             
             if (cursor && trail) {
-                // Ensure browser pointer is hidden and bind movements
                 document.addEventListener('mousemove', function(e) {
                     cursor.style.left = e.clientX + 'px';
                     cursor.style.top = e.clientY + 'px';
