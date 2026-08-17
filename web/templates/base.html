@@ -95,12 +95,17 @@
             letter-spacing: -0.02em;
         }
 
-        /* High-fidelity digital dotted typography used by premium companies */
+        /* High-fidelity digital dotted LED grid text effect */
         .dotted-text {
             font-family: 'JetBrains Mono', monospace;
-            letter-spacing: 0.12em;
+            letter-spacing: 0.15em;
             text-transform: uppercase;
-            text-shadow: 0 0 6px rgba(255, 107, 0, 0.6);
+            color: #ff6b00;
+            background-image: radial-gradient(circle, #ff8a00 35%, transparent 40%);
+            background-size: 3px 3px;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 2px rgba(255, 107, 0, 0.8));
         }
 
         /* Custom tactical orange cursor */
