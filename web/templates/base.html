@@ -109,7 +109,7 @@
         }
 
         html.light .glass-card {
-            background: rgba(255, 255, 255, 0.92) !important;
+            background: rgba(255, 255, 255, 0.55) !important;
             border: 1.5px solid #000000 !important;
             box-shadow: 
                 0 4px 20px rgba(0, 0, 0, 0.08),
@@ -206,16 +206,21 @@
             box-shadow: none !important;
         }
         
-        /* KPI Dashboard Glass Card - Sharp Double Outlines */
+        /* KPI Dashboard Glass Card - Sharp Double Outlines - High transparency (0.55 opacity) */
         .glass-card {
-            background: rgba(20, 20, 20, 0.82) !important;
+            background: rgba(20, 20, 20, 0.55) !important;
             border: 1px solid rgba(0, 163, 255, 0.18) !important;
             box-shadow: 
                 0 0 0 3px rgba(10, 10, 10, 0.95),
                 0 0 0 4px rgba(0, 163, 255, 0.06),
                 inset 0 0 20px rgba(0, 163, 255, 0.03) !important;
-            backdrop-filter: blur(12px) !important;
+            backdrop-filter: blur(14px) !important;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Make Tables, logs and containers completely transparent to let background shine through */
+        table, thead, tbody, tr, th, td, .log-item {
+            background-color: transparent !important;
         }
 
         .glow-hover:hover {
@@ -225,7 +230,11 @@
                 0 8px 32px rgba(0, 163, 255, 0.12),
                 inset 0 0 25px rgba(0, 163, 255, 0.06) !important;
             border-color: rgba(0, 163, 255, 0.6) !important;
-            background: rgba(26, 26, 26, 0.88) !important;
+            background: rgba(26, 26, 26, 0.65) !important;
+        }
+        html.light .glow-hover:hover {
+            background: rgba(255, 255, 255, 0.65) !important;
+            border-color: #000000 !important;
         }
 
         .table-row-hover:hover {
