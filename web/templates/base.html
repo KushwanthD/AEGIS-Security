@@ -134,12 +134,13 @@
         
         /* KPI Dashboard Glass Card - Sharp Double Outlines */
         .glass-card {
-            background: rgba(20, 20, 20, 0.85) !important;
-            border: 1px solid rgba(0, 163, 255, 0.2) !important;
+            background: rgba(20, 20, 20, 0.82) !important;
+            border: 1px solid rgba(0, 163, 255, 0.18) !important;
             box-shadow: 
                 0 0 0 3px rgba(10, 10, 10, 0.95),
-                0 0 0 4px rgba(0, 163, 255, 0.08),
+                0 0 0 4px rgba(0, 163, 255, 0.06),
                 inset 0 0 20px rgba(0, 163, 255, 0.03) !important;
+            backdrop-filter: blur(12px) !important;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -150,7 +151,7 @@
                 0 8px 32px rgba(0, 163, 255, 0.12),
                 inset 0 0 25px rgba(0, 163, 255, 0.06) !important;
             border-color: rgba(0, 163, 255, 0.6) !important;
-            background: rgba(26, 26, 26, 0.9) !important;
+            background: rgba(26, 26, 26, 0.88) !important;
         }
 
         /* Matte translucent blue selection tags and highlights */
@@ -223,15 +224,15 @@
         }
     </style>
     <script>
-        // Global 3D Spatial scene creation utility
+        // Global 3D Spatial scene creation utility - Zero repeated geometries!
         function createSpatial3DScene(containerId, type, customColor) {
             const container = document.getElementById(containerId);
             if (!container || typeof THREE === 'undefined') return;
 
-            const w = container.clientWidth || 250;
-            const h = container.clientHeight || 250;
+            const w = container.clientWidth || 550;
+            const h = container.clientHeight || 550;
             const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 100);
+            const camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 100);
             
             const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
             renderer.setSize(w, h);
@@ -240,68 +241,148 @@
             const colorHex = customColor || 0x00a3ff;
             let meshObject;
 
-            // Geometry dispatcher matching page context
+            // Geometry dispatcher mapping page context
             if (type === 'target') {
-                // Radar grid/target for verification and scans
+                // Asset Registry: Target scanner ring
                 const group = new THREE.Group();
-                const ringGeom = new THREE.RingGeometry(0.8, 1.0, 30);
+                const ringGeom = new THREE.RingGeometry(1.0, 1.2, 36);
                 const ringMat = new THREE.MeshBasicMaterial({ color: colorHex, side: THREE.DoubleSide, wireframe: true });
                 const ring = new THREE.Mesh(ringGeom, ringMat);
                 group.add(ring);
 
-                const centerGeom = new THREE.SphereGeometry(0.2, 8, 8);
+                const centerGeom = new THREE.SphereGeometry(0.35, 12, 12);
                 const centerMat = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
                 const center = new THREE.Mesh(centerGeom, centerMat);
                 group.add(center);
 
                 meshObject = group;
             } else if (type === 'lock') {
-                // Cryptographic security lock for audits & vault status
+                // Assessments: Cryptographic padlock
                 const group = new THREE.Group();
-                const shackleGeom = new THREE.TorusGeometry(0.5, 0.15, 8, 24, Math.PI);
+                const shackleGeom = new THREE.TorusGeometry(0.6, 0.16, 8, 24, Math.PI);
                 const shackleMat = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
                 const shackle = new THREE.Mesh(shackleGeom, shackleMat);
-                shackle.position.y = 0.3;
+                shackle.position.y = 0.4;
                 group.add(shackle);
 
-                const bodyGeom = new THREE.BoxGeometry(1.0, 0.8, 0.5);
+                const bodyGeom = new THREE.BoxGeometry(1.2, 0.9, 0.5);
                 const bodyMat = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
                 const body = new THREE.Mesh(bodyGeom, bodyMat);
                 body.position.y = -0.3;
                 group.add(body);
 
                 meshObject = group;
-            } else if (type === 'network') {
-                // Linked nodes for threat matrix feed
+            } else if (type === 'key') {
+                // Approval Inbox: Security Key
                 const group = new THREE.Group();
-                const nodesCount = 6;
-                const nodeGeom = new THREE.SphereGeometry(0.15, 8, 8);
+                const ringGeom = new THREE.TorusGeometry(0.35, 0.12, 8, 24);
+                const keyMat = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
+                const head = new THREE.Mesh(ringGeom, keyMat);
+                head.position.y = 0.6;
+                group.add(head);
+
+                const shaftGeom = new THREE.CylinderGeometry(0.08, 0.08, 1.2, 8);
+                const shaft = new THREE.Mesh(shaftGeom, keyMat);
+                shaft.position.y = -0.1;
+                group.add(shaft);
+
+                const toothGeom = new THREE.BoxGeometry(0.25, 0.12, 0.15);
+                const tooth1 = new THREE.Mesh(toothGeom, keyMat);
+                tooth1.position.set(0.2, -0.4, 0);
+                const tooth2 = new THREE.Mesh(toothGeom, keyMat);
+                tooth2.position.set(0.2, -0.6, 0);
+                group.add(tooth1);
+                group.add(tooth2);
+
+                meshObject = group;
+            } else if (type === 'network') {
+                // Threat Intelligence: Linked node network
+                const group = new THREE.Group();
+                const nodeGeom = new THREE.SphereGeometry(0.16, 8, 8);
                 const nodeMat = new THREE.MeshPhongMaterial({ color: colorHex });
-                
-                for (let i = 0; i < nodesCount; i++) {
+                for (let i = 0; i < 9; i++) {
                     const node = new THREE.Mesh(nodeGeom, nodeMat);
-                    node.position.set(
-                        (Math.random() - 0.5) * 1.5,
-                        (Math.random() - 0.5) * 1.5,
-                        (Math.random() - 0.5) * 1.5
-                    );
+                    node.position.set((Math.random() - 0.5) * 2.2, (Math.random() - 0.5) * 2.2, (Math.random() - 0.5) * 2.2);
                     group.add(node);
                 }
                 meshObject = group;
             } else if (type === 'cube') {
-                // Cybercube for reports, audits, and configurations
-                const geometry = new THREE.BoxGeometry(1.0, 1.0, 1.0);
+                // Report History: Nested Cybercube document
+                const group = new THREE.Group();
+                const outerGeom = new THREE.BoxGeometry(1.3, 1.3, 1.3);
+                const outerMat = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
+                const outer = new THREE.Mesh(outerGeom, outerMat);
+                group.add(outer);
+
+                const innerGeom = new THREE.BoxGeometry(0.65, 0.65, 0.65);
+                const inner = new THREE.Mesh(innerGeom, outerMat);
+                group.add(inner);
+
+                meshObject = group;
+            } else if (type === 'radar') {
+                // Recon Logs: Radar Sweep Cone
+                const geometry = new THREE.ConeGeometry(0.9, 1.6, 32, 1, true);
                 const material = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
                 meshObject = new THREE.Mesh(geometry, material);
-            } else {
-                // Default: Shield
+                meshObject.rotation.x = Math.PI / 2;
+            } else if (type === 'terminal') {
+                // Scan Logs: Terminal Frame Cylinder
+                const geometry = new THREE.CylinderGeometry(0.7, 0.7, 1.5, 12, 4, true);
+                const material = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
+                meshObject = new THREE.Mesh(geometry, material);
+            } else if (type === 'matrix') {
+                // Correlation Logs: Double Helix Cross links
                 const group = new THREE.Group();
-                const geometry = new THREE.IcosahedronGeometry(1.1, 1);
+                const torusGeom = new THREE.TorusGeometry(0.8, 0.12, 8, 32);
+                const torusMat = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
+                const t1 = new THREE.Mesh(torusGeom, torusMat);
+                const t2 = new THREE.Mesh(torusGeom, torusMat);
+                t2.rotation.y = Math.PI / 2;
+                group.add(t1);
+                group.add(t2);
+                meshObject = group;
+            } else if (type === 'audit') {
+                // Audit Logs: Concentric Circles
+                const group = new THREE.Group();
+                const torusGeom1 = new THREE.TorusGeometry(0.9, 0.05, 8, 36);
+                const torusGeom2 = new THREE.TorusGeometry(0.6, 0.05, 8, 36);
+                const torusGeom3 = new THREE.TorusGeometry(0.3, 0.05, 8, 36);
+                const torusMat = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
+                const r1 = new THREE.Mesh(torusGeom1, torusMat);
+                const r2 = new THREE.Mesh(torusGeom2, torusMat);
+                const r3 = new THREE.Mesh(torusGeom3, torusMat);
+                group.add(r1);
+                group.add(r2);
+                group.add(r3);
+                meshObject = group;
+            } else if (type === 'badge') {
+                // User Management: Octahedron Crown
+                const geometry = new THREE.OctahedronGeometry(1.2, 1);
+                const material = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
+                meshObject = new THREE.Mesh(geometry, material);
+            } else if (type === 'bell') {
+                // Notifications: Alert Bell Structure
+                const group = new THREE.Group();
+                const domeGeom = new THREE.CylinderGeometry(0.1, 0.7, 1.2, 16, 4, true);
+                const bellMat = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
+                const dome = new THREE.Mesh(domeGeom, bellMat);
+                group.add(dome);
+
+                const clapperGeom = new THREE.SphereGeometry(0.2, 8, 8);
+                const clapper = new THREE.Mesh(clapperGeom, bellMat);
+                clapper.position.y = -0.7;
+                group.add(clapper);
+
+                meshObject = group;
+            } else {
+                // Dashboard: Rotating 3D Shield (Default)
+                const group = new THREE.Group();
+                const geometry = new THREE.IcosahedronGeometry(1.4, 1);
                 const material = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true, transparent: true, opacity: 0.7 });
                 const shield = new THREE.Mesh(geometry, material);
                 group.add(shield);
 
-                const core = new THREE.Mesh(new THREE.IcosahedronGeometry(0.6, 0), new THREE.MeshPhongMaterial({ color: colorHex, transparent: true, opacity: 0.15 }));
+                const core = new THREE.Mesh(new THREE.IcosahedronGeometry(0.7, 0), new THREE.MeshPhongMaterial({ color: colorHex, transparent: true, opacity: 0.15 }));
                 group.add(core);
 
                 meshObject = group;
@@ -310,29 +391,29 @@
             scene.add(meshObject);
 
             // Lighting setup
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
             scene.add(ambientLight);
             
             const pointLight = new THREE.PointLight(colorHex, 2, 50);
             pointLight.position.set(5, 5, 5);
             scene.add(pointLight);
 
-            camera.position.z = 2.6;
+            camera.position.z = 3.2;
 
-            // Interactive rotation dynamics
+            // Interactive mouse rotation tracking
             let mouseX = 0, mouseY = 0;
             document.addEventListener('mousemove', (e) => {
                 const rect = container.getBoundingClientRect();
                 const x = e.clientX - rect.left - (w / 2);
                 const y = e.clientY - rect.top - (h / 2);
-                mouseX = (x / w) * 0.6;
-                mouseY = (y / h) * 0.6;
+                mouseX = (x / w) * 0.7;
+                mouseY = (y / h) * 0.7;
             });
 
             function render() {
                 requestAnimationFrame(render);
-                meshObject.rotation.y += 0.006;
-                meshObject.rotation.x += 0.003;
+                meshObject.rotation.y += 0.004;
+                meshObject.rotation.x += 0.002;
 
                 // Move toward cursor coords
                 meshObject.rotation.y += (mouseX - meshObject.rotation.y) * 0.05;
@@ -420,6 +501,11 @@
 
     <!-- Starry Night Background Canvas -->
     <canvas id="neural-bg-canvas"></canvas>
+
+    <!-- Ambient Spatial 3D Background Canvas -->
+    <div id="spatial-bg-container" class="fixed inset-0 pointer-events-none z-0 opacity-[0.14] flex items-center justify-center overflow-hidden">
+        <div id="spatial-bg-canvas-target" class="w-[650px] h-[650px] md:w-[750px] md:h-[750px]"></div>
+    </div>
 
     <!-- Background Grid Pattern -->
     <div class="grid-bg"></div>
@@ -537,10 +623,10 @@
     {% endif %}
 
     <!-- Main Content Area -->
-    <div class="flex-grow {% if current_user.is_authenticated %}ml-[280px]{% endif %} flex flex-col min-h-screen relative">
+    <div class="flex-grow {% if current_user.is_authenticated %}ml-[280px]{% endif %} flex flex-col min-h-screen relative z-10">
         {% if current_user.is_authenticated %}
             <!-- TopAppBar -->
-            <header class="fixed top-0 right-0 w-[calc(100%-280px)] z-40 bg-background/90 backdrop-blur-md border-b border-primary/20 flex justify-between items-center h-16 px-6">
+            <header class="fixed top-0 right-0 w-[calc(100%-280px)] z-40 bg-background/80 backdrop-blur-md border-b border-primary/20 flex justify-between items-center h-16 px-6">
                 <div class="flex items-center gap-6">
                     <span class="font-label-caps text-label-caps text-primary text-xs animate-pulse">SYS_UPLINK: ONLINE</span>
                 </div>
@@ -579,7 +665,7 @@
         {% endif %}
 
         <!-- Dashboard Content Container -->
-        <main class="flex-grow {% if current_user.is_authenticated %}mt-16 p-6{% else %}p-0{% endif %} animate-fade-slide">
+        <main class="flex-grow {% if current_user.is_authenticated %}mt-16 p-6{% else %}p-0{% endif %} animate-fade-slide relative z-10">
             <div class="max-w-7xl mx-auto">
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}

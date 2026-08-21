@@ -1,94 +1,74 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="grid grid-cols-1 lg:grid-cols-4 gap-6 animate-fade-slide">
-    <!-- Left Column (col-span 3) - Approval Queue -->
-    <div class="lg:col-span-3 space-y-6">
-        <div class="glass-card p-8 border border-primary/20 relative">
-            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
-            
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-10 h-10 bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(0,163,255,0.15)]">
-                    <span class="material-symbols-outlined">inbox</span>
-                </div>
-                <h2 class="text-base font-bold text-white">&gt; Approval Inbox</h2>
+<div class="space-y-6 relative z-10 animate-fade-slide">
+    <div class="glass-card p-8 border border-primary/20 relative">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
+        
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(0,163,255,0.15)]">
+                <span class="material-symbols-outlined">inbox</span>
             </div>
-            <p class="text-xs text-on-surface-variant mb-6 leading-relaxed">Assessments awaiting administrator compliance review and execution approval.</p>
-
-            {% if not assessments %}
-                <p class="text-xs text-on-surface-variant">No requested assessments are currently in the queue.</p>
-            {% else %}
-                <!-- Search Input Bar -->
-                <div class="mb-6 max-w-sm">
-                    <label class="text-[10px] text-on-surface-variant font-bold block mb-2 uppercase tracking-wider">&gt; Search Inbox:</label>
-                    <input type="text" id="pendingSearch" placeholder="Search pending requests..." onkeyup="filterPendingRequests()" class="w-full bg-[#080808] border border-primary/20 rounded py-2 px-3 text-xs text-primary focus:border-primary focus:ring-0 outline-none font-code-sm">
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table id="pendingTable" class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-primary/10 text-on-surface-variant font-label-caps text-xs">
-                                <th class="pb-3 px-4">Ref ID</th>
-                                <th class="pb-3 px-4">Asset Target</th>
-                                <th class="pb-3 px-4">Scope</th>
-                                <th class="pb-3 px-4">Status</th>
-                                <th class="pb-3 px-4">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-white/5 text-xs">
-                            {% for ass in assessments %}
-                                <tr class="table-row-hover transition-colors">
-                                    <td class="py-4 px-4 font-semibold text-white">{{ ass.assessment_reference }}</td>
-                                    <td class="py-4 px-4 text-on-surface-variant font-code-sm">{{ ass.asset.asset_value if ass.asset else "Unknown" }}</td>
-                                    <td class="py-4 px-4">
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-primary/10 text-primary border border-primary/20 font-semibold">
-                                            {{ ass.scope_status }}
-                                        </span>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-warning-amber/10 text-warning-amber border border-warning-amber/20">
-                                            <span class="w-1 h-1 rounded-full bg-warning-amber animate-pulse"></span>
-                                            Pending Approval
-                                        </span>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        {% if current_user.role == 'Admin' %}
-                                            <a href="/approve-assessment/{{ ass.id }}" class="px-3 py-1.5 bg-primary text-black rounded font-label-caps text-[10px] hover:bg-primary/80 transition-all no-underline font-bold text-center">
-                                                [APPROVE]
-                                            </a>
-                                        {% else %}
-                                            <span class="text-on-surface-variant font-semibold">Awaiting Admin Review</span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            {% endif %}
-            
-            <div class="mt-6 pt-4 border-t border-white/5">
-                <a href="/assessments" class="inline-flex items-center px-4 py-2 bg-white/5 border border-white/10 text-on-surface hover:bg-white/10 rounded transition-all no-underline text-xs font-bold">
-                    &lt;- Go to All Assessments
-                </a>
-            </div>
+            <h2 class="text-base font-bold text-white">&gt; Approval Inbox</h2>
         </div>
-    </div>
+        <p class="text-xs text-on-surface-variant mb-6 leading-relaxed">Assessments awaiting administrator compliance review and execution approval.</p>
 
-    <!-- Right Column (col-span 1) - Spatial 3D Vault Lock -->
-    <div class="space-y-6">
-        <div class="glass-card p-6 border border-primary/20 relative flex flex-col items-center justify-center overflow-hidden">
-            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
-            <h3 class="font-headline-sm text-xs text-white uppercase tracking-wider mb-2 font-bold w-full text-left">&gt; SPATIAL_VAULT_LOCK</h3>
-            
-            <div id="pending-3d-lock" class="w-full aspect-square max-w-[240px] bg-black/20 border border-primary/10 flex items-center justify-center my-4 overflow-hidden"></div>
-            
-            <div class="w-full text-center space-y-2 font-code-sm text-[11px] text-on-surface-variant border-t border-white/5 pt-4">
-                <div class="flex items-center justify-between">
-                    <span>VAULT_STATUS:</span>
-                    <span class="text-primary font-bold">AWAITING_KEY</span>
-                </div>
+        {% if not assessments %}
+            <p class="text-xs text-on-surface-variant">No requested assessments are currently in the queue.</p>
+        {% else %}
+            <!-- Search Input Bar -->
+            <div class="mb-6 max-w-sm">
+                <label class="text-[10px] text-on-surface-variant font-bold block mb-2 uppercase tracking-wider">&gt; Search Inbox:</label>
+                <input type="text" id="pendingSearch" placeholder="Search pending requests..." onkeyup="filterPendingRequests()" class="w-full bg-[#080808] border border-primary/20 rounded py-2 px-3 text-xs text-primary focus:border-primary focus:ring-0 outline-none font-code-sm">
             </div>
+
+            <div class="overflow-x-auto">
+                <table id="pendingTable" class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-primary/10 text-on-surface-variant font-label-caps text-xs">
+                            <th class="pb-3 px-4">Ref ID</th>
+                            <th class="pb-3 px-4">Asset Target</th>
+                            <th class="pb-3 px-4">Scope</th>
+                            <th class="pb-3 px-4">Status</th>
+                            <th class="pb-3 px-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5 text-xs">
+                        {% for ass in assessments %}
+                            <tr class="table-row-hover transition-colors">
+                                <td class="py-4 px-4 font-semibold text-white">{{ ass.assessment_reference }}</td>
+                                <td class="py-4 px-4 text-on-surface-variant font-code-sm">{{ ass.asset.asset_value if ass.asset else "Unknown" }}</td>
+                                <td class="py-4 px-4">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-primary/10 text-primary border border-primary/20 font-semibold">
+                                        {{ ass.scope_status }}
+                                    </span>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-warning-amber/10 text-warning-amber border border-warning-amber/20">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-warning-amber animate-pulse"></span>
+                                        Pending Approval
+                                    </span>
+                                </td>
+                                <td class="py-4 px-4">
+                                    {% if current_user.role == 'Admin' %}
+                                        <a href="/approve-assessment/{{ ass.id }}" class="px-3 py-1.5 bg-primary text-black rounded font-label-caps text-[10px] hover:bg-primary/80 transition-all no-underline font-bold text-center">
+                                            [APPROVE]
+                                        </a>
+                                    {% else %}
+                                        <span class="text-on-surface-variant font-semibold">Awaiting Admin Review</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+        
+        <div class="mt-6 pt-4 border-t border-white/5">
+            <a href="/assessments" class="inline-flex items-center px-4 py-2 bg-white/5 border border-white/10 text-on-surface hover:bg-white/10 rounded transition-all no-underline text-xs font-bold">
+                &lt;- Go to All Assessments
+            </a>
         </div>
     </div>
 </div>
@@ -104,8 +84,8 @@
     }
 
     window.addEventListener('DOMContentLoaded', function() {
-        // Instantiate the interactive cryptographic secure lock 3D mesh
-        createSpatial3DScene('pending-3d-lock', 'lock');
+        // Instantiate the unique security key 3D model in the background container
+        createSpatial3DScene('spatial-bg-canvas-target', 'key');
     });
 </script>
 {% endblock %}

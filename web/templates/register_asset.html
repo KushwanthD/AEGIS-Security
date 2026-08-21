@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="w-full max-w-[900px] mx-auto space-y-6">
+<div class="w-full max-w-[900px] mx-auto space-y-6 relative z-10">
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
         <div>
@@ -17,7 +17,7 @@
 
     <!-- Bento Grid Form Layout -->
     <div class="grid grid-cols-1 md:grid-cols-12 gap-6 relative">
-        <!-- Left Column: Progress Tracker & 3D Spatial Target canvas -->
+        <!-- Left Column: Progress Tracker -->
         <div class="md:col-span-4 bg-[#0c0c0c] border border-primary/20 rounded p-6 shadow-[0_8px_32px_rgba(0,0,0,0.4)] h-fit space-y-6">
             <h2 class="font-label-caps text-label-caps text-xs text-primary mb-4 tracking-widest border-b border-primary/10 pb-4">DEPLOYMENT SEQUENCE</h2>
             <div class="relative space-y-6">
@@ -37,12 +37,6 @@
                         <p class="font-body-sm text-[10px] text-on-surface-variant mt-1">Ownership Validation Challenge</p>
                     </div>
                 </div>
-            </div>
-
-            <!-- Spatial 3D Radar Target -->
-            <div class="border border-white/5 bg-black/40 p-4">
-                <div id="register-3d-target" class="w-full aspect-square bg-black/10 flex items-center justify-center overflow-hidden"></div>
-                <div class="text-center font-code-sm text-[10px] text-primary/70 mt-2">SYS_TARGET: AWAITING_DEPLOY</div>
             </div>
         </div>
 
@@ -88,8 +82,8 @@
 
 <script>
     window.addEventListener('DOMContentLoaded', function() {
-        // Instantiate the interactive target radar 3D mesh
-        createSpatial3DScene('register-3d-target', 'target');
+        // Instantiate the interactive target radar 3D mesh in the background container
+        createSpatial3DScene('spatial-bg-canvas-target', 'target');
     });
 </script>
 {% endblock %}

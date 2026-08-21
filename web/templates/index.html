@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="space-y-6">
+<div class="space-y-6 relative z-10">
     <!-- Welcome Banner -->
-    <div class="glass-card rounded-xl p-6 relative overflow-hidden flex items-center justify-between border-l-4 border-l-primary shadow-[0_4px_20px_rgba(255,107,0,0.08)]">
+    <div class="glass-card rounded-xl p-6 relative overflow-hidden flex items-center justify-between border-l-4 border-l-primary shadow-[0_4px_20px_rgba(0,163,255,0.08)]">
         <div class="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent pointer-events-none"></div>
         <div class="relative z-10">
-            <h2 class="font-headline-sm text-headline-sm text-white mb-1 dotted-text">&gt; Welcome back, {{ current_user.username }}.</h2>
+            <h2 class="font-headline-sm text-headline-sm text-white mb-1">&gt; Welcome back, {{ current_user.username }}.</h2>
             <p class="font-body-md text-xs text-on-surface-variant">System integrity is nominal. Access tier: <span class="text-primary font-semibold font-code-sm">{{ current_user.role }}</span></p>
         </div>
         <div class="relative z-10 hidden md:block">
@@ -17,344 +17,181 @@
         </div>
     </div>
 
-    <!-- Main Workspace: Split columns for Spatial 3D UI -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <!-- Left Side: Standard telemetry details (Col-span 2) -->
-        <div class="lg:col-span-2 space-y-6">
-            
-            <!-- Quick metrics -->
-            {% if current_user.role == 'Analyst' %}
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <a href="/requested-assessments" class="glass-card p-6 glow-hover transition-all duration-300 flex flex-col hover:no-underline text-inherit group">
-                        <div class="flex items-start justify-between mb-4">
-                            <div class="w-10 h-10 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:shadow-[0_0_12px_rgba(255,107,0,0.4)] transition-all">
-                                <span class="material-symbols-outlined">assignment_turned_in</span>
-                            </div>
-                            <span class="font-code-sm text-[10px] text-on-surface-variant">REQ_Q</span>
-                        </div>
-                        <h3 class="font-body-sm text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">Requested</h3>
-                        <div class="font-headline-lg text-2xl text-white font-bold dotted-text">{{ assessment_count }}</div>
-                    </a>
-                    <div class="glass-card p-6 glow-hover transition-all duration-300 flex flex-col">
-                        <div class="flex items-start justify-between mb-4">
-                            <div class="w-10 h-10 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-                                <span class="material-symbols-outlined">verified_user</span>
-                            </div>
-                            <span class="font-code-sm text-[10px] text-on-surface-variant">EXEC_W</span>
-                        </div>
-                        <h3 class="font-body-sm text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">Approved Runs</h3>
-                        <div class="font-headline-lg text-2xl text-primary font-bold dotted-text">{{ approved_count }}</div>
+    <!-- Quick Metrics Row -->
+    {% if current_user.role == 'Analyst' %}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <a href="/requested-assessments" class="glass-card p-6 glow-hover transition-all duration-300 flex flex-col hover:no-underline text-inherit group">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-10 h-10 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:shadow-[0_0_12px_rgba(0,163,255,0.4)] transition-all">
+                        <span class="material-symbols-outlined">assignment_turned_in</span>
                     </div>
-                    <a href="/high-risks-assessments" class="glass-card p-6 critical-glow transition-all duration-300 flex flex-col hover:no-underline text-inherit group">
-                        <div class="flex items-start justify-between mb-4">
-                            <div class="w-10 h-10 bg-error/20 border border-error/40 flex items-center justify-center text-error group-hover:shadow-[0_0_12px_rgba(255,51,51,0.4)] transition-all">
-                                <span class="material-symbols-outlined">warning</span>
-                            </div>
-                            <span class="font-code-sm text-[10px] text-error">URGENT</span>
-                        </div>
-                        <h3 class="font-body-sm text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">Critical Risks</h3>
-                        <div class="font-headline-lg text-2xl text-error font-bold dotted-text">{{ high_risk_count }}</div>
-                    </a>
+                    <span class="font-code-sm text-[10px] text-on-surface-variant">REQ_Q</span>
                 </div>
+                <h3 class="font-body-sm text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">Requested</h3>
+                <div class="font-headline-lg text-2xl text-white font-bold">{{ assessment_count }}</div>
+            </a>
+            <div class="glass-card p-6 glow-hover transition-all duration-300 flex flex-col">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-10 h-10 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined">verified_user</span>
+                    </div>
+                    <span class="font-code-sm text-[10px] text-on-surface-variant">EXEC_W</span>
+                </div>
+                <h3 class="font-body-sm text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">Approved Runs</h3>
+                <div class="font-headline-lg text-2xl text-primary font-bold">{{ approved_count }}</div>
+            </div>
+            <a href="/high-risks-assessments" class="glass-card p-6 critical-glow transition-all duration-300 flex flex-col hover:no-underline text-inherit group">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-10 h-10 bg-error/20 border border-error/40 flex items-center justify-center text-error group-hover:shadow-[0_0_12px_rgba(255,75,75,0.4)] transition-all">
+                        <span class="material-symbols-outlined">warning</span>
+                    </div>
+                    <span class="font-code-sm text-[10px] text-error">URGENT</span>
+                </div>
+                <h3 class="font-body-sm text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">Critical Risks</h3>
+                <div class="font-headline-lg text-2xl text-error font-bold">{{ high_risk_count }}</div>
+            </a>
+        </div>
 
-                <!-- Target Audit Console -->
-                <div class="glass-card p-8 border border-white/5 relative overflow-hidden">
-                    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-50"></div>
-                    <div class="flex items-center gap-3 mb-6">
-                        <div class="w-10 h-10 bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(255,107,0,0.15)]">
-                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">terminal</span>
-                        </div>
-                        <h2 class="font-headline-md text-sm text-on-surface font-semibold dotted-text">&gt; Target Audit Console</h2>
-                    </div>
-                    <form action="/analyst/assess-target" method="POST" class="space-y-4">
-                        <div class="flex flex-col gap-2">
-                            <label class="font-label-caps text-[10px] text-on-surface-variant">Target Identifier:</label>
-                            <input class="w-full bg-[#0c0c0c] border border-primary/20 rounded py-3 px-4 font-code-sm text-xs text-primary focus:border-primary focus:ring-0 outline-none" type="text" name="target" placeholder="e.g. secure-node.company.com" required autocomplete="off"/>
-                        </div>
-                        <button type="submit" class="w-full py-3 bg-primary text-black font-bold hover:shadow-[0_0_15px_rgba(255,107,0,0.4)] transition-all cursor-pointer text-xs">
-                            VERIFY & INITIATE SCAN
-                        </button>
-                    </form>
+        <!-- Target Audit Console -->
+        <div class="glass-card p-8 border border-white/5 relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-50"></div>
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(0,163,255,0.15)]">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">terminal</span>
                 </div>
+                <h2 class="font-headline-md text-sm text-on-surface font-semibold">&gt; Target Audit Console</h2>
+            </div>
+            <form action="/analyst/assess-target" method="POST" class="space-y-4">
+                <div class="flex flex-col gap-2">
+                    <label class="font-label-caps text-[10px] text-on-surface-variant">Target Identifier:</label>
+                    <input class="w-full bg-[#0c0c0c] border border-primary/20 rounded py-3 px-4 font-code-sm text-xs text-primary focus:border-primary focus:ring-0 outline-none" type="text" name="target" placeholder="e.g. secure-node.company.com" required autocomplete="off"/>
+                </div>
+                <button type="submit" class="w-full py-3 bg-primary text-black font-bold hover:shadow-[0_0_15px_rgba(0,163,255,0.4)] transition-all cursor-pointer text-xs">
+                    VERIFY & INITIATE SCAN
+                </button>
+            </form>
+        </div>
+    {% else %}
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="glass-card p-6 glow-hover transition-all duration-300 flex flex-col">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-10 h-10 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined">dns</span>
+                    </div>
+                    <span class="font-code-sm text-[10px] text-on-surface-variant">SYS_01</span>
+                </div>
+                <h3 class="font-body-sm text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">Assets</h3>
+                <div class="font-headline-lg text-2xl text-white font-bold">{{ asset_count }}</div>
+            </div>
+            <a href="/requested-assessments" class="glass-card p-6 glow-hover transition-all duration-300 flex flex-col hover:no-underline text-inherit group">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-10 h-10 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:shadow-[0_0_12px_rgba(0,163,255,0.4)] transition-all">
+                        <span class="material-symbols-outlined">assignment_turned_in</span>
+                    </div>
+                    <span class="font-code-sm text-[10px] text-on-surface-variant">REQ_Q</span>
+                </div>
+                <h3 class="font-body-sm text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">Requested</h3>
+                <div class="font-headline-lg text-2xl text-white font-bold">{{ assessment_count }}</div>
+            </a>
+            <div class="glass-card p-6 glow-hover transition-all duration-300 flex flex-col">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-10 h-10 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined">verified_user</span>
+                    </div>
+                    <span class="font-code-sm text-[10px] text-on-surface-variant">EXEC_W</span>
+                </div>
+                <h3 class="font-body-sm text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">Approved Runs</h3>
+                <div class="font-headline-lg text-2xl text-primary font-bold">{{ approved_count }}</div>
+            </div>
+            <a href="/high-risks-assessments" class="glass-card p-6 critical-glow transition-all duration-300 flex flex-col hover:no-underline text-inherit group">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-10 h-10 bg-error/20 border border-error/40 flex items-center justify-center text-error group-hover:shadow-[0_0_12px_rgba(255,75,75,0.4)] transition-all">
+                        <span class="material-symbols-outlined">warning</span>
+                    </div>
+                    <span class="font-code-sm text-[10px] text-error">URGENT</span>
+                </div>
+                <h3 class="font-body-sm text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">Critical Risks</h3>
+                <div class="font-headline-lg text-2xl text-error font-bold">{{ high_risk_count }}</div>
+            </a>
+        </div>
+
+        <!-- Managed targets table -->
+        <div class="glass-card p-8 border border-primary/20 relative">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-headline-sm text-sm text-white font-semibold">&gt; Managed Targets</h3>
+                <a href="/register-asset" class="px-4 py-2 bg-primary text-black font-label-caps text-[10px] hover:shadow-[0_0_12px_rgba(0,163,255,0.6)] transition-all no-underline font-bold">
+                    [+] REGISTER TARGET
+                </a>
+            </div>
+
+            {% if not assets %}
+                <p class="text-xs text-on-surface-variant">No assets registered. Click "[+] REGISTER TARGET" to begin.</p>
             {% else %}
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div class="glass-card p-4 glow-hover transition-all duration-300 flex flex-col">
-                        <div class="flex items-start justify-between mb-2">
-                            <div class="w-8 h-8 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-                                <span class="material-symbols-outlined text-sm">dns</span>
-                            </div>
-                            <span class="font-code-sm text-[9px] text-on-surface-variant">SYS_01</span>
-                        </div>
-                        <h3 class="font-body-sm text-[9px] text-on-surface-variant uppercase tracking-wider mb-1">Assets</h3>
-                        <div class="font-headline-lg text-xl text-white font-bold dotted-text">{{ asset_count }}</div>
-                    </div>
-                    <a href="/requested-assessments" class="glass-card p-4 glow-hover transition-all duration-300 flex flex-col hover:no-underline text-inherit group">
-                        <div class="flex items-start justify-between mb-2">
-                            <div class="w-8 h-8 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:shadow-[0_0_8px_rgba(255,107,0,0.3)] transition-all">
-                                <span class="material-symbols-outlined text-sm">assignment_turned_in</span>
-                            </div>
-                            <span class="font-code-sm text-[9px] text-on-surface-variant">REQ_Q</span>
-                        </div>
-                        <h3 class="font-body-sm text-[9px] text-on-surface-variant uppercase tracking-wider mb-1">Requested</h3>
-                        <div class="font-headline-lg text-xl text-white font-bold dotted-text">{{ assessment_count }}</div>
-                    </a>
-                    <div class="glass-card p-4 glow-hover transition-all duration-300 flex flex-col">
-                        <div class="flex items-start justify-between mb-2">
-                            <div class="w-8 h-8 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-                                <span class="material-symbols-outlined text-sm">verified_user</span>
-                            </div>
-                            <span class="font-code-sm text-[9px] text-on-surface-variant">EXEC_W</span>
-                        </div>
-                        <h3 class="font-body-sm text-[9px] text-on-surface-variant uppercase tracking-wider mb-1">Approved</h3>
-                        <div class="font-headline-lg text-xl text-primary font-bold dotted-text">{{ approved_count }}</div>
-                    </div>
-                    <a href="/high-risks-assessments" class="glass-card p-4 critical-glow transition-all duration-300 flex flex-col hover:no-underline text-inherit group">
-                        <div class="flex items-start justify-between mb-2">
-                            <div class="w-8 h-8 bg-error/20 border border-error/40 flex items-center justify-center text-error group-hover:shadow-[0_0_8px_rgba(255,51,51,0.3)] transition-all">
-                                <span class="material-symbols-outlined text-sm">warning</span>
-                            </div>
-                            <span class="font-code-sm text-[9px] text-error">URGENT</span>
-                        </div>
-                        <h3 class="font-body-sm text-[9px] text-on-surface-variant uppercase tracking-wider mb-1">Critical</h3>
-                        <div class="font-headline-lg text-xl text-error font-bold dotted-text">{{ high_risk_count }}</div>
-                    </a>
-                </div>
-
-                <!-- Managed targets table -->
-                <div class="glass-card p-8 border border-primary/20 relative">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-headline-sm text-sm text-white font-semibold dotted-text">&gt; Managed Targets</h3>
-                        <a href="/register-asset" class="px-4 py-2 bg-primary text-black font-label-caps text-[10px] hover:shadow-[0_0_12px_rgba(255,107,0,0.6)] transition-all no-underline font-bold">
-                            [+] REGISTER TARGET
-                        </a>
-                    </div>
-
-                    {% if not assets %}
-                        <p class="text-xs text-on-surface-variant">No assets registered. Click "[+] REGISTER TARGET" to begin.</p>
-                    {% else %}
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="border-b border-primary/10 text-on-surface-variant font-label-caps text-[10px]">
-                                        <th class="pb-3">ID</th>
-                                        <th class="pb-3">Asset Target</th>
-                                        <th class="pb-3">Type</th>
-                                        <th class="pb-3">Ownership Status</th>
-                                        <th class="pb-3">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-white/5 text-xs">
-                                    {% for asset in assets %}
-                                        <tr class="table-row-hover transition-colors">
-                                            <td class="py-4 font-code-sm text-on-surface-variant">{{ asset.id }}</td>
-                                            <td class="py-4 font-semibold text-white">{{ asset.asset_value }}</td>
-                                            <td class="py-4 text-on-surface-variant">{{ asset.asset_type.capitalize() }}</td>
-                                            <td class="py-4">
-                                                {% if asset.verification_status == 'VERIFIED' %}
-                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 text-[10px] font-bold">
-                                                        <span class="w-1 h-1 rounded-full bg-primary animate-pulse"></span>
-                                                        Verified
-                                                    </span>
-                                                {% elif asset.verification_status == 'TOKEN_GENERATED' %}
-                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-warning-amber/10 text-warning-amber border border-warning-amber/20 text-[10px] font-bold">
-                                                        <span class="w-1 h-1 rounded-full bg-warning-amber"></span>
-                                                        Pending
-                                                    </span>
-                                                {% else %}
-                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-error/10 text-error border border-error/20 text-[10px] font-bold">
-                                                        <span class="w-1 h-1 rounded-full bg-error"></span>
-                                                        Unverified
-                                                    </span>
-                                                {% endif %}
-                                            </td>
-                                            <td class="py-4">
-                                                {% if asset.verification_status != 'VERIFIED' %}
-                                                    <a href="/verify-asset/{{ asset.id }}" class="inline-flex items-center px-2 py-1 bg-[#0c0c0c] border border-white/10 text-[10px] text-primary hover:bg-primary/10 transition-all no-underline font-bold">
-                                                        [VERIFY]
-                                                    </a>
-                                                {% else %}
-                                                    <a href="/analyst/assess-target" onclick="event.preventDefault(); document.getElementById('assess-form-{{ asset.id }}').submit();" class="inline-flex items-center px-2 py-1 bg-primary/15 border border-primary/30 text-[10px] text-primary hover:bg-primary hover:text-black transition-all no-underline font-bold">
-                                                        [RUN_SCAN]
-                                                    </a>
-                                                    <form id="assess-form-{{ asset.id }}" action="/analyst/assess-target" method="POST" style="display:none;">
-                                                        <input type="hidden" name="target" value="{{ asset.asset_value }}">
-                                                    </form>
-                                                {% endif %}
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% endif %}
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-primary/10 text-on-surface-variant font-label-caps text-[10px]">
+                                <th class="pb-3">ID</th>
+                                <th class="pb-3">Asset Target</th>
+                                <th class="pb-3">Type</th>
+                                <th class="pb-3">Ownership Status</th>
+                                <th class="pb-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5 text-xs">
+                            {% for asset in assets %}
+                                <tr class="table-row-hover transition-colors">
+                                    <td class="py-4 font-code-sm text-on-surface-variant">{{ asset.id }}</td>
+                                    <td class="py-4 font-semibold text-white">{{ asset.asset_value }}</td>
+                                    <td class="py-4 text-on-surface-variant">{{ asset.asset_type.capitalize() }}</td>
+                                    <td class="py-4">
+                                        {% if asset.verification_status == 'VERIFIED' %}
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 text-[10px] font-bold">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                                                Verified
+                                            </span>
+                                        {% elif asset.verification_status == 'TOKEN_GENERATED' %}
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-warning-amber/10 text-warning-amber border border-warning-amber/20 text-[10px] font-bold">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-warning-amber"></span>
+                                                Pending
+                                            </span>
+                                        {% else %}
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-error/10 text-error border border-error/20 text-[10px] font-bold">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                                                Unverified
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-4">
+                                        {% if asset.verification_status != 'VERIFIED' %}
+                                            <a href="/verify-asset/{{ asset.id }}" class="inline-flex items-center px-2 py-1 bg-[#0c0c0c] border border-white/10 text-[10px] text-primary hover:bg-primary/10 transition-all no-underline font-bold">
+                                                [VERIFY]
+                                            </a>
+                                        {% else %}
+                                            <a href="/analyst/assess-target" onclick="event.preventDefault(); document.getElementById('assess-form-{{ asset.id }}').submit();" class="inline-flex items-center px-2 py-1 bg-primary/15 border border-primary/30 text-[10px] text-primary hover:bg-primary hover:text-black transition-all no-underline font-bold">
+                                                [RUN_SCAN]
+                                            </a>
+                                            <form id="assess-form-{{ asset.id }}" action="/analyst/assess-target" method="POST" style="display:none;">
+                                                <input type="hidden" name="target" value="{{ asset.asset_value }}">
+                                            </form>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             {% endif %}
         </div>
-
-        <!-- Right Side: 3D Holographic Spatial protection console (Col-span 1) -->
-        <div class="space-y-6">
-            <div class="glass-card p-6 border border-primary/20 relative flex flex-col items-center justify-center overflow-hidden">
-                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
-                <h3 class="font-headline-sm text-xs text-white uppercase tracking-wider mb-2 font-bold dotted-text w-full text-left">&gt; SPATIAL_SHIELD_MAP</h3>
-                
-                <!-- Rotating 3D wireframe shield container -->
-                <div id="dashboard-3d-canvas-container" class="relative w-full aspect-square max-w-[280px] bg-black/30 border border-primary/10 flex items-center justify-center my-4 overflow-hidden">
-                    <div class="absolute inset-0 bg-radial-glow pointer-events-none z-20"></div>
-                    <div id="canvas-3d-target" class="w-full h-full relative z-10"></div>
-                </div>
-                
-                <div class="w-full text-center space-y-2 font-code-sm text-[11px] text-on-surface-variant">
-                    <div class="flex items-center justify-between border-b border-white/5 pb-2">
-                        <span>HOLOGRAPHIC_SHIELD:</span>
-                        <span class="text-primary font-bold">CALIBRATED</span>
-                    </div>
-                    <div class="flex items-center justify-between border-b border-white/5 pb-2">
-                        <span>NODE_DENSITY:</span>
-                        <span class="text-white">120_PARTICLES</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span>SYSTEM_HEALTH:</span>
-                        {% if high_risk_count > 0 %}
-                            <span class="text-error font-bold animate-pulse">WARNING_RISK</span>
-                        {% else %}
-                            <span class="text-security-green font-bold flex items-center gap-1">
-                                <span class="w-1.5 h-1.5 rounded-full bg-security-green"></span>
-                                OPTIMAL
-                            </span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            
-            <!-- System Decryption Terminal Feed -->
-            <div class="glass-card p-6 border border-primary/20 relative font-code-sm text-[10px] text-primary/80 bg-black/40">
-                <div class="flex justify-between items-center mb-3">
-                    <span class="font-bold text-[9px] uppercase tracking-wider text-white">SYS_DIAGNOSTIC_STREAM</span>
-                    <span class="w-2 h-2 rounded-full bg-security-green animate-pulse"></span>
-                </div>
-                <div id="live-console-feed" class="h-32 overflow-y-auto space-y-1.5 font-code-sm leading-relaxed pr-2 scrollbar-thin">
-                    <div class="text-white/40">&gt; Listening on active network interfaces...</div>
-                    <div class="text-white/40">&gt; Calibrating spatial UI sensors...</div>
-                </div>
-            </div>
-        </div>
-        
-    </div>
+    {% endif %}
 </div>
 
-<!-- 3D Spatial Rendering Script -->
 <script>
     window.addEventListener('DOMContentLoaded', function() {
-        const container = document.getElementById('dashboard-3d-canvas-container');
-        const target = document.getElementById('canvas-3d-target');
-        
-        if (container && target && typeof THREE !== 'undefined') {
-            const width = container.clientWidth;
-            const height = container.clientHeight;
-            
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 100);
-            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-            renderer.setSize(width, height);
-            target.appendChild(renderer.domElement);
-
-            // Shield color matches high risk count status
-            const hasRisks = {{ 'true' if high_risk_count > 0 else 'false' }};
-            const themeColor = hasRisks ? 0xff3333 : 0xff6b00;
-
-            // Spatial holographic shield geometry
-            const geometry = new THREE.IcosahedronGeometry(1.2, 1);
-            const material = new THREE.MeshPhongMaterial({
-                color: themeColor,
-                wireframe: true,
-                transparent: true,
-                opacity: 0.65
-            });
-            const shield = new THREE.Mesh(geometry, material);
-            scene.add(shield);
-
-            // Glowing core
-            const coreMat = new THREE.MeshPhongMaterial({
-                color: themeColor,
-                transparent: true,
-                opacity: 0.15
-            });
-            const core = new THREE.Mesh(new THREE.IcosahedronGeometry(0.7, 0), coreMat);
-            scene.add(core);
-
-            // Ambient & Point lighting
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-            scene.add(ambientLight);
-            
-            const pointLight = new THREE.PointLight(themeColor, 2, 50);
-            pointLight.position.set(5, 5, 5);
-            scene.add(pointLight);
-
-            camera.position.z = 2.8;
-
-            // Cursor movement rotation interaction
-            let targetX = 0;
-            let targetY = 0;
-            document.addEventListener('mousemove', (e) => {
-                const rect = container.getBoundingClientRect();
-                const x = e.clientX - rect.left - (width / 2);
-                const y = e.clientY - rect.top - (height / 2);
-                targetX = (x / width) * 0.5;
-                targetY = (y / height) * 0.5;
-            });
-
-            function animate() {
-                requestAnimationFrame(animate);
-                
-                // Rotations
-                shield.rotation.y += 0.005;
-                shield.rotation.x += 0.002;
-                core.rotation.y -= 0.008;
-
-                // Move toward cursor coords
-                shield.rotation.y += (targetX - shield.rotation.y) * 0.05;
-                shield.rotation.x += (targetY - shield.rotation.x) * 0.05;
-
-                renderer.render(scene, camera);
-            }
-            animate();
-            
-            // Adjust renderer size on window resize
-            window.addEventListener('resize', () => {
-                const w = container.clientWidth;
-                const h = container.clientHeight;
-                renderer.setSize(w, h);
-                camera.aspect = w / h;
-                camera.updateProjectionMatrix();
-            });
-        }
-        
-        // Setup live decryption feed logging in sidebar
-        const consoleFeed = document.getElementById('live-console-feed');
-        const logs = [
-            "DECRYPTING_SECURE_KEYS...",
-            "VERIFYING_IP_TRUST_SCORE...",
-            "CORE_VULN_SCANNER: OPERATIONAL",
-            "THREAT_FEED_SYNC: COMPLETED",
-            "SSH_PORT_AUDIT: OK",
-            "DNS_RECORD_AUDIT: COMPLETE",
-            "ESTABLISHING_VPN_HANDSHAKE...",
-            "NODE_DIAGNOSTIC_COMPLETED"
-        ];
-        
-        if (consoleFeed) {
-            setInterval(() => {
-                const line = document.createElement('div');
-                line.className = 'text-primary/70';
-                line.textContent = `> ${logs[Math.floor(Math.random() * logs.length)]}`;
-                consoleFeed.appendChild(line);
-                if (consoleFeed.children.length > 8) {
-                    consoleFeed.removeChild(consoleFeed.firstChild);
-                }
-                consoleFeed.scrollTop = consoleFeed.scrollHeight;
-            }, 3000);
-        }
+        // Instantiate the interactive 3D shield directly in the background container
+        const hasRisks = {{ 'true' if high_risk_count > 0 else 'false' }};
+        const themeColor = hasRisks ? 0xff4b4b : 0x00a3ff;
+        createSpatial3DScene('spatial-bg-canvas-target', 'shield', themeColor);
     });
 </script>
 {% endblock %}

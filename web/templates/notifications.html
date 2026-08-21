@@ -1,86 +1,66 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="grid grid-cols-1 lg:grid-cols-4 gap-6 animate-fade-slide">
-    <!-- Left Column (col-span 3) - Alert Inbox -->
-    <div class="lg:col-span-3 space-y-6">
-        <div class="glass-card p-8 border border-primary/20 relative">
-            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
-            
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(0,163,255,0.15)]">
-                        <span class="material-symbols-outlined">notifications</span>
-                    </div>
-                    <div>
-                        <h2 class="text-base font-bold text-white">&gt; Notification Center</h2>
-                        <p class="text-xs text-on-surface-variant mt-1">Keep updated on targets, audit requests, approvals, and security scan reports.</p>
-                    </div>
+<div class="space-y-6 relative z-10 animate-fade-slide">
+    <div class="glass-card p-8 border border-primary/20 relative">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(0,163,255,0.15)]">
+                    <span class="material-symbols-outlined">notifications</span>
                 </div>
-                {% if notifications %}
-                    <form action="/notifications/clear" method="POST" class="m-0">
-                        <button type="submit" class="px-4 py-2 bg-error text-black font-bold rounded hover:shadow-[0_0_12px_rgba(255,51,51,0.5)] transition-all cursor-pointer text-xs uppercase">
-                            [CLEAR_ALL_ALERTS]
-                        </button>
-                    </form>
-                {% endif %}
+                <div>
+                    <h2 class="text-base font-bold text-white">&gt; Notification Center</h2>
+                    <p class="text-xs text-on-surface-variant mt-1">Keep updated on targets, audit requests, approvals, and security scan reports.</p>
+                </div>
             </div>
-
-            {% if not notifications %}
-                <div class="text-center py-12">
-                    <span class="text-3xl opacity-35">🔔</span>
-                    <p class="text-xs text-on-surface-variant mt-4 font-semibold">You have no notifications or alerts at this time.</p>
-                </div>
-            {% else %}
-                <div class="flex flex-col gap-4 mt-6">
-                    {% for n in notifications %}
-                        <div class="p-5 bg-white/5 border border-primary/10 rounded flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs table-row-hover transition-all duration-200 border-l-4 {% if not n.read %}border-l-primary bg-primary/5{% else %}border-l-white/10{% endif %}">
-                            <div class="flex-grow">
-                                <div class="flex items-center gap-2">
-                                    <h4 class="font-bold {% if not n.read %}text-white{% else %}text-on-surface-variant{% endif %} text-xs font-code-sm">
-                                        {{ n.title }}
-                                    </h4>
-                                    {% if not n.read %}
-                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[8px] bg-primary text-black font-extrabold uppercase animate-pulse">NEW</span>
-                                    {% endif %}
-                                </div>
-                                <p class="text-on-surface-variant leading-relaxed mt-2 font-code-sm text-[11px]">{{ n.message }}</p>
-                                <span class="text-[9px] text-white/40 block mt-2 font-code-sm">{{ n.created_at.strftime("%Y-%m-%d %H:%M") }}</span>
-                            </div>
-                            {% if n.link %}
-                                <a href="{{ n.link }}" class="px-3 py-1.5 bg-[#080808] border border-primary/30 text-primary rounded font-label-caps text-[10px] hover:bg-primary/20 hover:border-primary/50 transition-all no-underline font-bold text-center shrink-0 self-start md:self-center">
-                                    [VIEW_DETAILS]
-                                </a>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                </div>
+            {% if notifications %}
+                <form action="/notifications/clear" method="POST" class="m-0">
+                    <button type="submit" class="px-4 py-2 bg-error text-black font-bold rounded hover:shadow-[0_0_12px_rgba(255,51,51,0.5)] transition-all cursor-pointer text-xs uppercase">
+                        [CLEAR_ALL_ALERTS]
+                    </button>
+                </form>
             {% endif %}
         </div>
-    </div>
 
-    <!-- Right Column (col-span 1) - Spatial 3D Alert Cube -->
-    <div class="space-y-6">
-        <div class="glass-card p-6 border border-primary/20 relative flex flex-col items-center justify-center overflow-hidden">
-            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
-            <h3 class="font-headline-sm text-xs text-white uppercase tracking-wider mb-2 font-bold w-full text-left">&gt; SPATIAL_ALERT_CUBE</h3>
-            
-            <div id="notif-3d-cube" class="w-full aspect-square max-w-[240px] bg-black/20 border border-primary/10 flex items-center justify-center my-4 overflow-hidden"></div>
-            
-            <div class="w-full text-center space-y-2 font-code-sm text-[11px] text-on-surface-variant border-t border-white/5 pt-4">
-                <div class="flex items-center justify-between">
-                    <span>ALERT_MONITOR:</span>
-                    <span class="text-primary font-bold">ACTIVE</span>
-                </div>
+        {% if not notifications %}
+            <div class="text-center py-12">
+                <span class="text-3xl opacity-35">🔔</span>
+                <p class="text-xs text-on-surface-variant mt-4 font-semibold">You have no notifications or alerts at this time.</p>
             </div>
-        </div>
+        {% else %}
+            <div class="flex flex-col gap-4 mt-6">
+                {% for n in notifications %}
+                    <div class="p-5 bg-white/5 border border-primary/10 rounded flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs table-row-hover transition-all duration-200 border-l-4 {% if not n.read %}border-l-primary bg-primary/5{% else %}border-l-white/10{% endif %}">
+                        <div class="flex-grow">
+                            <div class="flex items-center gap-2">
+                                <h4 class="font-bold {% if not n.read %}text-white{% else %}text-on-surface-variant{% endif %} text-xs font-code-sm">
+                                    {{ n.title }}
+                                </h4>
+                                {% if not n.read %}
+                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[8px] bg-primary text-black font-extrabold uppercase animate-pulse">NEW</span>
+                                {% endif %}
+                            </div>
+                            <p class="text-on-surface-variant leading-relaxed mt-2 font-code-sm text-[11px]">{{ n.message }}</p>
+                            <span class="text-[9px] text-white/40 block mt-2 font-code-sm">{{ n.created_at.strftime("%Y-%m-%d %H:%M") }}</span>
+                        </div>
+                        {% if n.link %}
+                            <a href="{{ n.link }}" class="px-3 py-1.5 bg-[#080808] border border-primary/30 text-primary rounded font-label-caps text-[10px] hover:bg-primary/20 hover:border-primary/50 transition-all no-underline font-bold text-center shrink-0 self-start md:self-center">
+                                [VIEW_DETAILS]
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
 </div>
 
 <script>
     window.addEventListener('DOMContentLoaded', function() {
-        // Instantiate the interactive 3D document cybercube mesh
-        createSpatial3DScene('notif-3d-cube', 'cube');
+        // Instantiate the unique alert bell 3D model in the background container
+        createSpatial3DScene('spatial-bg-canvas-target', 'bell');
     });
 </script>
 {% endblock %}
