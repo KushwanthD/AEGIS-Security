@@ -99,9 +99,74 @@
             background-color: #0d0d0d;
             font-family: 'JetBrains Mono', monospace;
             letter-spacing: -0.02em;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* Custom tactical cyber blue cursor */
+        /* --- Theme Colors (Tailwind Variables overrides) --- */
+        html.light body {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+        }
+
+        html.light .glass-card {
+            background: rgba(255, 255, 255, 0.92) !important;
+            border: 1.5px solid #000000 !important;
+            box-shadow: 
+                0 4px 20px rgba(0, 0, 0, 0.08),
+                0 0 0 3px #ffffff,
+                inset 0 0 10px rgba(0,0,0,0.02) !important;
+            color: #000000 !important;
+        }
+        
+        html.light .glass-card input, 
+        html.light .glass-card select, 
+        html.light .glass-card textarea {
+            background: #ffffff !important;
+            border: 1.5px solid #000000 !important;
+            color: #000000 !important;
+        }
+
+        /* Matte selections and hover states in light mode */
+        html.light .selected-orange-matte {
+            background: rgba(0, 0, 0, 0.08) !important;
+            border: 1.5px solid #000000 !important;
+            color: #000000 !important;
+        }
+
+        html.light .sidebar-links a:hover {
+            background: rgba(0, 0, 0, 0.05) !important;
+            color: #000000 !important;
+        }
+
+        /* Button shadow logic to prevent mixing with light backgrounds */
+        html.light button,
+        html.light a.px-4,
+        html.light a.px-3,
+        html.light a.px-2,
+        html.light input[type="submit"] {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+            border: 1.5px solid #000000 !important;
+        }
+
+        html.light .text-white { color: #000000 !important; }
+        html.light .text-primary { color: #000000 !important; }
+        html.light .text-on-surface-variant { color: #555555 !important; }
+        html.light .bg-primary { background-color: #000000 !important; color: #ffffff !important; }
+        html.light .bg-primary\/10 { background-color: rgba(0, 0, 0, 0.05) !important; }
+        html.light .border-primary\/20 { border-color: rgba(0, 0, 0, 0.2) !important; }
+        html.light .border-primary\/30 { border-color: rgba(0, 0, 0, 0.3) !important; }
+        html.light .border-white\/5 { border-color: rgba(0, 0, 0, 0.1) !important; }
+        html.light .divide-white\/5 { border-color: rgba(0, 0, 0, 0.1) !important; }
+        html.light nav {
+            background-color: #ffffff !important;
+            border-right: 1.5px solid #000000 !important;
+        }
+        html.light header {
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            border-bottom: 1.5px solid #000000 !important;
+        }
+
+        /* Custom tactical cursor colors matching mode */
         .custom-cursor {
             position: fixed;
             top: 0;
@@ -114,6 +179,10 @@
             z-index: 99999;
             transform: translate(-50%, -50%);
             box-shadow: 0 0 10px #00a3ff, 0 0 20px #00a3ff;
+        }
+        html.light .custom-cursor {
+            background-color: #000000 !important;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5) !important;
         }
 
         .custom-cursor-trail {
@@ -130,6 +199,11 @@
             transition: transform 0.05s cubic-bezier(0.25, 1, 0.5, 1);
             background: rgba(0, 163, 255, 0.04);
             box-shadow: 0 0 8px rgba(0, 163, 255, 0.2);
+        }
+        html.light .custom-cursor-trail {
+            border: 1.5px solid rgba(0, 0, 0, 0.5) !important;
+            background: rgba(0, 0, 0, 0.02) !important;
+            box-shadow: none !important;
         }
         
         /* KPI Dashboard Glass Card - Sharp Double Outlines */
@@ -154,22 +228,11 @@
             background: rgba(26, 26, 26, 0.88) !important;
         }
 
-        /* Matte translucent blue selection tags and highlights */
-        .selected-orange-matte {
-            background: rgba(0, 163, 255, 0.18) !important;
-            border: 1px solid rgba(0, 163, 255, 0.4) !important;
-            color: #00a3ff !important;
-            box-shadow: inset 0 0 8px rgba(0, 163, 255, 0.05);
-            text-shadow: 0 0 4px rgba(0, 163, 255, 0.2);
-        }
-
-        .critical-glow {
-            box-shadow: 0 0 15px rgba(255, 75, 75, 0.2);
-            border-color: rgba(255, 75, 75, 0.3);
-        }
-
         .table-row-hover:hover {
             background: rgba(0, 163, 255, 0.05);
+        }
+        html.light .table-row-hover:hover {
+            background: rgba(0, 0, 0, 0.03) !important;
         }
         
         /* Grid Background Pattern */
@@ -185,6 +248,11 @@
             bottom: 0;
             z-index: -2;
             pointer-events: none;
+        }
+        html.light .grid-bg {
+            background-image: 
+                linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px) !important;
         }
 
         /* Starry Night interactive Background Canvas */
@@ -216,18 +284,27 @@
         ::-webkit-scrollbar-track {
             background: rgba(10, 10, 10, 0.95);
         }
+        html.light ::-webkit-scrollbar-track {
+            background: #ffffff !important;
+        }
         ::-webkit-scrollbar-thumb {
             background: rgba(0, 163, 255, 0.25);
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 163, 255, 0.5);
+        html.light ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.25) !important;
         }
     </style>
     <script>
+        // Track the current instantiated background scene so we can clean it up or redraw it
+        let currentSceneData = null;
+
         // Global 3D Spatial scene creation utility - Zero repeated geometries!
         function createSpatial3DScene(containerId, type, customColor) {
             const container = document.getElementById(containerId);
             if (!container || typeof THREE === 'undefined') return;
+
+            // Clear previous canvas renders to avoid WebGL context limits
+            container.innerHTML = "";
 
             const w = container.clientWidth || 550;
             const h = container.clientHeight || 550;
@@ -238,12 +315,15 @@
             renderer.setSize(w, h);
             container.appendChild(renderer.domElement);
 
-            const colorHex = customColor || 0x00a3ff;
+            // Dynamically check mode and map theme color
+            const isLightMode = document.documentElement.classList.contains('light');
+            const defaultThemeColor = isLightMode ? 0x000000 : 0x00a3ff;
+            const colorHex = customColor !== undefined ? customColor : defaultThemeColor;
+
             let meshObject;
 
             // Geometry dispatcher mapping page context
             if (type === 'target') {
-                // Asset Registry: Target scanner ring
                 const group = new THREE.Group();
                 const ringGeom = new THREE.RingGeometry(1.0, 1.2, 36);
                 const ringMat = new THREE.MeshBasicMaterial({ color: colorHex, side: THREE.DoubleSide, wireframe: true });
@@ -257,7 +337,6 @@
 
                 meshObject = group;
             } else if (type === 'lock') {
-                // Assessments: Cryptographic padlock
                 const group = new THREE.Group();
                 const shackleGeom = new THREE.TorusGeometry(0.6, 0.16, 8, 24, Math.PI);
                 const shackleMat = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
@@ -273,7 +352,6 @@
 
                 meshObject = group;
             } else if (type === 'key') {
-                // Approval Inbox: Security Key
                 const group = new THREE.Group();
                 const ringGeom = new THREE.TorusGeometry(0.35, 0.12, 8, 24);
                 const keyMat = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
@@ -296,7 +374,6 @@
 
                 meshObject = group;
             } else if (type === 'network') {
-                // Threat Intelligence: Linked node network
                 const group = new THREE.Group();
                 const nodeGeom = new THREE.SphereGeometry(0.16, 8, 8);
                 const nodeMat = new THREE.MeshPhongMaterial({ color: colorHex });
@@ -307,7 +384,6 @@
                 }
                 meshObject = group;
             } else if (type === 'cube') {
-                // Report History: Nested Cybercube document
                 const group = new THREE.Group();
                 const outerGeom = new THREE.BoxGeometry(1.3, 1.3, 1.3);
                 const outerMat = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
@@ -320,18 +396,15 @@
 
                 meshObject = group;
             } else if (type === 'radar') {
-                // Recon Logs: Radar Sweep Cone
                 const geometry = new THREE.ConeGeometry(0.9, 1.6, 32, 1, true);
                 const material = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
                 meshObject = new THREE.Mesh(geometry, material);
                 meshObject.rotation.x = Math.PI / 2;
             } else if (type === 'terminal') {
-                // Scan Logs: Terminal Frame Cylinder
                 const geometry = new THREE.CylinderGeometry(0.7, 0.7, 1.5, 12, 4, true);
                 const material = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
                 meshObject = new THREE.Mesh(geometry, material);
             } else if (type === 'matrix') {
-                // Correlation Logs: Double Helix Cross links
                 const group = new THREE.Group();
                 const torusGeom = new THREE.TorusGeometry(0.8, 0.12, 8, 32);
                 const torusMat = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
@@ -342,7 +415,6 @@
                 group.add(t2);
                 meshObject = group;
             } else if (type === 'audit') {
-                // Audit Logs: Concentric Circles
                 const group = new THREE.Group();
                 const torusGeom1 = new THREE.TorusGeometry(0.9, 0.05, 8, 36);
                 const torusGeom2 = new THREE.TorusGeometry(0.6, 0.05, 8, 36);
@@ -356,12 +428,10 @@
                 group.add(r3);
                 meshObject = group;
             } else if (type === 'badge') {
-                // User Management: Octahedron Crown
                 const geometry = new THREE.OctahedronGeometry(1.2, 1);
                 const material = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
                 meshObject = new THREE.Mesh(geometry, material);
             } else if (type === 'bell') {
-                // Notifications: Alert Bell Structure
                 const group = new THREE.Group();
                 const domeGeom = new THREE.CylinderGeometry(0.1, 0.7, 1.2, 16, 4, true);
                 const bellMat = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
@@ -375,7 +445,6 @@
 
                 meshObject = group;
             } else {
-                // Dashboard: Rotating 3D Shield (Default)
                 const group = new THREE.Group();
                 const geometry = new THREE.IcosahedronGeometry(1.4, 1);
                 const material = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true, transparent: true, opacity: 0.7 });
@@ -402,16 +471,18 @@
 
             // Interactive mouse rotation tracking
             let mouseX = 0, mouseY = 0;
-            document.addEventListener('mousemove', (e) => {
+            const mouseTracker = (e) => {
                 const rect = container.getBoundingClientRect();
                 const x = e.clientX - rect.left - (w / 2);
                 const y = e.clientY - rect.top - (h / 2);
                 mouseX = (x / w) * 0.7;
                 mouseY = (y / h) * 0.7;
-            });
+            };
+            document.addEventListener('mousemove', mouseTracker);
 
+            let animationFrameId;
             function render() {
-                requestAnimationFrame(render);
+                animationFrameId = requestAnimationFrame(render);
                 meshObject.rotation.y += 0.004;
                 meshObject.rotation.x += 0.002;
 
@@ -423,6 +494,17 @@
             }
             render();
 
+            // Cache data so we can rebuild on theme change
+            currentSceneData = {
+                containerId: containerId,
+                type: type,
+                customColor: customColor,
+                cleanup: () => {
+                    cancelAnimationFrame(animationFrameId);
+                    document.removeEventListener('mousemove', mouseTracker);
+                }
+            };
+
             window.addEventListener('resize', () => {
                 const currentW = container.clientWidth;
                 const currentH = container.clientHeight;
@@ -431,6 +513,38 @@
                 camera.updateProjectionMatrix();
             });
         }
+
+        // Theme Toggle Logic
+        function toggleTheme() {
+            const htmlEl = document.documentElement;
+            if (htmlEl.classList.contains('dark')) {
+                htmlEl.classList.remove('dark');
+                htmlEl.classList.add('light');
+                localStorage.setItem('theme', 'light');
+            } else {
+                htmlEl.classList.remove('light');
+                htmlEl.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+
+            // Re-instantiate background 3D scene using new theme color rules
+            if (currentSceneData) {
+                currentSceneData.cleanup();
+                createSpatial3DScene(currentSceneData.containerId, currentSceneData.type, currentSceneData.customColor);
+            }
+        }
+
+        // Restore saved theme preference on page load
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.classList.add('light');
+            } else {
+                document.documentElement.classList.remove('light');
+                document.documentElement.classList.add('dark');
+            }
+        })();
 
         window.addEventListener('DOMContentLoaded', function() {
             const preloader = document.getElementById('preloader');
@@ -502,8 +616,8 @@
     <!-- Starry Night Background Canvas -->
     <canvas id="neural-bg-canvas"></canvas>
 
-    <!-- Ambient Spatial 3D Background Canvas -->
-    <div id="spatial-bg-container" class="fixed inset-0 pointer-events-none z-0 opacity-[0.14] flex items-center justify-center overflow-hidden">
+    <!-- Ambient Spatial 3D Background Canvas (High visibility 0.35/0.45 opacity) -->
+    <div id="spatial-bg-container" class="fixed inset-0 pointer-events-none z-0 opacity-[0.38] flex items-center justify-center overflow-hidden">
         <div id="spatial-bg-canvas-target" class="w-[650px] h-[650px] md:w-[750px] md:h-[750px]"></div>
     </div>
 
@@ -633,6 +747,11 @@
                 
                 <!-- Actions -->
                 <div class="flex items-center gap-6 ml-auto">
+                    <!-- Light / Dark Toggle Switch -->
+                    <button onclick="toggleTheme()" class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors outline-none cursor-pointer" title="Toggle Light/Dark Theme">
+                        <span class="material-symbols-outlined text-[20px]">brightness_medium</span>
+                    </button>
+
                     <!-- Notifications Dropdown -->
                     <div class="relative">
                         <button id="bellButton" class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors relative outline-none cursor-pointer">
@@ -744,7 +863,8 @@
                 draw() {
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(0, 163, 255, ${this.alpha})`;
+                    const isLight = document.documentElement.classList.contains('light');
+                    ctx.fillStyle = isLight ? `rgba(0, 0, 0, ${this.alpha * 0.5})` : `rgba(0, 163, 255, ${this.alpha})`;
                     ctx.fill();
                 }
             }
@@ -767,7 +887,8 @@
                             ctx.beginPath();
                             ctx.moveTo(s1.x, s1.y);
                             ctx.lineTo(mouseX, mouseY);
-                            ctx.strokeStyle = `rgba(0, 163, 255, ${0.08 * (1 - distToMouse / 120)})`;
+                            const isLight = document.documentElement.classList.contains('light');
+                            ctx.strokeStyle = isLight ? `rgba(0, 0, 0, ${0.05 * (1 - distToMouse / 120)})` : `rgba(0, 163, 255, ${0.08 * (1 - distToMouse / 120)})`;
                             ctx.stroke();
                         }
                     }
