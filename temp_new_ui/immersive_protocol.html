@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AEGIS-Security - Initializing</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-container": "#00723f",
+                        "outline-variant": "#3f4852",
+                        "security-green": "#00FF94",
+                        "primary-container": "#00a3ff",
+                        "on-surface": "#e5e2e1",
+                        "secondary-fixed-dim": "#00e383",
+                        "surface-dim": "#131313",
+                        "surface-container-high": "#2a2a2a",
+                        "on-primary-container": "#00375a",
+                        "surface-container-low": "#1c1b1b",
+                        "navy-surface": "#1E222D",
+                        "secondary-container": "#27ff97",
+                        "surface": "#131313",
+                        "on-secondary-fixed-variant": "#00522c",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-surface-variant": "#bec7d4",
+                        "on-tertiary": "#412d00",
+                        "primary-fixed-dim": "#98cbff",
+                        "tertiary": "#ffba20",
+                        "on-secondary-fixed": "#00210e",
+                        "inverse-on-surface": "#313030",
+                        "tertiary-container": "#cc9200",
+                        "on-secondary": "#00391d",
+                        "primary": "#98cbff",
+                        "on-tertiary-fixed-variant": "#5e4200",
+                        "cyber-blue": "#00A3FF",
+                        "on-tertiary-fixed": "#271900",
+                        "on-error-container": "#ffdad6",
+                        "surface-container": "#201f1f",
+                        "secondary": "#f5fff3",
+                        "inverse-surface": "#e5e2e1",
+                        "primary-fixed": "#cfe5ff",
+                        "on-tertiary-container": "#463000",
+                        "on-background": "#e5e2e1",
+                        "on-error": "#690005",
+                        "on-primary": "#003354",
+                        "secondary-fixed": "#5bffa1",
+                        "background": "#131313",
+                        "on-primary-fixed-variant": "#004a77",
+                        "tertiary-fixed": "#ffdea8",
+                        "on-primary-fixed": "#001d33",
+                        "critical-red": "#FF4B4B",
+                        "tertiary-fixed-dim": "#ffba20",
+                        "surface-container-highest": "#353534",
+                        "inverse-primary": "#00629d",
+                        "error": "#ffb4ab",
+                        "warning-amber": "#FFB800",
+                        "surface-bright": "#393939",
+                        "error-container": "#93000a",
+                        "deep-charcoal": "#1A1A1A",
+                        "outline": "#88919d",
+                        "surface-tint": "#98cbff",
+                        "surface-variant": "#353534"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "sidebar-width": "280px",
+                        "xl": "64px",
+                        "md": "24px",
+                        "gutter": "24px",
+                        "xs": "4px",
+                        "sm": "12px",
+                        "lg": "40px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "code-sm": ["JetBrains Mono"],
+                        "headline-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "code-md": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-caps": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "code-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-sm": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "code-md": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glow-ring {
+            box-shadow: 0 0 24px 4px rgba(0, 163, 255, 0.4);
+            transition: all 0.5s ease-out;
+        }
+        .glow-text {
+            text-shadow: 0 0 10px rgba(0, 163, 255, 0.8);
+        }
+        .terminal-scroll {
+            mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+        }
+        @keyframes pulse-opacity {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .pulse-op {
+            animation: pulse-opacity 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        /* Circular Progress */
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.1s linear;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        /* Staggered Fade In */
+        .stagger-fade {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .delay-1 { animation-delay: 0.0s; }
+        .delay-2 { animation-delay: 0.5s; }
+        .delay-3 { animation-delay: 1.0s; }
+
+        /* Glitch Button */
+        .glitch-btn {
+            position: relative;
+            transition: all 0.2s;
+        }
+        .glitch-btn:hover {
+            animation: glitch-anim 0.3s infinite;
+        }
+        @keyframes glitch-anim {
+            0% { transform: translate(0) }
+            20% { transform: translate(-2px, 1px) }
+            40% { transform: translate(-1px, -1px) }
+            60% { transform: translate(2px, 1px) }
+            80% { transform: translate(1px, -1px) }
+            100% { transform: translate(0) }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface h-screen w-screen overflow-hidden flex flex-col items-center justify-center relative">
+<!-- WebGL Background -->
+<canvas class="absolute inset-0 z-0 w-full h-full" id="bg-canvas"></canvas>
+<!-- Main Content Container -->
+<div class="z-10 flex flex-col items-center w-full max-w-2xl px-md gap-lg">
+<!-- Brand Header -->
+<div class="text-center flex flex-col items-center gap-base mb-8 stagger-fade delay-1">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight drop-shadow-md">AEGIS-Security</h1>
+<p class="font-label-caps text-label-caps text-cyber-blue uppercase tracking-widest pulse-op drop-shadow-md">System Initialization Protocol Active</p>
+</div>
+<!-- 3D Shield & Security Score Ring -->
+<div class="w-64 h-64 mx-auto mb-8 relative stagger-fade delay-2 flex items-center justify-center" id="three-container">
+<!-- Progress SVG Ring overlay -->
+<svg class="w-full h-full absolute inset-0 z-20 pointer-events-none drop-shadow-[0_0_15px_rgba(0,163,255,0.5)]" viewbox="0 0 120 120">
+<!-- Background track -->
+<circle class="text-white/5 stroke-current" cx="60" cy="60" fill="transparent" r="54" stroke-width="2"></circle>
+<!-- Progress track -->
+<circle class="text-cyber-blue stroke-current progress-ring__circle" cx="60" cy="60" fill="transparent" id="progress-circle" r="54" stroke-dasharray="339.292" stroke-dashoffset="339.292" stroke-linecap="round" stroke-width="2"></circle>
+</svg>
+<!-- Center Content -->
+<div class="flex flex-col items-center justify-center z-30 text-center pointer-events-none absolute">
+<span class="font-headline-lg text-headline-lg text-on-surface glow-text drop-shadow-lg" id="score-value">0%</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant mt-1">Integrity</span>
+</div>
+</div>
+<!-- Terminal Output -->
+<div class="w-full max-w-lg mt-4 bg-black/30 backdrop-blur-xl border border-white/10 rounded-lg p-md shadow-[0_4px_32px_rgba(0,163,255,0.15)] relative overflow-hidden h-48 terminal-scroll stagger-fade delay-3">
+<!-- Scanline Overlay -->
+<div class="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%] z-20"></div>
+<div class="font-code-sm text-code-sm text-security-green flex flex-col gap-2 z-10 relative h-full justify-end" id="terminal-content">
+<!-- Lines injected via JS -->
+</div>
+<!-- Blinking Cursor -->
+<div class="absolute bottom-md right-md w-2 h-4 bg-security-green pulse-op z-10"></div>
+</div>
+<!-- Action Area -->
+<div class="stagger-fade delay-3 mt-4">
+<button class="glitch-btn font-code-sm px-6 py-2 bg-cyber-blue/10 border border-cyber-blue text-cyber-blue rounded hover:bg-cyber-blue/20 hover:text-white transition-colors uppercase tracking-widest backdrop-blur-sm">
+        Manual Override
+    </button>
+</div>
+</div>
+<script>
+        // --- WebGL Background Setup ---
+        const canvas = document.getElementById('bg-canvas');
+        const gl = canvas.getContext('webgl');
+        
+        if (gl) {
+            const vsSource = `
+                attribute vec4 aVertexPosition;
+                varying vec2 v_texCoord;
+                void main() {
+                    gl_Position = aVertexPosition;
+                    v_texCoord = aVertexPosition.xy * 0.5 + 0.5;
+                }
+            `;
+            
+            const fsSource = `
+                precision highp float;
+                uniform float u_time;
+                uniform vec2 u_resolution;
+                uniform vec2 u_mouse;
+                varying vec2 v_texCoord;
+
+                float grid(vec2 uv, float res) {
+                    vec2 grid = fract(uv * res);
+                    return 1.0 - smoothstep(0.0, 0.05, min(grid.x, grid.y));
+                }
+
+                void main() {
+                    vec2 uv = v_texCoord;
+                    vec2 mouse = u_mouse / u_resolution;
+                    
+                    // Base dark surface color from Cyber Blue Security
+                    vec3 color = vec3(0.07, 0.07, 0.07); 
+                    
+                    // Animated Cyber Blue Grid
+                    float g1 = grid(uv + u_time * 0.02, 10.0);
+                    float g2 = grid(uv - u_time * 0.01, 20.0);
+                    
+                    vec3 gridColor = vec3(0.0, 0.64, 1.0); // Cyber Blue
+                    color += gridColor * g1 * 0.1;
+                    color += gridColor * g2 * 0.05;
+                    
+                    // Interactive Glow from Mouse
+                    float dist = distance(uv, mouse);
+                    float glow = smoothstep(0.4, 0.0, dist);
+                    color += gridColor * glow * 0.2;
+                    
+                    // Vignette
+                    color *= 1.0 - smoothstep(0.5, 1.5, length(uv - 0.5));
+                    
+                    gl_FragColor = vec4(color, 1.0);
+                }
+            `;
+
+            function createShader(gl, type, source) {
+                const shader = gl.createShader(type);
+                gl.shaderSource(shader, source);
+                gl.compileShader(shader);
+                return shader;
+            }
+
+            const vertexShader = createShader(gl, gl.VERTEX_SHADER, vsSource);
+            const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fsSource);
+            const program = gl.createProgram();
+            gl.attachShader(program, vertexShader);
+            gl.attachShader(program, fragmentShader);
+            gl.linkProgram(program);
+            gl.useProgram(program);
+
+            const positionBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+            const positions = [
+                -1.0,  1.0,
+                 1.0,  1.0,
+                -1.0, -1.0,
+                 1.0, -1.0,
+            ];
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+            
+            const positionLocation = gl.getAttribLocation(program, "aVertexPosition");
+            gl.enableVertexAttribArray(positionLocation);
+            gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+            const timeLocation = gl.getUniformLocation(program, "u_time");
+            const resLocation = gl.getUniformLocation(program, "u_resolution");
+            const mouseLocation = gl.getUniformLocation(program, "u_mouse");
+
+            let mouseX = 0, mouseY = 0;
+            window.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                // WebGL y goes up
+                mouseY = window.innerHeight - e.clientY; 
+            });
+
+            function renderGL(time) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                gl.viewport(0, 0, canvas.width, canvas.height);
+                
+                gl.uniform1f(timeLocation, time * 0.001);
+                gl.uniform2f(resLocation, canvas.width, canvas.height);
+                gl.uniform2f(mouseLocation, mouseX, mouseY);
+                
+                gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+                requestAnimationFrame(renderGL);
+            }
+            requestAnimationFrame(renderGL);
+        }
+
+        // --- Three.js Shield Setup ---
+        const container = document.getElementById('three-container');
+        if (container && typeof THREE !== 'undefined') {
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(width, height);
+            
+            // Positioning absolute to stay behind SVG ring
+            renderer.domElement.style.position = 'absolute';
+            renderer.domElement.style.top = '0';
+            renderer.domElement.style.left = '0';
+            renderer.domElement.style.zIndex = '10';
+            container.appendChild(renderer.domElement);
+
+            // Shield Geometry for AEGIS
+            const geometry = new THREE.IcosahedronGeometry(0.8, 1);
+            const material = new THREE.MeshPhongMaterial({
+                color: 0x00a3ff,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.7
+            });
+            const shield = new THREE.Mesh(geometry, material);
+            scene.add(shield);
+
+            // Inner solid core
+            const coreMat = new THREE.MeshPhongMaterial({
+                color: 0x00a3ff,
+                transparent: true,
+                opacity: 0.2
+            });
+            const core = new THREE.Mesh(new THREE.IcosahedronGeometry(0.5, 0), coreMat);
+            scene.add(core);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0x00a3ff, 2);
+            pointLight.position.set(2, 2, 2);
+            scene.add(pointLight);
+
+            camera.position.z = 2.5;
+
+            function animateThree() {
+                requestAnimationFrame(animateThree);
+                shield.rotation.y += 0.005;
+                shield.rotation.x += 0.002;
+                core.rotation.y -= 0.01;
+                renderer.render(scene, camera);
+            }
+            animateThree();
+        }
+
+        // --- Existing Terminal Logic ---
+        const terminalLines = [
+            "[OK] Boot sequence initiated...",
+            "Loading core modules: [sys_kernel, mem_mgr, io_ctrl]",
+            "Establishing secure uplink...",
+            "Encrypting local vault via AES-256-GCM.",
+            "[INFO] Parsing perimeter firewall rulesets.",
+            "Synchronizing Threat Intel DB: v2.4.91",
+            "Analyzing network topography anomalies...",
+            "Deploying distributed sensory nodes.",
+            "[WARN] Minor latency in node 7 - compensating.",
+            "Validating cryptographic signatures.",
+            "Mounting virtual secure enclave.",
+            "Initiating deep-packet inspection engine.",
+            "Calibrating heuristic analysis thresholds.",
+            "System checks passing. Verifying integrity...",
+            "AEGIS Core online."
+        ];
+
+        const terminalContent = document.getElementById('terminal-content');
+        const progressCircle = document.getElementById('progress-circle');
+        const scoreValue = document.getElementById('score-value');
+        
+        // Setup SVG Circle
+        if(progressCircle) {
+            const radius = progressCircle.r.baseVal.value;
+            const circumference = radius * 2 * Math.PI;
+            progressCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+            progressCircle.style.strokeDashoffset = `${circumference}`;
+
+            function setProgress(percent) {
+                const offset = circumference - (percent / 100) * circumference;
+                progressCircle.style.strokeDashoffset = offset;
+                scoreValue.innerText = `${Math.floor(percent)}%`;
+                
+                if (percent > 90) {
+                    progressCircle.classList.remove('text-cyber-blue');
+                    progressCircle.classList.add('text-security-green');
+                    progressCircle.parentElement.classList.replace('drop-shadow-[0_0_15px_rgba(0,163,255,0.5)]', 'drop-shadow-[0_0_15px_rgba(0,255,148,0.5)]');
+                    scoreValue.classList.replace('text-cyber-blue', 'text-security-green');
+                    scoreValue.classList.replace('glow-text', 'text-shadow-[0_0_10px_rgba(0,255,148,0.8)]'); 
+                    scoreValue.style.textShadow = '0 0 10px rgba(0, 255, 148, 0.8)';
+                }
+            }
+
+            let currentProgress = 0;
+            let lineIndex = 0;
+
+            function addTerminalLine(text) {
+                const line = document.createElement('div');
+                line.className = 'opacity-80 transition-opacity duration-300';
+                line.innerHTML = `> ${text}`;
+                terminalContent.appendChild(line);
+                
+                if (terminalContent.children.length > 6) {
+                    terminalContent.removeChild(terminalContent.firstChild);
+                }
+            }
+
+            const bootSequence = setInterval(() => {
+                if (currentProgress < 100) {
+                    const increment = Math.random() > 0.7 ? Math.floor(Math.random() * 15) : Math.floor(Math.random() * 3);
+                    currentProgress = Math.min(100, currentProgress + increment);
+                    setProgress(currentProgress);
+                }
+
+                if (lineIndex < terminalLines.length) {
+                    if (Math.random() > 0.4 || currentProgress >= 100) {
+                        addTerminalLine(terminalLines[lineIndex]);
+                        lineIndex++;
+                    }
+                }
+
+                if (currentProgress >= 100 && lineIndex >= terminalLines.length) {
+                    clearInterval(bootSequence);
+                    setTimeout(() => {
+                        addTerminalLine("SYSTEM READY. AWAITING COMMAND...");
+                    }, 1000);
+                }
+            }, 300); 
+        }
+    </script>
+</body></html>
