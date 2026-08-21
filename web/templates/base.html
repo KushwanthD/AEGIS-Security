@@ -587,6 +587,9 @@
             // Sync preloader style if active
             syncPreloaderTheme();
 
+            // Sync loader 3D color
+            if (window.syncLoaderColor) window.syncLoaderColor();
+
             // Re-instantiate background 3D scene using new theme color rules
             if (currentSceneData) {
                 currentSceneData.cleanup();
@@ -601,10 +604,6 @@
                 if (isLight) {
                     preloader.style.background = '#ffffff';
                     preloader.style.color = '#000000';
-                    const rings = preloader.querySelectorAll('.absolute');
-                    rings.forEach(ring => {
-                        ring.style.borderColor = '#000000';
-                    });
                     const pctText = document.getElementById('loader-percentage');
                     if (pctText) pctText.style.color = '#000000';
                     const logText = document.getElementById('decryption-log');
@@ -612,12 +611,6 @@
                 } else {
                     preloader.style.background = '#0b0b0b';
                     preloader.style.color = '#ffffff';
-                    const rings = preloader.querySelectorAll('.absolute');
-                    rings.forEach((ring, idx) => {
-                        if (idx === 0) ring.style.borderColor = 'rgba(0, 163, 255, 0.3)';
-                        else if (idx === 1) ring.style.borderColor = '#00a3ff';
-                        else ring.style.borderColor = 'rgba(0, 163, 255, 0.4)';
-                    });
                     const pctText = document.getElementById('loader-percentage');
                     if (pctText) pctText.style.color = '#00a3ff';
                     const logText = document.getElementById('decryption-log');
@@ -637,6 +630,25 @@
                 document.documentElement.classList.add('dark');
             }
         })();
+
+        window.addEventListener('pageshow', function(event) {
+            const savedTheme = localStorage.getItem('theme');
+            const htmlEl = document.documentElement;
+            if (savedTheme === 'light') {
+                htmlEl.classList.remove('dark');
+                htmlEl.classList.add('light');
+            } else {
+                htmlEl.classList.remove('light');
+                htmlEl.classList.add('dark');
+            }
+            syncPreloaderTheme();
+            if (window.syncLoaderColor) window.syncLoaderColor();
+            // Clean and redraw current scene with the aligned theme variables
+            if (currentSceneData) {
+                currentSceneData.cleanup();
+                createSpatial3DScene(currentSceneData.containerId, currentSceneData.type, currentSceneData.customColor);
+            }
+        });
 
         window.addEventListener('DOMContentLoaded', function() {
             // Apply saved theme color styles to preloader
@@ -749,13 +761,11 @@
     <!-- Decryption Loader Screen -->
     <div id="preloader" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0b0b0b; z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.4s ease, visibility 0.4s ease;">
         <div style="text-align: center;" class="relative">
-            <!-- Hex ring animation -->
+            <!-- Interactive 3D Loader Canvas -->
             <div class="relative w-36 h-36 mx-auto mb-6 flex items-center justify-center">
-                <div class="absolute inset-0 rounded-full border-2 border-dashed border-primary/30 animate-[spin_20s_linear_infinite]"></div>
-                <div class="absolute inset-2 rounded-full border-2 border-primary border-t-transparent animate-[spin_3s_linear_infinite]"></div>
-                <div class="absolute inset-4 rounded-full border border-primary/40 border-b-transparent animate-[spin_6s_linear_infinite_reverse]"></div>
+                <div id="loader-3d-target" class="absolute w-full h-full"></div>
                 <!-- Scanning HUD Value -->
-                <span id="loader-percentage" class="font-code-sm text-lg text-primary font-bold tracking-widest">00%</span>
+                <span id="loader-percentage" class="font-code-sm text-lg text-primary font-bold tracking-widest z-10">00%</span>
             </div>
             
             <!-- Rapid decryption log output -->
@@ -1052,6 +1062,88 @@
                     log.textContent = logPhrases[phraseIndex];
                 }
             }, 60);
+        })();
+    </script>
+
+    <!-- 3D Interactive Preloader Script -->
+    <script>
+        (function() {
+            const target = document.getElementById('loader-3d-target');
+            if (!target || typeof THREE === 'undefined') return;
+
+            const w = 144;
+            const h = 144;
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
+            camera.position.z = 3.5;
+
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(w, h);
+            target.appendChild(renderer.domElement);
+
+            // Check theme preference for wireframe color setup
+            const isLight = document.documentElement.classList.contains('light');
+            const themeColor = isLight ? 0x000000 : 0x00a3ff;
+            const materialConstructor = isLight ? THREE.MeshBasicMaterial : THREE.MeshPhongMaterial;
+
+            const group = new THREE.Group();
+            
+            // Spinning outer wireframe icosahedron
+            const geomOuter = new THREE.IcosahedronGeometry(1.2, 1);
+            const matOuter = new materialConstructor({ color: themeColor, wireframe: true });
+            const outerMesh = new THREE.Mesh(geomOuter, matOuter);
+            group.add(outerMesh);
+
+            // Spinning inner solid/wireframe core
+            const geomInner = new THREE.OctahedronGeometry(0.5, 0);
+            const matInner = new materialConstructor({ color: themeColor, wireframe: true });
+            const innerMesh = new THREE.Mesh(geomInner, matInner);
+            group.add(innerMesh);
+
+            scene.add(group);
+
+            // Light sources
+            scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+            const pointL = new THREE.PointLight(themeColor, 1.5, 30);
+            pointL.position.set(2, 2, 2);
+            scene.add(pointL);
+
+            // Cursor mouse interactivity
+            let mouseX = 0, mouseY = 0;
+            document.addEventListener('mousemove', (e) => {
+                const rect = target.getBoundingClientRect();
+                const x = e.clientX - rect.left - (w / 2);
+                const y = e.clientY - rect.top - (h / 2);
+                mouseX = (x / w) * 0.9;
+                mouseY = (y / h) * 0.9;
+            });
+
+            function render() {
+                requestAnimationFrame(render);
+                
+                // Idle spins
+                outerMesh.rotation.y += 0.007;
+                outerMesh.rotation.x += 0.003;
+                innerMesh.rotation.y -= 0.012;
+
+                // Mouse follow tilt
+                group.rotation.y += (mouseX - group.rotation.y) * 0.06;
+                group.rotation.x += (mouseY - group.rotation.x) * 0.06;
+
+                renderer.render(scene, camera);
+            }
+            render();
+
+            // Expose a function to reset the color if toggled (preloader on screen transition)
+            window.syncLoaderColor = function() {
+                const updatedLight = document.documentElement.classList.contains('light');
+                const updatedColor = updatedLight ? 0x000000 : 0x00a3ff;
+                
+                // Update materials
+                matOuter.color.setHex(updatedColor);
+                matInner.color.setHex(updatedColor);
+                pointL.color.setHex(updatedColor);
+            };
         })();
     </script>
 
