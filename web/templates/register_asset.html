@@ -5,7 +5,7 @@
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
         <div>
-            <h2 class="font-headline-lg text-lg font-bold text-white tracking-tight dotted-text mb-1">&gt; Target Asset Registry</h2>
+            <h2 class="font-headline-lg text-lg font-bold text-white tracking-tight mb-1">&gt; Target Asset Registry</h2>
             <p class="font-body-md text-xs text-on-surface-variant">Register domain nodes, comms channels, or systems to start security mapping.</p>
         </div>
         <div class="flex items-center gap-4">
@@ -17,13 +17,13 @@
 
     <!-- Bento Grid Form Layout -->
     <div class="grid grid-cols-1 md:grid-cols-12 gap-6 relative">
-        <!-- Left Column: Progress Tracker -->
-        <div class="md:col-span-4 bg-[#0c0c0c] border border-primary/20 rounded-xl p-6 shadow-[0_8px_32px_rgba(0,0,0,0.4)] h-fit">
-            <h2 class="font-label-caps text-label-caps text-xs text-primary mb-8 tracking-widest border-b border-primary/10 pb-4 dotted-text">DEPLOYMENT SEQUENCE</h2>
-            <div class="relative space-y-8">
+        <!-- Left Column: Progress Tracker & 3D Spatial Target canvas -->
+        <div class="md:col-span-4 bg-[#0c0c0c] border border-primary/20 rounded p-6 shadow-[0_8px_32px_rgba(0,0,0,0.4)] h-fit space-y-6">
+            <h2 class="font-label-caps text-label-caps text-xs text-primary mb-4 tracking-widest border-b border-primary/10 pb-4">DEPLOYMENT SEQUENCE</h2>
+            <div class="relative space-y-6">
                 <!-- Step 1: Identity -->
                 <div class="step-item active relative flex gap-4">
-                    <div class="w-8 h-8 rounded-full border border-primary bg-primary/15 text-primary flex items-center justify-center font-code-sm text-xs font-bold shadow-[0_0_10px_rgba(255,107,0,0.3)] shrink-0">1</div>
+                    <div class="w-8 h-8 rounded-full border border-primary bg-primary/15 text-primary flex items-center justify-center font-code-sm text-xs font-bold shrink-0">1</div>
                     <div class="pt-1">
                         <h3 class="font-headline-sm text-sm font-semibold text-white">Nomenclature</h3>
                         <p class="font-body-sm text-[10px] text-on-surface-variant mt-1">Target Name & Classification</p>
@@ -37,58 +37,44 @@
                         <p class="font-body-sm text-[10px] text-on-surface-variant mt-1">Ownership Validation Challenge</p>
                     </div>
                 </div>
-                <!-- Step 3: Security Keys -->
-                <div class="step-item relative flex gap-4 opacity-50">
-                    <div class="w-8 h-8 rounded-full border border-white/10 bg-white/5 text-white/50 flex items-center justify-center font-code-sm text-xs font-bold shrink-0">3</div>
-                    <div class="pt-1">
-                        <h3 class="font-headline-sm text-sm font-semibold text-white">Auditing Keys</h3>
-                        <p class="font-body-sm text-[10px] text-on-surface-variant mt-1">Credential Integration</p>
-                    </div>
-                </div>
             </div>
 
-            <!-- Terminal Mini Status -->
-            <div class="mt-8 bg-black rounded-lg p-4 border border-white/5 relative overflow-hidden">
-                <div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-                <p class="font-code-sm text-[9px] text-primary opacity-70 mb-1">&gt; SYSTEM.AWAITING_INPUT</p>
-                <p class="font-code-sm text-[9px] text-white/50">&gt; ALLOCATING_VIRTUAL_SPACE...</p>
+            <!-- Spatial 3D Radar Target -->
+            <div class="border border-white/5 bg-black/40 p-4">
+                <div id="register-3d-target" class="w-full aspect-square bg-black/10 flex items-center justify-center overflow-hidden"></div>
+                <div class="text-center font-code-sm text-[10px] text-primary/70 mt-2">SYS_TARGET: AWAITING_DEPLOY</div>
             </div>
         </div>
 
         <!-- Right Column: Active Form Step -->
-        <div class="md:col-span-8 bg-[#121212]/80 border border-primary/20 rounded-xl p-8 shadow-[0_8px_32px_rgba(0,0,0,0.4)] relative overflow-hidden">
-            <!-- Top Glow Indicator -->
+        <div class="md:col-span-8 bg-[#121212]/80 border border-primary/20 rounded p-8 shadow-[0_8px_32px_rgba(0,0,0,0.4)] relative overflow-hidden">
             <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-50"></div>
             
             <div class="flex items-center gap-3 mb-8">
-                <div class="w-10 h-10 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(255,107,0,0.15)]">
+                <div class="w-10 h-10 bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(0,163,255,0.15)]">
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">badge</span>
                 </div>
-                <h2 class="font-headline-md text-base text-on-surface font-semibold dotted-text">&gt; Asset Identity & Scope</h2>
+                <h2 class="font-headline-md text-base text-on-surface font-semibold">&gt; Asset Identity & Scope</h2>
             </div>
 
             <form method="POST" class="space-y-6">
                 <!-- Hostname / Target Address -->
                 <div>
                     <label class="block font-label-caps text-xs text-on-surface-variant mb-2" for="asset_value">Primary Target Address <span class="text-error">*</span></label>
-                    <div class="relative">
-                        <input class="w-full bg-[#080808] border border-primary/20 rounded-md py-3 px-4 font-code-sm text-xs text-primary placeholder-white/20 focus:border-primary focus:ring-0 outline-none" id="asset_value" name="asset_value" placeholder="e.g. secure-node.company.com or 192.168.1.50" required type="text" autocomplete="off"/>
-                    </div>
+                    <input class="w-full bg-[#080808] border border-primary/20 rounded py-3 px-4 font-code-sm text-xs text-primary placeholder-white/20 focus:border-primary focus:ring-0 outline-none" id="asset_value" name="asset_value" placeholder="e.g. secure-node.company.com or 192.168.1.50" required type="text" autocomplete="off"/>
                     <p class="font-code-sm text-[10px] text-white/40 mt-2">Enter a domain, email address, web URL, or IP address node.</p>
                 </div>
 
                 <!-- Optional SSH Credentials -->
                 <div>
                     <label class="block font-label-caps text-xs text-on-surface-variant mb-2" for="ssh_credentials">SSH Host Auditing Credentials (Optional JSON)</label>
-                    <div class="relative">
-                        <textarea class="w-full bg-[#080808] border border-primary/20 rounded-md p-4 font-code-sm text-xs text-white placeholder-white/20 focus:border-primary focus:ring-0 outline-none h-24" id="ssh_credentials" name="ssh_credentials" placeholder='e.g. {"username": "ubuntu", "password": "password123", "port": 22}' autocomplete="off"></textarea>
-                    </div>
+                    <textarea class="w-full bg-[#080808] border border-primary/20 rounded p-4 font-code-sm text-xs text-white placeholder-white/20 focus:border-primary focus:ring-0 outline-none h-24" id="ssh_credentials" name="ssh_credentials" placeholder='e.g. {"username": "ubuntu", "password": "password123", "port": 22}' autocomplete="off"></textarea>
                     <p class="font-code-sm text-[10px] text-white/40 mt-2">Supply JSON configurations (username, password, private_key) to run authenticated system patch analysis checks.</p>
                 </div>
 
                 <!-- Submit Button -->
                 <div class="pt-4 border-t border-white/5 flex gap-4">
-                    <button type="submit" class="flex-1 py-4 bg-primary text-black font-bold rounded hover:shadow-[0_0_15px_rgba(255,107,0,0.4)] transition-all cursor-pointer text-xs">
+                    <button type="submit" class="flex-1 py-4 bg-primary text-black font-bold rounded hover:shadow-[0_0_15px_rgba(0,163,255,0.4)] transition-all cursor-pointer text-xs">
                         DEPLOY TARGET SCOPE
                     </button>
                     <a href="/" class="px-6 py-4 bg-white/5 border border-white/10 text-on-surface hover:bg-white/10 rounded transition-all no-underline text-center flex items-center justify-center text-xs font-bold">
@@ -99,4 +85,11 @@
         </div>
     </div>
 </div>
+
+<script>
+    window.addEventListener('DOMContentLoaded', function() {
+        // Instantiate the interactive target radar 3D mesh
+        createSpatial3DScene('register-3d-target', 'target');
+    });
+</script>
 {% endblock %}

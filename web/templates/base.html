@@ -14,58 +14,58 @@
             theme: {
                 extend: {
                     "colors": {
-                        "secondary": "#ffe0cc",
-                        "surface-container-low": "#0d0d0d",
+                        "secondary": "#cfe5ff",
+                        "surface-container-low": "#121212",
                         "tertiary-fixed": "#ffdea8",
-                        "secondary-container": "#ff6b00",
-                        "inverse-on-surface": "#0d0d0d",
-                        "surface-dim": "#060606",
-                        "surface-tint": "#ff6b00",
-                        "on-secondary": "#0d0d0d",
-                        "surface-container-high": "rgba(20, 20, 20, 0.9)",
-                        "surface-container": "rgba(10, 10, 10, 0.9)",
-                        "secondary-fixed": "#ff8a00",
-                        "on-secondary-fixed-variant": "#ff6b00",
-                        "on-tertiary": "#0d0d0d",
-                        "outline-variant": "rgba(255, 107, 0, 0.25)",
-                        "on-tertiary-fixed-variant": "#ff6b00",
-                        "on-tertiary-fixed": "#0d0d0d",
-                        "navy-surface": "rgba(10, 10, 10, 0.95)",
-                        "outline": "rgba(255, 107, 0, 0.35)",
-                        "primary": "#ff6b00",
-                        "secondary-fixed-dim": "#ff8a00",
+                        "secondary-container": "#00a3ff",
+                        "inverse-on-surface": "#121212",
+                        "surface-dim": "#0d0d0d",
+                        "surface-tint": "#00a3ff",
+                        "on-secondary": "#121212",
+                        "surface-container-high": "rgba(26, 26, 26, 0.9)",
+                        "surface-container": "rgba(18, 18, 18, 0.9)",
+                        "secondary-fixed": "#00e383",
+                        "on-secondary-fixed-variant": "#00a3ff",
+                        "on-tertiary": "#121212",
+                        "outline-variant": "rgba(0, 163, 255, 0.25)",
+                        "on-tertiary-fixed-variant": "#00a3ff",
+                        "on-tertiary-fixed": "#121212",
+                        "navy-surface": "rgba(30, 34, 45, 0.95)",
+                        "outline": "rgba(0, 163, 255, 0.35)",
+                        "primary": "#00a3ff",
+                        "secondary-fixed-dim": "#00e383",
                         "surface-container-highest": "rgba(30, 30, 30, 0.95)",
-                        "primary-fixed": "#ffdec6",
-                        "background": "#060606",
-                        "primary-fixed-dim": "#ff6b00",
-                        "on-background": "#ffffff",
-                        "error": "#ff3333",
-                        "on-surface-variant": "#999999",
-                        "on-secondary-fixed": "#0d0d0d",
-                        "on-error": "#0d0d0d",
+                        "primary-fixed": "#cfe5ff",
+                        "background": "#0d0d0d",
+                        "primary-fixed-dim": "#00a3ff",
+                        "on-background": "#e5e2e1",
+                        "error": "#FF4B4B",
+                        "on-surface-variant": "#bec7d4",
+                        "on-secondary-fixed": "#121212",
+                        "on-error": "#121212",
                         "security-green": "#00FF94",
                         "inverse-surface": "#ffffff",
-                        "inverse-primary": "#ff6b00",
-                        "on-surface": "#ffffff",
-                        "surface-container-lowest": "#030303",
+                        "inverse-primary": "#00a3ff",
+                        "on-surface": "#e5e2e1",
+                        "surface-container-lowest": "#0e0e0e",
                         "error-container": "#93000a",
-                        "tertiary-container": "#ff6b00",
-                        "tertiary": "#ff8a00",
-                        "deep-charcoal": "#0d0d0d",
+                        "tertiary-container": "#00a3ff",
+                        "tertiary": "#ffba20",
+                        "deep-charcoal": "#141414",
                         "on-primary-container": "#ffffff",
-                        "surface-variant": "rgba(30, 30, 30, 0.9)",
-                        "surface": "#060606",
-                        "cyber-blue": "#ff6b00",
+                        "surface-variant": "rgba(26, 26, 26, 0.9)",
+                        "surface": "#0d0d0d",
+                        "cyber-blue": "#00A3FF",
                         "on-tertiary-container": "#ffffff",
-                        "primary-container": "#ff6b00",
-                        "on-primary": "#0d0d0d",
-                        "surface-bright": "rgba(40, 40, 40, 0.9)",
-                        "warning-amber": "#FFB800",
-                        "critical-red": "#ff3333",
-                        "on-primary-fixed-variant": "#ff6b00",
-                        "on-primary-fixed": "#0d0d0d",
+                        "primary-container": "#00a3ff",
+                        "on-primary": "#121212",
+                        "surface-bright": "rgba(45, 45, 45, 0.9)",
+                        "warning-amber": "#ffba20",
+                        "critical-red": "#FF4B4B",
+                        "on-primary-fixed-variant": "#00a3ff",
+                        "on-primary-fixed": "#121212",
                         "on-error-container": "#ffdad6",
-                        "tertiary-fixed-dim": "#ff8a00",
+                        "tertiary-fixed-dim": "#ffba20",
                         "on-secondary-container": "#ffffff"
                     },
                     "fontFamily": {
@@ -96,70 +96,24 @@
 
         body {
             overflow-x: hidden;
-            background-color: #060606;
+            background-color: #0d0d0d;
             font-family: 'JetBrains Mono', monospace;
             letter-spacing: -0.02em;
         }
 
-        /* Solari Character Split-Flap Style */
-        .solari-char {
-            display: inline-block;
-            position: relative;
-            width: 1.1em;
-            height: 1.4em;
-            background-color: #0c0c0c;
-            border: 1px solid rgba(255, 107, 0, 0.3);
-            text-align: center;
-            line-height: 1.4em;
-            overflow: hidden;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.8), 0 1px 2px rgba(0,0,0,0.9);
-            margin: 0 1px;
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: bold;
-            color: #ff6b00;
-            text-shadow: 0 0 4px rgba(255, 107, 0, 0.6);
-        }
-
-        /* Horizontal Split line in Solari card */
-        .solari-char::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: rgba(0,0,0,0.95);
-            border-bottom: 1px solid rgba(255,107,0,0.15);
-            z-index: 10;
-        }
-
-        /* Hover shake/wobble for active Solari containers */
-        .solari-char.hover-flip {
-            animation: flipDown 0.12s linear;
-            border-color: rgba(255, 107, 0, 0.7);
-            color: #ffffff;
-            text-shadow: 0 0 8px rgba(255, 107, 0, 0.9);
-        }
-
-        @keyframes flipDown {
-            0% { transform: scaleY(1); }
-            50% { transform: scaleY(0); }
-            100% { transform: scaleY(1); }
-        }
-
-        /* Custom tactical orange cursor */
+        /* Custom tactical cyber blue cursor */
         .custom-cursor {
             position: fixed;
             top: 0;
             left: 0;
             width: 6px;
             height: 6px;
-            background-color: #ff6b00;
+            background-color: #00a3ff;
             border-radius: 50% !important;
             pointer-events: none;
             z-index: 99999;
             transform: translate(-50%, -50%);
-            box-shadow: 0 0 10px #ff6b00, 0 0 20px #ff6b00;
+            box-shadow: 0 0 10px #00a3ff, 0 0 20px #00a3ff;
         }
 
         .custom-cursor-trail {
@@ -168,61 +122,61 @@
             left: 0;
             width: 22px;
             height: 22px;
-            border: 1.5px solid rgba(255, 107, 0, 0.6);
+            border: 1.5px solid rgba(0, 163, 255, 0.6);
             border-radius: 50% !important;
             pointer-events: none;
             z-index: 99998;
             transform: translate(-50%, -50%);
             transition: transform 0.05s cubic-bezier(0.25, 1, 0.5, 1);
-            background: rgba(255, 107, 0, 0.04);
-            box-shadow: 0 0 8px rgba(255, 107, 0, 0.2);
+            background: rgba(0, 163, 255, 0.04);
+            box-shadow: 0 0 8px rgba(0, 163, 255, 0.2);
         }
         
         /* KPI Dashboard Glass Card - Sharp Double Outlines */
         .glass-card {
-            background: rgba(18, 18, 18, 0.9) !important;
-            border: 1px solid rgba(255, 107, 0, 0.3) !important;
+            background: rgba(20, 20, 20, 0.85) !important;
+            border: 1px solid rgba(0, 163, 255, 0.2) !important;
             box-shadow: 
-                0 0 0 3px rgba(10, 10, 10, 0.9),
-                0 0 0 4px rgba(255, 107, 0, 0.1),
-                inset 0 0 20px rgba(255, 107, 0, 0.05) !important;
+                0 0 0 3px rgba(10, 10, 10, 0.95),
+                0 0 0 4px rgba(0, 163, 255, 0.08),
+                inset 0 0 20px rgba(0, 163, 255, 0.03) !important;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .glow-hover:hover {
             box-shadow: 
-                0 0 0 3px rgba(10, 10, 10, 0.9),
-                0 0 0 4px rgba(255, 107, 0, 0.3),
-                0 8px 32px rgba(255, 107, 0, 0.15),
-                inset 0 0 25px rgba(255, 107, 0, 0.1) !important;
-            border-color: rgba(255, 107, 0, 0.7) !important;
-            background: rgba(24, 24, 24, 0.95) !important;
+                0 0 0 3px rgba(10, 10, 10, 0.95),
+                0 0 0 4px rgba(0, 163, 255, 0.25),
+                0 8px 32px rgba(0, 163, 255, 0.12),
+                inset 0 0 25px rgba(0, 163, 255, 0.06) !important;
+            border-color: rgba(0, 163, 255, 0.6) !important;
+            background: rgba(26, 26, 26, 0.9) !important;
         }
 
-        /* Matte translucent orange selection tags and highlights */
+        /* Matte translucent blue selection tags and highlights */
         .selected-orange-matte {
-            background: rgba(255, 107, 0, 0.18) !important;
-            border: 1px solid rgba(255, 107, 0, 0.4) !important;
-            color: #ff8a00 !important;
-            box-shadow: inset 0 0 8px rgba(255, 107, 0, 0.05);
-            text-shadow: 0 0 4px rgba(255, 107, 0, 0.2);
+            background: rgba(0, 163, 255, 0.18) !important;
+            border: 1px solid rgba(0, 163, 255, 0.4) !important;
+            color: #00a3ff !important;
+            box-shadow: inset 0 0 8px rgba(0, 163, 255, 0.05);
+            text-shadow: 0 0 4px rgba(0, 163, 255, 0.2);
         }
 
         .critical-glow {
-            box-shadow: 0 0 15px rgba(255, 51, 51, 0.2);
-            border-color: rgba(255, 51, 51, 0.3);
+            box-shadow: 0 0 15px rgba(255, 75, 75, 0.2);
+            border-color: rgba(255, 75, 75, 0.3);
         }
 
         .table-row-hover:hover {
-            background: rgba(255, 107, 0, 0.05);
+            background: rgba(0, 163, 255, 0.05);
         }
         
         /* Grid Background Pattern */
         .grid-bg {
             background-size: 40px 40px;
             background-image: 
-                linear-gradient(to right, rgba(255, 107, 0, 0.015) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 107, 0, 0.015) 1px, transparent 1px);
+                linear-gradient(to right, rgba(0, 163, 255, 0.012) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 163, 255, 0.012) 1px, transparent 1px);
             position: fixed;
             top: 0;
             left: 0;
@@ -259,73 +213,141 @@
             width: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: rgba(10, 10, 10, 0.9);
+            background: rgba(10, 10, 10, 0.95);
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(255, 107, 0, 0.3);
+            background: rgba(0, 163, 255, 0.25);
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 107, 0, 0.6);
+            background: rgba(0, 163, 255, 0.5);
         }
     </style>
     <script>
-        // Global Solari Split-Flap character translation logic
-        const CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>/? ';
-        
-        function parseSolariText(el, textVal) {
-            el.innerHTML = '';
-            el.setAttribute('data-solari-processed', 'true');
+        // Global 3D Spatial scene creation utility
+        function createSpatial3DScene(containerId, type, customColor) {
+            const container = document.getElementById(containerId);
+            if (!container || typeof THREE === 'undefined') return;
+
+            const w = container.clientWidth || 250;
+            const h = container.clientHeight || 250;
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 100);
             
-            for (let i = 0; i < textVal.length; i++) {
-                const charSpan = document.createElement('span');
-                charSpan.className = 'solari-char';
-                
-                if (textVal[i] === ' ') {
-                    charSpan.style.backgroundColor = 'transparent';
-                    charSpan.style.borderColor = 'transparent';
-                    charSpan.style.boxShadow = 'none';
-                }
-                charSpan.textContent = textVal[i];
-                
-                // Mouseenter cursor cycle animation trigger
-                if (textVal[i] !== ' ') {
-                    const originalChar = textVal[i];
-                    charSpan.addEventListener('mouseenter', () => {
-                        if (!charSpan.classList.contains('hover-flip')) {
-                            charSpan.classList.add('hover-flip');
-                            let cycles = 0;
-                            const interval = setInterval(() => {
-                                charSpan.textContent = CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)];
-                                cycles++;
-                                if (cycles > 4) {
-                                    clearInterval(interval);
-                                    charSpan.textContent = originalChar;
-                                }
-                            }, 45);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(w, h);
+            container.appendChild(renderer.domElement);
 
-                            setTimeout(() => {
-                                charSpan.classList.remove('hover-flip');
-                            }, 300);
-                        }
-                    });
+            const colorHex = customColor || 0x00a3ff;
+            let meshObject;
+
+            // Geometry dispatcher matching page context
+            if (type === 'target') {
+                // Radar grid/target for verification and scans
+                const group = new THREE.Group();
+                const ringGeom = new THREE.RingGeometry(0.8, 1.0, 30);
+                const ringMat = new THREE.MeshBasicMaterial({ color: colorHex, side: THREE.DoubleSide, wireframe: true });
+                const ring = new THREE.Mesh(ringGeom, ringMat);
+                group.add(ring);
+
+                const centerGeom = new THREE.SphereGeometry(0.2, 8, 8);
+                const centerMat = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
+                const center = new THREE.Mesh(centerGeom, centerMat);
+                group.add(center);
+
+                meshObject = group;
+            } else if (type === 'lock') {
+                // Cryptographic security lock for audits & vault status
+                const group = new THREE.Group();
+                const shackleGeom = new THREE.TorusGeometry(0.5, 0.15, 8, 24, Math.PI);
+                const shackleMat = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
+                const shackle = new THREE.Mesh(shackleGeom, shackleMat);
+                shackle.position.y = 0.3;
+                group.add(shackle);
+
+                const bodyGeom = new THREE.BoxGeometry(1.0, 0.8, 0.5);
+                const bodyMat = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
+                const body = new THREE.Mesh(bodyGeom, bodyMat);
+                body.position.y = -0.3;
+                group.add(body);
+
+                meshObject = group;
+            } else if (type === 'network') {
+                // Linked nodes for threat matrix feed
+                const group = new THREE.Group();
+                const nodesCount = 6;
+                const nodeGeom = new THREE.SphereGeometry(0.15, 8, 8);
+                const nodeMat = new THREE.MeshPhongMaterial({ color: colorHex });
+                
+                for (let i = 0; i < nodesCount; i++) {
+                    const node = new THREE.Mesh(nodeGeom, nodeMat);
+                    node.position.set(
+                        (Math.random() - 0.5) * 1.5,
+                        (Math.random() - 0.5) * 1.5,
+                        (Math.random() - 0.5) * 1.5
+                    );
+                    group.add(node);
                 }
-                el.appendChild(charSpan);
+                meshObject = group;
+            } else if (type === 'cube') {
+                // Cybercube for reports, audits, and configurations
+                const geometry = new THREE.BoxGeometry(1.0, 1.0, 1.0);
+                const material = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true });
+                meshObject = new THREE.Mesh(geometry, material);
+            } else {
+                // Default: Shield
+                const group = new THREE.Group();
+                const geometry = new THREE.IcosahedronGeometry(1.1, 1);
+                const material = new THREE.MeshPhongMaterial({ color: colorHex, wireframe: true, transparent: true, opacity: 0.7 });
+                const shield = new THREE.Mesh(geometry, material);
+                group.add(shield);
+
+                const core = new THREE.Mesh(new THREE.IcosahedronGeometry(0.6, 0), new THREE.MeshPhongMaterial({ color: colorHex, transparent: true, opacity: 0.15 }));
+                group.add(core);
+
+                meshObject = group;
             }
-        }
 
-        function initAllSolariElements() {
-            // Target specific title headers, big metrics, and table headers
-            const targets = document.querySelectorAll('.solari-text, h2, h3, .metric-value, .solari-header');
-            targets.forEach(el => {
-                // Safeguard: Skip any elements inside sidebar nav or top header
-                if (el.closest('nav') || el.closest('header') || el.closest('.sidebar-links')) {
-                    return;
-                }
-                if (el.children.length === 0 && el.textContent.trim().length > 0 && !el.hasAttribute('data-solari-processed')) {
-                    const originalVal = el.textContent.trim();
-                    el.setAttribute('data-text', originalVal);
-                    parseSolariText(el, originalVal);
-                }
+            scene.add(meshObject);
+
+            // Lighting setup
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
+            scene.add(ambientLight);
+            
+            const pointLight = new THREE.PointLight(colorHex, 2, 50);
+            pointLight.position.set(5, 5, 5);
+            scene.add(pointLight);
+
+            camera.position.z = 2.6;
+
+            // Interactive rotation dynamics
+            let mouseX = 0, mouseY = 0;
+            document.addEventListener('mousemove', (e) => {
+                const rect = container.getBoundingClientRect();
+                const x = e.clientX - rect.left - (w / 2);
+                const y = e.clientY - rect.top - (h / 2);
+                mouseX = (x / w) * 0.6;
+                mouseY = (y / h) * 0.6;
+            });
+
+            function render() {
+                requestAnimationFrame(render);
+                meshObject.rotation.y += 0.006;
+                meshObject.rotation.x += 0.003;
+
+                // Move toward cursor coords
+                meshObject.rotation.y += (mouseX - meshObject.rotation.y) * 0.05;
+                meshObject.rotation.x += (mouseY - meshObject.rotation.x) * 0.05;
+
+                renderer.render(scene, camera);
+            }
+            render();
+
+            window.addEventListener('resize', () => {
+                const currentW = container.clientWidth;
+                const currentH = container.clientHeight;
+                renderer.setSize(currentW, currentH);
+                camera.aspect = currentW / currentH;
+                camera.updateProjectionMatrix();
             });
         }
 
@@ -338,10 +360,7 @@
                 }, 1400);
             }
             
-            // Convert page texts into interactive Solari split-flap tiles
-            initAllSolariElements();
-            
-            // Highlight active sidebar links in matte translucent orange
+            // Highlight active sidebar links in matte translucent blue
             const currentPath = window.location.pathname;
             document.querySelectorAll('.sidebar-links a').forEach(link => {
                 if (link.getAttribute('href') === currentPath) {
@@ -350,7 +369,7 @@
                 }
             });
 
-            // Bind Tactical Orange Cursor
+            // Bind Tactical Cyber Blue Cursor
             const cursor = document.getElementById('custom-cursor');
             const trail = document.getElementById('custom-cursor-trail');
             
@@ -372,14 +391,14 @@
                     el.addEventListener('mouseenter', () => {
                         trail.style.width = '32px';
                         trail.style.height = '32px';
-                        trail.style.borderColor = '#ff8a00';
-                        cursor.style.backgroundColor = '#ff8a00';
+                        trail.style.borderColor = '#00e383';
+                        cursor.style.backgroundColor = '#00e383';
                     });
                     el.addEventListener('mouseleave', () => {
                         trail.style.width = '22px';
                         trail.style.height = '22px';
-                        trail.style.borderColor = 'rgba(255, 107, 0, 0.5)';
-                        cursor.style.backgroundColor = '#ff6b00';
+                        trail.style.borderColor = 'rgba(0, 163, 255, 0.5)';
+                        cursor.style.backgroundColor = '#00a3ff';
                     });
                 });
             }
@@ -395,18 +414,18 @@
     </script>
 </head>
 <body class="bg-background text-on-surface min-h-screen flex selection:bg-primary selection:text-black">
-    <!-- Tactical Orange Cursor -->
+    <!-- Tactical Cursor -->
     <div id="custom-cursor" class="custom-cursor hidden md:block"></div>
     <div id="custom-cursor-trail" class="custom-cursor-trail hidden md:block"></div>
 
-    <!-- Starry Night interactive Background Canvas -->
+    <!-- Starry Night Background Canvas -->
     <canvas id="neural-bg-canvas"></canvas>
 
-    <!-- Background Grid -->
+    <!-- Background Grid Pattern -->
     <div class="grid-bg"></div>
 
     <!-- Decryption Loader Screen -->
-    <div id="preloader" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #050505; z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.4s ease, visibility 0.4s ease;">
+    <div id="preloader" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0b0b0b; z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.4s ease, visibility 0.4s ease;">
         <div style="text-align: center;" class="relative">
             <!-- Hex ring animation -->
             <div class="relative w-36 h-36 mx-auto mb-6 flex items-center justify-center">
@@ -417,8 +436,8 @@
                 <span id="loader-percentage" class="font-code-sm text-lg text-primary font-bold tracking-widest">00%</span>
             </div>
             
-            <div style="color: #ffffff; font-family: 'JetBrains Mono', monospace; font-size: 1.25rem; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase;" class="dotted-text">
-                AEGIS <span class="text-primary">ORANGE</span>
+            <div style="color: #ffffff; font-family: 'JetBrains Mono', monospace; font-size: 1.25rem; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase;">
+                AEGIS <span class="text-primary">BLUE</span>
             </div>
             <!-- Rapid decryption log output -->
             <div id="decryption-log" class="mt-3 font-code-sm text-xs text-primary/60 h-4 uppercase tracking-wider">
@@ -429,7 +448,7 @@
 
     {% if current_user.is_authenticated %}
         <!-- SideNavBar -->
-        <nav class="fixed h-full w-[280px] left-0 top-0 bg-[#090909] border-r border-primary/20 shadow-[4px_0_24px_rgba(255,107,0,0.05)] flex flex-col py-6 px-4 z-50 overflow-y-auto">
+        <nav class="fixed h-full w-[280px] left-0 top-0 bg-[#0c0c0c] border-r border-primary/20 shadow-[4px_0_24px_rgba(0,163,255,0.03)] flex flex-col py-6 px-4 z-50 overflow-y-auto">
             <!-- Header -->
             <div class="flex items-center gap-3 mb-8 px-2">
                 <div class="w-10 h-10 bg-deep-charcoal border border-primary/20 flex items-center justify-center overflow-hidden relative group">
@@ -437,8 +456,8 @@
                     <div class="absolute inset-0 bg-primary/10 mix-blend-overlay"></div>
                 </div>
                 <div>
-                    <h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight leading-none text-[16px] dotted-text">AEGIS</h1>
-                    <p class="font-code-sm text-xs text-primary flex items-center gap-1 mt-1">
+                    <h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight leading-none text-[16px]">AEGIS</h1>
+                    <p class="font-code-sm text-[10px] text-primary flex items-center gap-1 mt-1">
                         <span class="w-1.5 h-1.5 bg-primary animate-pulse" style="border-radius: 50% !important;"></span>
                         VIGILANCE ACTIVE
                     </p>
@@ -465,7 +484,7 @@
                     <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/requested-assessments">
                         <span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">inbox</span>
                         <span class="font-label-caps text-label-caps tracking-wider text-xs flex-1">Approval Inbox</span>
-                        <span class="badge" id="sidebar-pending-badge" style="background: #ff6b00; color: #121212; padding: 0.15rem 0.4rem; font-size: 0.7rem; font-weight: bold; margin-left: auto; {% if pending_count == 0 %}display:none;{% endif %}">{{ pending_count }}</span>
+                        <span class="badge" id="sidebar-pending-badge" style="background: #00a3ff; color: #121212; padding: 0.15rem 0.4rem; font-size: 0.7rem; font-weight: bold; margin-left: auto; {% if pending_count == 0 %}display:none;{% endif %}">{{ pending_count }}</span>
                     </a>
                 {% endif %}
                 <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group duration-200 border-l-4 border-transparent" href="/threat-intelligence">
@@ -523,7 +542,7 @@
             <!-- TopAppBar -->
             <header class="fixed top-0 right-0 w-[calc(100%-280px)] z-40 bg-background/90 backdrop-blur-md border-b border-primary/20 flex justify-between items-center h-16 px-6">
                 <div class="flex items-center gap-6">
-                    <span class="font-label-caps text-label-caps text-primary text-xs dotted-text animate-pulse">SYS_UPLINK: ONLINE</span>
+                    <span class="font-label-caps text-label-caps text-primary text-xs animate-pulse">SYS_UPLINK: ONLINE</span>
                 </div>
                 
                 <!-- Actions -->
@@ -578,7 +597,7 @@
         </main>
     </div>
 
-    <!-- Starry Night interactive Background Canvas -->
+    <!-- Starry Night Background Canvas -->
     <script>
         (function() {
             const canvas = document.getElementById('neural-bg-canvas');
@@ -592,7 +611,6 @@
                 height = canvas.height = window.innerHeight;
             });
 
-            // Particle Star constructor
             const stars = [];
             const starCount = 120;
             let mouseX = -9999;
@@ -618,11 +636,9 @@
                 }
 
                 update() {
-                    // Drift
                     this.x += this.vx;
                     this.y += this.vy;
 
-                    // Gravity pull toward cursor
                     if (mouseX !== -9999) {
                         const dx = mouseX - this.x;
                         const dy = mouseY - this.y;
@@ -634,7 +650,6 @@
                         }
                     }
 
-                    // Bounds check
                     if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
                         this.reset();
                     }
@@ -643,7 +658,7 @@
                 draw() {
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(255, 107, 0, ${this.alpha})`;
+                    ctx.fillStyle = `rgba(0, 163, 255, ${this.alpha})`;
                     ctx.fill();
                 }
             }
@@ -655,20 +670,18 @@
             function animate() {
                 ctx.clearRect(0, 0, width, height);
 
-                // Draw starry night and draw tiny interactive constellation lines near the cursor
                 for (let i = 0; i < stars.length; i++) {
                     const s1 = stars[i];
                     s1.update();
                     s1.draw();
 
-                    // Optional tiny interactive constellation lines near cursor
                     if (mouseX !== -9999) {
                         const distToMouse = Math.hypot(mouseX - s1.x, mouseY - s1.y);
                         if (distToMouse < 120) {
                             ctx.beginPath();
                             ctx.moveTo(s1.x, s1.y);
                             ctx.lineTo(mouseX, mouseY);
-                            ctx.strokeStyle = `rgba(255, 107, 0, ${0.08 * (1 - distToMouse / 120)})`;
+                            ctx.strokeStyle = `rgba(0, 163, 255, ${0.08 * (1 - distToMouse / 120)})`;
                             ctx.stroke();
                         }
                     }

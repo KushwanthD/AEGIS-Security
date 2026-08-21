@@ -1,100 +1,123 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="glass-card rounded-xl p-8 border border-primary/20 relative animate-fade-slide">
-    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
-    
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(255,107,0,0.15)]">
-                <span class="material-symbols-outlined">supervisor_account</span>
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-6 animate-fade-slide">
+    <!-- Left Column (col-span 3) - User List -->
+    <div class="lg:col-span-3 space-y-6">
+        <div class="glass-card p-8 border border-primary/20 relative">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
+            
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(0,163,255,0.15)]">
+                        <span class="material-symbols-outlined">supervisor_account</span>
+                    </div>
+                    <div>
+                        <h2 class="text-base font-bold text-white">&gt; User Management</h2>
+                        <p class="text-xs text-on-surface-variant mt-1">Superadmin account scope panel.</p>
+                    </div>
+                </div>
+                <div>
+                    <span class="inline-flex items-center px-3 py-1 bg-error/15 text-error border border-error/30 text-[10px] font-bold">
+                        SUPERADMIN_ONLY
+                    </span>
+                </div>
             </div>
-            <div>
-                <h2 class="text-base font-bold text-white dotted-text">&gt; User Management</h2>
-                <p class="text-xs text-on-surface-variant mt-1">Superadmin account scope panel.</p>
+
+            <!-- Search bar -->
+            <div class="mb-6 max-w-sm">
+                <label class="text-[10px] text-on-surface-variant font-bold block mb-2 uppercase tracking-wider">&gt; Search Accounts:</label>
+                <input id="userSearch" type="text" placeholder="Search by username, email, or role..." oninput="filterUsers()" class="w-full bg-[#080808] border border-primary/20 rounded py-2 px-3 text-xs text-primary focus:border-primary focus:ring-0 outline-none font-code-sm">
             </div>
-        </div>
-        <div>
-            <span class="inline-flex items-center px-3 py-1 rounded bg-error/15 text-error border border-error/30 text-[10px] font-bold">
-                SUPERADMIN_ONLY
-            </span>
+
+            <div class="overflow-x-auto">
+                <table id="userTable" class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-primary/10 text-on-surface-variant font-label-caps text-xs">
+                            <th class="pb-3 px-4">#</th>
+                            <th class="pb-3 px-4">Username</th>
+                            <th class="pb-3 px-4">Email</th>
+                            <th class="pb-3 px-4">Role</th>
+                            <th class="pb-3 px-4">Status</th>
+                            <th class="pb-3 px-4">Created</th>
+                            <th class="pb-3 px-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5 text-xs">
+                        {% for u in users %}
+                        <tr class="user-row table-row-hover transition-colors">
+                            <td class="py-4 px-4 font-code-sm text-on-surface-variant">{{ u.id }}</td>
+                            <td class="py-4 px-4">
+                                <span class="font-bold text-white">{{ u.username }}</span>
+                                {% if u.username == 'Kushwanth' %}
+                                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[8px] bg-primary text-black font-extrabold uppercase font-code-sm">YOU</span>
+                                {% endif %}
+                                {% if u.username == 'admin' %}
+                                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[8px] bg-white/5 border border-white/10 text-on-surface-variant font-bold uppercase">demo</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-4 px-4 text-on-surface-variant font-code-sm">{{ u.email }}</td>
+                            <td class="py-4 px-4">
+                                {% if u.role == 'Superadmin' %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-primary/10 text-primary font-extrabold border border-primary/20 uppercase font-code-sm">{{ u.role }}</span>
+                                {% elif u.role == 'Admin' %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-error/10 text-error border border-error/20 font-bold uppercase font-code-sm">{{ u.role }}</span>
+                                {% elif u.role == 'Analyst' %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-warning-amber/10 text-warning-amber border border-warning-amber/20 font-bold uppercase font-code-sm">{{ u.role }}</span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-security-green/10 text-security-green border border-security-green/20 uppercase font-code-sm">{{ u.role }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-4 px-4">
+                                {% if u.is_active %}
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-security-green/10 text-security-green font-bold border border-security-green/20">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-security-green"></span>
+                                        Active
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-error/10 text-error border border-error/20 font-bold">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                                        Inactive
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="py-4 px-4 text-on-surface-variant font-code-sm">
+                                {{ u.created_at.strftime('%Y-%m-%d') if u.created_at else '—' }}
+                            </td>
+                            <td class="py-4 px-4">
+                                {% if u.username != 'Kushwanth' %}
+                                <form method="POST" action="/delete-user/{{ u.id }}" onsubmit="return confirm('Delete user {{ u.username }}? This cannot be undone.');" class="m-0">
+                                    <button type="submit" class="px-2.5 py-1 bg-primary text-black rounded font-label-caps text-[9px] hover:bg-primary/80 transition-all font-bold cursor-pointer">
+                                        [REMOVE]
+                                    </button>
+                                </form>
+                                {% else %}
+                                <span class="text-on-surface-variant font-semibold">Protected</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <!-- Search bar -->
-    <div class="mb-6 max-w-sm">
-        <label class="text-[10px] text-on-surface-variant font-bold block mb-2 uppercase tracking-wider">&gt; Search Accounts:</label>
-        <input id="userSearch" type="text" placeholder="Search by username, email, or role..." oninput="filterUsers()" class="w-full bg-[#080808] border border-primary/20 rounded py-2 px-3 text-xs text-primary focus:border-primary focus:ring-0 outline-none font-code-sm">
-    </div>
-
-    <div class="overflow-x-auto">
-        <table id="userTable" class="w-full text-left border-collapse">
-            <thead>
-                <tr class="border-b border-primary/10 text-on-surface-variant font-label-caps text-xs">
-                    <th class="pb-3 px-4">#</th>
-                    <th class="pb-3 px-4">Username</th>
-                    <th class="pb-3 px-4">Email</th>
-                    <th class="pb-3 px-4">Role</th>
-                    <th class="pb-3 px-4">Status</th>
-                    <th class="pb-3 px-4">Created</th>
-                    <th class="pb-3 px-4">Action</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-white/5 text-xs">
-                {% for u in users %}
-                <tr class="user-row table-row-hover transition-colors">
-                    <td class="py-4 px-4 font-code-sm text-on-surface-variant">{{ u.id }}</td>
-                    <td class="py-4 px-4">
-                        <span class="font-bold text-white">{{ u.username }}</span>
-                        {% if u.username == 'Kushwanth' %}
-                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[8px] bg-primary text-black font-extrabold uppercase">YOU</span>
-                        {% endif %}
-                        {% if u.username == 'admin' %}
-                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[8px] bg-white/5 border border-white/10 text-on-surface-variant font-bold uppercase">demo</span>
-                        {% endif %}
-                    </td>
-                    <td class="py-4 px-4 text-on-surface-variant font-code-sm">{{ u.email }}</td>
-                    <td class="py-4 px-4">
-                        {% if u.role == 'Superadmin' %}
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-primary text-black font-extrabold border border-primary/20 uppercase">{{ u.role }}</span>
-                        {% elif u.role == 'Admin' %}
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-error/10 text-error border border-error/20 font-bold uppercase">{{ u.role }}</span>
-                        {% elif u.role == 'Analyst' %}
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-warning-amber/10 text-warning-amber border border-warning-amber/20 font-bold uppercase">{{ u.role }}</span>
-                        {% else %}
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-security-green/10 text-security-green border border-security-green/20 uppercase">{{ u.role }}</span>
-                        {% endif %}
-                    </td>
-                    <td class="py-4 px-4">
-                        {% if u.is_active %}
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-security-green/10 text-security-green font-bold border border-security-green/20">
-                                <span class="w-1 h-1 rounded-full bg-security-green"></span>
-                                Active
-                            </span>
-                        {% else %}
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-error/10 text-error border border-error/20 font-bold">
-                                <span class="w-1 h-1 rounded-full bg-error"></span>
-                                Inactive
-                            </span>
-                        {% endif %}
-                    </td>
-                    <td class="py-4 px-4 text-on-surface-variant font-code-sm">
-                        {{ u.created_at.strftime('%Y-%m-%d') if u.created_at else '—' }}
-                    </td>
-                    <td class="py-4 px-4">
-                        {% if u.username != 'Kushwanth' %}
-                        <form method="POST" action="/delete-user/{{ u.id }}" onsubmit="return confirm('Delete user {{ u.username }}? This cannot be undone.');" class="m-0">
-                            <button type="submit" class="px-2.5 py-1 bg-primary text-black rounded font-label-caps text-[9px] hover:bg-primary/80 transition-all font-bold cursor-pointer">
-                                [REMOVE]
-                            </button>
-                        </form>
-                        {% else %}
-                        <span class="text-on-surface-variant font-semibold">Protected</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <!-- Right Column (col-span 1) - Spatial 3D Vault Lock -->
+    <div class="space-y-6">
+        <div class="glass-card p-6 border border-primary/20 relative flex flex-col items-center justify-center overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
+            <h3 class="font-headline-sm text-xs text-white uppercase tracking-wider mb-2 font-bold w-full text-left">&gt; SPATIAL_USER_LOCK</h3>
+            
+            <div id="user-3d-lock" class="w-full aspect-square max-w-[240px] bg-black/20 border border-primary/10 flex items-center justify-center my-4 overflow-hidden"></div>
+            
+            <div class="w-full text-center space-y-2 font-code-sm text-[11px] text-on-surface-variant border-t border-white/5 pt-4">
+                <div class="flex items-center justify-between">
+                    <span>ACCOUNTS:</span>
+                    <span class="text-primary font-bold">MUT_SECURED</span>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -107,5 +130,10 @@
             row.style.display = text.includes(query) ? '' : 'none';
         });
     }
+
+    window.addEventListener('DOMContentLoaded', function() {
+        // Instantiate the interactive cryptographic secure lock 3D mesh
+        createSpatial3DScene('user-3d-lock', 'lock');
+    });
 </script>
 {% endblock %}

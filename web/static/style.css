@@ -1,16 +1,16 @@
 :root {
-    /* Pure Black & Tactical Orange Theme root tokens */
-    --background: #080808;
-    --bg-card: #121212;
-    --border-color: rgba(255, 107, 0, 0.15);
+    /* Cyber Blue & Immersive Dark Theme root tokens */
+    --background: #0d0d0d;
+    --bg-card: #141414;
+    --border-color: rgba(0, 163, 255, 0.15);
     
-    --primary: #ff6b00;
-    --accent: #ff8a00;
-    --accent-yellow: #FFB800;
+    --primary: #00a3ff;
+    --accent: #00e383;
+    --accent-yellow: #ffba20;
     --success: #00FF94;
-    --critical: #ff3333;
+    --critical: #FF4B4B;
     
-    --text-primary: #ffffff;
-    --text-secondary: #aaaaaa;
-    --preloader-bg: #050505;
+    --text-primary: #e5e2e1;
+    --text-secondary: #bec7d4;
+    --preloader-bg: #0b0b0b;
 }

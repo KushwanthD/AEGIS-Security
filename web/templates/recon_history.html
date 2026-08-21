@@ -1,64 +1,93 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="glass-card rounded-xl p-8 border border-primary/20 relative animate-fade-slide">
-    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
-    
-    <div class="flex items-center gap-3 mb-4">
-        <div class="w-10 h-10 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(255,107,0,0.15)]">
-            <span class="material-symbols-outlined">search</span>
-        </div>
-        <h2 class="text-base font-bold text-white dotted-text">&gt; Reconnaissance Logs</h2>
-    </div>
-    <p class="text-xs text-on-surface-variant mb-6 leading-relaxed">List of all executed passive DNS, metadata footprinting, and DMARC compliance evaluation runs.</p>
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-6 animate-fade-slide">
+    <!-- Left Column (col-span 3) - Recon Table -->
+    <div class="lg:col-span-3 space-y-6">
+        <div class="glass-card p-8 border border-primary/20 relative">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
+            
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(0,163,255,0.15)]">
+                    <span class="material-symbols-outlined">search</span>
+                </div>
+                <h2 class="text-base font-bold text-white">&gt; Reconnaissance Logs</h2>
+            </div>
+            <p class="text-xs text-on-surface-variant mb-6 leading-relaxed">List of all executed passive DNS, metadata footprinting, and DMARC compliance evaluation runs.</p>
 
-    {% if not executions %}
-        <p class="text-xs text-on-surface-variant">No reconnaissance runs have been performed yet.</p>
-    {% else %}
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
-                <thead>
-                    <tr class="border-b border-primary/10 text-on-surface-variant font-label-caps">
-                        <th class="pb-3 px-4">Execution ID</th>
-                        <th class="pb-3 px-4">Assessment ID</th>
-                        <th class="pb-3 px-4">Status</th>
-                        <th class="pb-3 px-4">Started At</th>
-                        <th class="pb-3 px-4">Completed At</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-white/5">
-                    {% for ex in executions %}
-                        <tr class="table-row-hover transition-colors">
-                            <td class="py-4 px-4">
-                                <a href="/recon-results/{{ ex[0] }}" class="font-bold text-primary hover:underline font-code-sm">
-                                    #{{ ex[0] }}
-                                </a>
-                            </td>
-                            <td class="py-4 px-4 text-white font-code-sm">Assessment #{{ ex[1] }}</td>
-                            <td class="py-4 px-4">
-                                {% if ex[2] == 'COMPLETED' %}
-                                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-security-green/10 text-security-green border border-security-green/20">
-                                        <span class="w-1 h-1 rounded-full bg-security-green"></span>
-                                        Completed
-                                    </span>
-                                {% elif ex[2] == 'RUNNING' %}
-                                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-warning-amber/10 text-warning-amber border border-warning-amber/20">
-                                        <span class="w-1 h-1 rounded-full bg-warning-amber animate-pulse"></span>
-                                        Running
-                                    </span>
-                                {% else %}
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded bg-error/10 text-error border border-error/20">
-                                        {{ ex[2] }}
-                                    </span>
-                                {% endif %}
-                            </td>
-                            <td class="py-4 px-4 text-on-surface-variant font-code-sm">{{ ex[3] }}</td>
-                            <td class="py-4 px-4 text-on-surface-variant font-code-sm">{{ ex[4] or 'N/A' }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            {% if not executions %}
+                <p class="text-xs text-on-surface-variant">No reconnaissance runs have been performed yet.</p>
+            {% else %}
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="border-b border-primary/10 text-on-surface-variant font-label-caps">
+                                <th class="pb-3 px-4">Execution ID</th>
+                                <th class="pb-3 px-4">Assessment ID</th>
+                                <th class="pb-3 px-4">Status</th>
+                                <th class="pb-3 px-4">Started At</th>
+                                <th class="pb-3 px-4">Completed At</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            {% for ex in executions %}
+                                <tr class="table-row-hover transition-colors">
+                                    <td class="py-4 px-4">
+                                        <a href="/recon-results/{{ ex[0] }}" class="font-bold text-primary hover:underline font-code-sm">
+                                            #{{ ex[0] }}
+                                        </a>
+                                    </td>
+                                    <td class="py-4 px-4 text-white font-code-sm">Assessment #{{ ex[1] }}</td>
+                                    <td class="py-4 px-4">
+                                        {% if ex[2] == 'COMPLETED' %}
+                                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-security-green/10 text-security-green border border-security-green/20">
+                                                <span class="w-1 h-1 rounded-full bg-security-green"></span>
+                                                Completed
+                                            </span>
+                                        {% elif ex[2] == 'RUNNING' %}
+                                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-warning-amber/10 text-warning-amber border border-warning-amber/20">
+                                                <span class="w-1 h-1 rounded-full bg-warning-amber animate-pulse"></span>
+                                                Running
+                                            </span>
+                                        {% else %}
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded bg-error/10 text-error border border-error/20">
+                                                {{ ex[2] }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-4 px-4 text-on-surface-variant font-code-sm">{{ ex[3] }}</td>
+                                    <td class="py-4 px-4 text-on-surface-variant font-code-sm">{{ ex[4] or 'N/A' }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
         </div>
-    {% endif %}
+    </div>
+
+    <!-- Right Column (col-span 1) - Spatial 3D Radar Target -->
+    <div class="space-y-6">
+        <div class="glass-card p-6 border border-primary/20 relative flex flex-col items-center justify-center overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
+            <h3 class="font-headline-sm text-xs text-white uppercase tracking-wider mb-2 font-bold w-full text-left">&gt; SPATIAL_RECON_MAP</h3>
+            
+            <div id="recon-3d-target" class="w-full aspect-square max-w-[240px] bg-black/20 border border-primary/10 flex items-center justify-center my-4 overflow-hidden"></div>
+            
+            <div class="w-full text-center space-y-2 font-code-sm text-[11px] text-on-surface-variant border-t border-white/5 pt-4">
+                <div class="flex items-center justify-between">
+                    <span>RADAR_SCAN:</span>
+                    <span class="text-primary font-bold">READY</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    window.addEventListener('DOMContentLoaded', function() {
+        // Instantiate the interactive target radar 3D mesh
+        createSpatial3DScene('recon-3d-target', 'target');
+    });
+</script>
 {% endblock %}

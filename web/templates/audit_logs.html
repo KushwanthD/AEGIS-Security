@@ -1,52 +1,81 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="glass-card rounded-xl p-8 border border-primary/20 relative animate-fade-slide">
-    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
-    
-    <div class="flex items-center gap-3 mb-4">
-        <div class="w-10 h-10 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(255,107,0,0.15)]">
-            <span class="material-symbols-outlined">lock</span>
-        </div>
-        <h2 class="text-base font-bold text-white dotted-text">&gt; System Audit Trail Logs</h2>
-    </div>
-    <p class="text-xs text-on-surface-variant mb-6 leading-relaxed">Chronological logs tracking ownership verification, scan operations, report generations, and admin status updates.</p>
-
-    {% if not logs %}
-        <p class="text-xs text-on-surface-variant">No system logs exist.</p>
-    {% else %}
-        <!-- Search Input Bar -->
-        <div class="mb-6 max-w-sm">
-            <label class="text-[10px] text-on-surface-variant font-bold block mb-2 uppercase tracking-wider">&gt; Search Audit Trail:</label>
-            <input type="text" id="logSearch" placeholder="Search audit logs..." onkeyup="filterLogs()" class="w-full bg-[#080808] border border-primary/20 rounded py-2 px-3 text-xs text-primary focus:border-primary focus:ring-0 outline-none font-code-sm">
-        </div>
-
-        <div id="logsContainer" class="flex flex-col gap-3">
-            {% for log in logs %}
-                <div class="log-item p-4 bg-white/5 border border-primary/10 rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs table-row-hover transition-colors">
-                    <div class="flex items-start md:items-center gap-3">
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-primary/10 text-primary border border-primary/20 font-code-sm font-bold uppercase shrink-0">
-                            {{ log[2] }}
-                        </span>
-                        <span class="text-white leading-relaxed font-code-sm font-medium">{{ log[3] }}</span>
-                    </div>
-                    <span class="text-on-surface-variant font-code-sm text-[10px] shrink-0 text-right">
-                        Assessment ID: {{ log[1] or 'Global' }} | {{ log[4] }}
-                    </span>
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-6 animate-fade-slide">
+    <!-- Left Column (col-span 3) - Audit Logs -->
+    <div class="lg:col-span-3 space-y-6">
+        <div class="glass-card p-8 border border-primary/20 relative">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
+            
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(0,163,255,0.15)]">
+                    <span class="material-symbols-outlined">lock</span>
                 </div>
-            {% endfor %}
-        </div>
+                <h2 class="text-base font-bold text-white">&gt; System Audit Trail Logs</h2>
+            </div>
+            <p class="text-xs text-on-surface-variant mb-6 leading-relaxed">Chronological logs tracking ownership verification, scan operations, report generations, and admin status updates.</p>
 
-        <script>
-            function filterLogs() {
-                const query = document.getElementById('logSearch').value.toLowerCase();
-                const items = document.querySelectorAll('#logsContainer .log-item');
-                items.forEach(item => {
-                    const text = item.textContent.toLowerCase();
-                    item.style.display = text.includes(query) ? 'flex' : 'none';
-                });
-            }
-        </script>
-    {% endif %}
+            {% if not logs %}
+                <p class="text-xs text-on-surface-variant">No system logs exist.</p>
+            {% else %}
+                <!-- Search Input Bar -->
+                <div class="mb-6 max-w-sm">
+                    <label class="text-[10px] text-on-surface-variant font-bold block mb-2 uppercase tracking-wider">&gt; Search Audit Trail:</label>
+                    <input type="text" id="logSearch" placeholder="Search audit logs..." onkeyup="filterLogs()" class="w-full bg-[#080808] border border-primary/20 rounded py-2 px-3 text-xs text-primary focus:border-primary focus:ring-0 outline-none font-code-sm">
+                </div>
+
+                <div id="logsContainer" class="flex flex-col gap-3">
+                    {% for log in logs %}
+                        <div class="log-item p-4 bg-white/5 border border-primary/10 rounded flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs table-row-hover transition-colors">
+                            <div class="flex items-start md:items-center gap-3">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-primary/10 text-primary border border-primary/20 font-code-sm font-bold uppercase shrink-0">
+                                    {{ log[2] }}
+                                </span>
+                                <span class="text-white leading-relaxed font-code-sm font-medium">{{ log[3] }}</span>
+                            </div>
+                            <span class="text-on-surface-variant font-code-sm text-[10px] shrink-0 text-right">
+                                Assessment ID: {{ log[1] or 'Global' }} | {{ log[4] }}
+                            </span>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <script>
+                    function filterLogs() {
+                        const query = document.getElementById('logSearch').value.toLowerCase();
+                        const items = document.querySelectorAll('#logsContainer .log-item');
+                        items.forEach(item => {
+                            const text = item.textContent.toLowerCase();
+                            item.style.display = text.includes(query) ? 'flex' : 'none';
+                        });
+                    }
+                </script>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Right Column (col-span 1) - Spatial 3D Vault Lock -->
+    <div class="space-y-6">
+        <div class="glass-card p-6 border border-primary/20 relative flex flex-col items-center justify-center overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
+            <h3 class="font-headline-sm text-xs text-white uppercase tracking-wider mb-2 font-bold w-full text-left">&gt; SPATIAL_AUDIT_LOCK</h3>
+            
+            <div id="audit-3d-lock" class="w-full aspect-square max-w-[240px] bg-black/20 border border-primary/10 flex items-center justify-center my-4 overflow-hidden"></div>
+            
+            <div class="w-full text-center space-y-2 font-code-sm text-[11px] text-on-surface-variant border-t border-white/5 pt-4">
+                <div class="flex items-center justify-between">
+                    <span>AUDIT_LOGS:</span>
+                    <span class="text-primary font-bold">MONITORED</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    window.addEventListener('DOMContentLoaded', function() {
+        // Instantiate the interactive cryptographic secure lock 3D mesh
+        createSpatial3DScene('audit-3d-lock', 'lock');
+    });
+</script>
 {% endblock %}

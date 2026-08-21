@@ -1,102 +1,154 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="glass-card rounded-xl p-8 border border-primary/20 relative animate-fade-slide">
-    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
-    
-    <div class="flex items-center gap-3 mb-4">
-        <div class="w-10 h-10 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(255,107,0,0.15)]">
-            <span class="material-symbols-outlined">folder</span>
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-6 animate-fade-slide">
+    <!-- Left Column (col-span 3) - Reports Table -->
+    <div class="lg:col-span-3 space-y-6">
+        <div class="glass-card p-8 border border-primary/20 relative">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
+            
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(0,163,255,0.15)]">
+                    <span class="material-symbols-outlined">folder</span>
+                </div>
+                <h2 class="text-base font-bold text-white">&gt; Report Generation History</h2>
+            </div>
+            <p class="text-xs text-on-surface-variant mb-6 leading-relaxed">List of generated assessment reports. You can view them inline or download technical and executive summaries.</p>
+
+            {% if not reports %}
+                <p class="text-xs text-on-surface-variant">No reports have been generated yet. Open an assessment to generate PDFs.</p>
+            {% else %}
+                <!-- Search and Dropdown Viewer Actions -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white/5 border border-primary/15 rounded p-6 mb-6">
+                    <div>
+                        <label class="text-[10px] text-on-surface-variant font-bold block mb-2 uppercase tracking-wider">&gt; Search Reports:</label>
+                        <input type="text" id="reportSearch" placeholder="Type to filter reports..." onkeyup="filterReports()" class="w-full bg-[#080808] border border-primary/20 rounded py-2 px-3 text-xs text-primary focus:border-primary focus:ring-0 outline-none font-code-sm">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-on-surface-variant font-bold block mb-2 uppercase tracking-wider">&gt; Quick Selector:</label>
+                        <select id="reportSelect" onchange="viewReportFromDropdown()" class="w-full bg-[#080808] border border-primary/20 rounded py-2 px-3 text-xs text-primary focus:border-primary focus:ring-0 outline-none font-code-sm cursor-pointer">
+                            <option value="">-- Choose a report to view --</option>
+                            {% for r in reports %}
+                                <option value="{{ r[4] }}" data-title="{{ r[2].title() }} Report - {{ r[5] }}">{{ r[2].title() }} Report - {{ r[5] }} ({{ r[3] }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table id="reportsTable" class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-primary/10 text-on-surface-variant font-label-caps text-xs">
+                                <th class="pb-3 px-4">Report ID</th>
+                                <th class="pb-3 px-4">Assessment Ref</th>
+                                <th class="pb-3 px-4">Report Class</th>
+                                <th class="pb-3 px-4">Timestamp</th>
+                                <th class="pb-3 px-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5 text-xs">
+                            {% for r in reports %}
+                                <tr class="table-row-hover transition-colors">
+                                    <td class="py-4 px-4 font-code-sm text-on-surface-variant">{{ r[0] }}</td>
+                                    <td class="py-4 px-4 font-semibold text-white">{{ r[5] }}</td>
+                                    <td class="py-4 px-4">
+                                        {% if r[2] == 'EXECUTIVE' %}
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-primary/10 text-primary border border-primary/20 font-semibold">
+                                                Executive Summary
+                                            </span>
+                                        {% else %}
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-white/5 text-on-surface-variant border border-white/10 font-semibold">
+                                                Technical Report
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-4 px-4 text-on-surface-variant">{{ r[3] }}</td>
+                                    <td class="py-4 px-4 flex gap-2">
+                                        <button onclick="openPdfModal('{{ r[4] }}', '{{ r[2].title() }} Report - {{ r[5] }}')" class="px-3 py-1.5 bg-[#080808] border border-primary/30 text-primary rounded font-label-caps text-[10px] hover:bg-primary/20 hover:border-primary/50 transition-all font-bold">
+                                            [VIEW]
+                                        </button>
+                                        <a href="/download-pdf/{{ r[4] }}" class="px-3 py-1.5 bg-primary text-black rounded font-label-caps text-[10px] hover:bg-primary/80 transition-all no-underline font-bold text-center">
+                                            [DOWNLOAD]
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
         </div>
-        <h2 class="text-base font-bold text-white dotted-text">&gt; Report Generation History</h2>
     </div>
-    <p class="text-xs text-on-surface-variant mb-6 leading-relaxed">List of generated assessment reports. You can view them inline or download technical and executive summaries.</p>
 
-    {% if not reports %}
-        <p class="text-xs text-on-surface-variant">No reports have been generated yet. Open an assessment to generate PDFs.</p>
-    {% else %}
-        <!-- Search and Dropdown Viewer Actions -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white/5 border border-primary/15 rounded-xl p-6 mb-6">
-            <div>
-                <label class="text-[10px] text-on-surface-variant font-bold block mb-2 uppercase tracking-wider">&gt; Search Reports:</label>
-                <input type="text" id="reportSearch" placeholder="Type to filter reports..." onkeyup="filterReports()" class="w-full bg-[#080808] border border-primary/20 rounded py-2 px-3 text-xs text-primary focus:border-primary focus:ring-0 outline-none font-code-sm">
-            </div>
-            <div>
-                <label class="text-[10px] text-on-surface-variant font-bold block mb-2 uppercase tracking-wider">&gt; Quick Selector:</label>
-                <select id="reportSelect" onchange="viewReportFromDropdown()" class="w-full bg-[#080808] border border-primary/20 rounded py-2 px-3 text-xs text-primary focus:border-primary focus:ring-0 outline-none font-code-sm cursor-pointer">
-                    <option value="">-- Choose a report to view --</option>
-                    {% for r in reports %}
-                        <option value="{{ r[4] }}" data-title="{{ r[2].title() }} Report - {{ r[5] }}">{{ r[2].title() }} Report - {{ r[5] }} ({{ r[3] }})</option>
-                    {% endfor %}
-                </select>
+    <!-- Right Column (col-span 1) - Spatial 3D Document Cybercube -->
+    <div class="space-y-6">
+        <div class="glass-card p-6 border border-primary/20 relative flex flex-col items-center justify-center overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
+            <h3 class="font-headline-sm text-xs text-white uppercase tracking-wider mb-2 font-bold w-full text-left">&gt; SPATIAL_DOC_BLOCK</h3>
+            
+            <div id="reports-3d-cube" class="w-full aspect-square max-w-[240px] bg-black/20 border border-primary/10 flex items-center justify-center my-4 overflow-hidden"></div>
+            
+            <div class="w-full text-center space-y-2 font-code-sm text-[11px] text-on-surface-variant border-t border-white/5 pt-4">
+                <div class="flex items-center justify-between">
+                    <span>BLOCK_VAULT:</span>
+                    <span class="text-primary font-bold">STABLE</span>
+                </div>
             </div>
         </div>
-
-        <div class="overflow-x-auto">
-            <table id="reportsTable" class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="border-b border-primary/10 text-on-surface-variant font-label-caps text-xs">
-                        <th class="pb-3 px-4">Report ID</th>
-                        <th class="pb-3 px-4">Assessment Ref</th>
-                        <th class="pb-3 px-4">Report Class</th>
-                        <th class="pb-3 px-4">Timestamp</th>
-                        <th class="pb-3 px-4">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-white/5 text-xs">
-                    {% for r in reports %}
-                        <tr class="table-row-hover transition-colors">
-                            <td class="py-4 px-4 font-code-sm text-on-surface-variant">{{ r[0] }}</td>
-                            <td class="py-4 px-4 font-semibold text-white">{{ r[5] }}</td>
-                            <td class="py-4 px-4">
-                                {% if r[2] == 'EXECUTIVE' %}
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-primary/10 text-primary border border-primary/20 font-semibold">
-                                        Executive Summary
-                                    </span>
-                                {% else %}
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-white/5 text-on-surface-variant border border-white/10 font-semibold">
-                                        Technical Report
-                                    </span>
-                                {% endif %}
-                            </td>
-                            <td class="py-4 px-4 text-on-surface-variant">{{ r[3] }}</td>
-                            <td class="py-4 px-4 flex gap-2">
-                                <button onclick="openPdfModal('{{ r[4] }}', '{{ r[2].title() }} Report - {{ r[5] }}')" class="px-3 py-1.5 bg-[#080808] border border-primary/30 text-primary rounded font-label-caps text-[10px] hover:bg-primary/20 hover:border-primary/50 transition-all font-bold">
-                                    [VIEW]
-                                </button>
-                                <a href="/download-pdf/{{ r[4] }}" class="px-3 py-1.5 bg-primary text-black rounded font-label-caps text-[10px] hover:bg-primary/80 transition-all no-underline font-bold text-center">
-                                    [DOWNLOAD]
-                                </a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <script>
-            function filterReports() {
-                const query = document.getElementById('reportSearch').value.toLowerCase();
-                const rows = document.querySelectorAll('#reportsTable tbody tr');
-                rows.forEach(row => {
-                    const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(query) ? '' : 'none';
-                });
-            }
-
-            function viewReportFromDropdown() {
-                const select = document.getElementById('reportSelect');
-                const selectedVal = select.value;
-                if (selectedVal) {
-                    const option = select.options[select.selectedIndex];
-                    const title = option.getAttribute('data-title');
-                    if (window.openPdfModal) {
-                        window.openPdfModal(selectedVal, title);
-                    }
-                    select.value = "";
-                }
-            }
-        </script>
-    {% endif %}
+    </div>
 </div>
+
+<!-- PDF Modal Viewer -->
+<div id="pdfModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="glass-card w-full max-w-4xl h-[85vh] flex flex-col overflow-hidden relative">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent"></div>
+        <div class="p-4 border-b border-white/5 flex justify-between items-center bg-black/40">
+            <h3 id="pdfModalTitle" class="text-xs font-bold text-white uppercase tracking-widest font-code-sm">PDF View</h3>
+            <button onclick="closePdfModal()" class="text-on-surface-variant hover:text-white transition-colors cursor-pointer bg-transparent border-none text-xs font-bold">
+                [CLOSE]
+            </button>
+        </div>
+        <div class="flex-grow bg-black/90 p-4">
+            <iframe id="pdfFrame" class="w-full h-full border-none bg-black/80" src=""></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+    function filterReports() {
+        const query = document.getElementById('reportSearch').value.toLowerCase();
+        const rows = document.querySelectorAll('#reportsTable tbody tr');
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(query) ? '' : 'none';
+        });
+    }
+
+    function viewReportFromDropdown() {
+        const select = document.getElementById('reportSelect');
+        const selectedVal = select.value;
+        if (selectedVal) {
+            const option = select.options[select.selectedIndex];
+            const title = option.getAttribute('data-title');
+            openPdfModal(selectedVal, title);
+            select.value = "";
+        }
+    }
+
+    function openPdfModal(pdfId, title) {
+        document.getElementById('pdfModalTitle').textContent = title;
+        document.getElementById('pdfFrame').src = `/view-pdf/${pdfId}`;
+        document.getElementById('pdfModal').classList.remove('hidden');
+    }
+
+    function closePdfModal() {
+        document.getElementById('pdfModal').classList.add('hidden');
+        document.getElementById('pdfFrame').src = "";
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+        // Instantiate the interactive 3D document cybercube mesh
+        createSpatial3DScene('reports-3d-cube', 'cube');
+    });
+</script>
 {% endblock %}
