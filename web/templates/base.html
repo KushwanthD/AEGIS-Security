@@ -228,6 +228,46 @@
             background-color: transparent !important;
         }
 
+        /* Interactive 3D tilt and scanning effect */
+        button, a.px-4, a.px-3, a.px-2, input[type="submit"], select, input, textarea {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.12s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+            transform-style: preserve-3d;
+        }
+
+        /* Linear sweep scanner animation on hover */
+        button::after, a.px-4::after, input[type="submit"]::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(0, 163, 255, 0.4),
+                transparent
+            );
+            transform: skewX(-25deg);
+            transition: none;
+            pointer-events: none;
+        }
+        html.light button::after, html.light a.px-4::after, html.light input[type="submit"]::after {
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(0, 0, 0, 0.25),
+                transparent
+            );
+        }
+
+        button:hover::after, a.px-4:hover::after, input[type="submit"]:hover::after {
+            left: 150%;
+            transition: left 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
         .glow-hover:hover {
             box-shadow: 
                 0 0 0 3px rgba(10, 10, 10, 0.95),
@@ -644,11 +684,24 @@
                         trail.style.borderColor = '#00e383';
                         cursor.style.backgroundColor = '#00e383';
                     });
+                    el.addEventListener('mousemove', (e) => {
+                        // Apply dynamic 3D spatial tilt relative to cursor position inside element
+                        const rect = el.getBoundingClientRect();
+                        const x = e.clientX - rect.left - (rect.width / 2);
+                        const y = e.clientY - rect.top - (rect.height / 2);
+                        
+                        // Limit maximum tilt to 10 degrees for clean, elegant spatial UI feedback
+                        const rotX = -(y / (rect.height / 2)) * 10;
+                        const rotY = (x / (rect.width / 2)) * 10;
+                        
+                        el.style.transform = `perspective(400px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.04)`;
+                    });
                     el.addEventListener('mouseleave', () => {
                         trail.style.width = '22px';
                         trail.style.height = '22px';
                         trail.style.borderColor = 'rgba(0, 163, 255, 0.5)';
                         cursor.style.backgroundColor = '#00a3ff';
+                        el.style.transform = ''; // reset tilt
                     });
                 });
             }
@@ -795,7 +848,12 @@
         {% if current_user.is_authenticated %}
             <!-- TopAppBar -->
             <header class="fixed top-0 right-0 w-[calc(100%-280px)] z-40 bg-background/80 backdrop-blur-md border-b border-primary/20 flex justify-between items-center h-16 px-6">
-                <div class="flex items-center gap-6">
+                <div class="flex items-center gap-4">
+                    <button onclick="window.history.back()" class="flex items-center gap-2 text-[11px] font-label-caps text-on-surface-variant hover:text-primary transition-all border border-primary/20 px-3 py-1.5 bg-black/35 cursor-pointer" title="Go back to the previous page">
+                        <span class="material-symbols-outlined text-[14px]">arrow_back</span>
+                        <span>BACK</span>
+                    </button>
+                    <div class="w-[1px] h-4 bg-primary/20 mx-1"></div>
                     <span class="font-label-caps text-label-caps text-primary text-xs animate-pulse">SYS_UPLINK: ONLINE</span>
                 </div>
                 
