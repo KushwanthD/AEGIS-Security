@@ -166,6 +166,11 @@
             border-bottom: 1.5px solid #000000 !important;
         }
 
+        /* Force background 3D spatial container to be total black (solid opacity 0.85) in light theme */
+        html.light #spatial-bg-container {
+            opacity: 0.85 !important;
+        }
+
         /* Custom tactical cursor colors matching mode */
         .custom-cursor {
             position: fixed;
@@ -688,9 +693,6 @@
                 <span id="loader-percentage" class="font-code-sm text-lg text-primary font-bold tracking-widest">00%</span>
             </div>
             
-            <div style="color: #ffffff; font-family: 'JetBrains Mono', monospace; font-size: 1.25rem; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase;">
-                AEGIS <span class="text-primary">BLUE</span>
-            </div>
             <!-- Rapid decryption log output -->
             <div id="decryption-log" class="mt-3 font-code-sm text-xs text-primary/60 h-4 uppercase tracking-wider">
                 BOOTING_MONITOR_HUD...
